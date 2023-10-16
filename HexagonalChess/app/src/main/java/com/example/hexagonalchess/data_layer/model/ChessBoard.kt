@@ -104,104 +104,169 @@ class ChessBoard:ViewModel() {
     val i8 = Tile(TileId.I8,TileColor.LIGHT)
 
     init {
-        repeat(2) {
-            a1.topTile = a2
-            a1.upperRightTile = b2
-            a1.underRightTile = b1
+        a1.topTile = a2
+        a1.upperRightTile = b2
+        a1.underRightTile = b1
 
-            a2.topTile = a3
-            a2.upperRightTile = b3
-            a2.underRightTile = b2
-            a2.bottomTile = a1
+        a2.topTile = a3
+        a2.upperRightTile = b3
+        a2.underRightTile = b2
+        a2.bottomTile = a1
 
-            a3.topTile = a4
-            a3.upperRightTile = b4
-            a3.underRightTile = b3
-            a3.bottomTile = a2
+        a3.topTile = a4
+        a3.upperRightTile = b4
+        a3.underRightTile = b3
+        a3.bottomTile = a2
 
-            a4.topTile = a5
-            a4.upperRightTile = b5
-            a4.underLeftTile = b4
-            a4.bottomTile = a6
+        a4.topTile = a5
+        a4.upperRightTile = b5
+        a4.underLeftTile = b4
+        a4.bottomTile = a6
 
-            a5.topTile = a6
-            a5.upperRightTile = b6
-            a5.underRightTile = b5
-            a5.bottomTile = a4
+        a5.topTile = a6
+        a5.upperRightTile = b6
+        a5.underRightTile = b5
+        a5.bottomTile = a4
 
-            a6.topTile = a7
-            a6.upperRightTile = b7
-            a6.underRightTile = b6
-            a6.bottomTile = a5
+        a6.topTile = a7
+        a6.upperRightTile = b7
+        a6.underRightTile = b6
+        a6.bottomTile = a5
 
-            a7.topTile = a8
-            a7.upperRightTile = b8
-            a7.underRightTile = b7
-            a7.bottomTile = a6
+        a7.topTile = a8
+        a7.upperRightTile = b8
+        a7.underRightTile = b7
+        a7.bottomTile = a6
 
-            a8.upperRightTile = b9
-            a8.underRightTile = b8
-            a8.bottomTile = a7
+        a8.upperRightTile = b9
+        a8.underRightTile = b8
+        a8.bottomTile = a7
 
-            b1.topTile = b2
-            b1.upperRightTile = c2
-            b1.underRightTile = c1
-            b1.upperLeftTile = a1
+        b1.topTile = b2
+        b1.upperRightTile = c2
+        b1.underRightTile = c1
+        b1.upperLeftTile = a1
 
-            b2.topTile = b3
-            b2.upperRightTile = c3
-            b2.underRightTile = c2
-            b2.bottomTile = b1
-            b2.underLeftTile = a1
-            b2.upperLeftTile = a2
+        b2.topTile = b3
+        b2.upperRightTile = c3
+        b2.underRightTile = c2
+        b2.bottomTile = b1
+        b2.underLeftTile = a1
+        b2.upperLeftTile = a2
 
-            b3.topTile = b4
-            b3.upperRightTile = c4
-            b3.underRightTile = c3
-            b3.bottomTile = b2
-            b3.underLeftTile = a2
-            b3.upperLeftTile = a3
+        b3.topTile = b4
+        b3.upperRightTile = c4
+        b3.underRightTile = c3
+        b3.bottomTile = b2
+        b3.underLeftTile = a2
+        b3.upperLeftTile = a3
 
-            b4.topTile = b5
-            b4.upperRightTile = c5
-            b4.underRightTile = c4
-            b4.bottomTile = b3
-            b4.underLeftTile = a3
-            b4.upperLeftTile = a4
+        b4.topTile = b5
+        b4.upperRightTile = c5
+        b4.underRightTile = c4
+        b4.bottomTile = b3
+        b4.underLeftTile = a3
+        b4.upperLeftTile = a4
 
-            b5.topTile = b6
-            b5.upperRightTile = c6
-            b5.underRightTile = c5
-            b5.bottomTile = b4
-            b5.underLeftTile = a4
-            b5.upperLeftTile = a5
+        b5.topTile = b6
+        b5.upperRightTile = c6
+        b5.underRightTile = c5
+        b5.bottomTile = b4
+        b5.underLeftTile = a4
+        b5.upperLeftTile = a5
 
-            b6.topTile = b7
-            b6.upperRightTile = c7
-            b6.underRightTile = c6
-            b6.bottomTile = b5
-            b6.underLeftTile = a5
-            b6.upperLeftTile = a6
+        b6.topTile = b7
+        b6.upperRightTile = c7
+        b6.underRightTile = c6
+        b6.bottomTile = b5
+        b6.underLeftTile = a5
+        b6.upperLeftTile = a6
 
-            b7.topTile = b8
-            b7.upperRightTile = c8
-            b7.underRightTile = c7
-            b7.bottomTile = b6
-            b7.underLeftTile = a6
-            b7.upperLeftTile = a7
+        b7.topTile = b8
+        b7.upperRightTile = c8
+        b7.underRightTile = c7
+        b7.bottomTile = b6
+        b7.underLeftTile = a6
+        b7.upperLeftTile = a7
 
-            b8.topTile = b9
-            b8.upperRightTile = c9
-            b8.underRightTile = c8
-            b8.bottomTile = b7
-            b8.underLeftTile = a7
-            b8.upperLeftTile = a4
+        b8.topTile = b9
+        b8.upperRightTile = c9
+        b8.underRightTile = c8
+        b8.bottomTile = b7
+        b8.underLeftTile = a7
+        b8.upperLeftTile = a4
 
-            b9.upperRightTile = c10
-            b9.underRightTile = c9
-            b9.bottomTile = b8
-            b9.underLeftTile = a8
+        b9.upperRightTile = c10
+        b9.underRightTile = c9
+        b9.bottomTile = b8
+        b9.underLeftTile = a8
 
-        }
+        c1.topTile = c2
+        c1.upperRightTile = d2
+        c1.underRightTile = d1
+        c1.upperLeftTile = b1
+
+        c2.topTile = c3
+        c2.upperRightTile = d3
+        c2.underRightTile = d2
+        c2.bottomTile = c1
+        c2.underLeftTile = b1
+        c2.upperLeftTile = b2
+
+        c3.topTile = c4
+        c3.upperRightTile = d4
+        c3.underRightTile = d3
+        c3.bottomTile = c2
+        c3.underLeftTile = b2
+        c3.upperLeftTile = b3
+
+        c4.topTile = c5
+        c4.upperRightTile = d5
+        c4.underRightTile = d4
+        c4.bottomTile = c3
+        c4.underLeftTile = b3
+        c4.upperLeftTile = b4
+
+        c5.topTile = c6
+        c5.upperRightTile = d6
+        c5.underRightTile = d5
+        c5.bottomTile = c4
+        c5.underLeftTile = b4
+        c5.upperLeftTile = b5
+
+        c6.topTile = c7
+        c6.upperRightTile = d7
+        c6.underRightTile = d6
+        c6.bottomTile = c5
+        c6.underLeftTile = b5
+        c6.upperLeftTile = b6
+
+        c7.topTile = c8
+        c7.upperRightTile = d8
+        c7.underRightTile = d7
+        c7.bottomTile = c6
+        c7.underLeftTile = b6
+        c7.upperLeftTile = b7
+
+        c8.topTile = c9
+        c8.upperRightTile = d9
+        c8.underRightTile = d8
+        c8.bottomTile = c7
+        c8.underLeftTile = b7
+        c8.upperLeftTile = b8
+
+        c9.topTile = c10
+        c9.upperRightTile = d10
+        c9.underRightTile = d9
+        c9.bottomTile = c8
+        c9.underLeftTile = b8
+        c9.upperLeftTile = b9
+
+        c10.upperRightTile = d11
+        c10.underRightTile = d10
+        c10.underLeftTile = c9
+        c10.bottomTile = c9
+
+
     }
 }
