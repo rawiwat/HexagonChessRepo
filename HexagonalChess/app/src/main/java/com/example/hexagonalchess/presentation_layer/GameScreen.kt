@@ -108,7 +108,6 @@ import com.example.hexagonalchess.data_layer.model.tile.I.I8
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.getTileImage
 
-@Preview
 @Composable
 fun GameScreen() {
     Surface(
@@ -162,9 +161,82 @@ fun GameScreen() {
         Row(
             horizontalArrangement = Arrangement.Center
         ) {
+
             LazyColumn {
                 items(
                     columnA,
+                    key = { it.id }
+                ) {
+                    TileUI(tile = it)
+                }
+            }
+
+            LazyColumn {
+                items(
+                    columnB,
+                    key = { it.id }
+                ) {
+                    TileUI(tile = it)
+                }
+            }
+
+            LazyColumn {
+                items(
+                    columnC,
+                    key = { it.id }
+                ) {
+                    TileUI(tile = it)
+                }
+            }
+
+            LazyColumn {
+                items(
+                    columnD,
+                    key = { it.id }
+                ) {
+                    TileUI(tile = it)
+                }
+            }
+
+            LazyColumn {
+                items(
+                    columnE,
+                    key = { it.id }
+                ) {
+                    TileUI(tile = it)
+                }
+            }
+
+            LazyColumn {
+                items(
+                    columnF,
+                    key = { it.id }
+                ) {
+                    TileUI(tile = it)
+                }
+            }
+
+            LazyColumn {
+                items(
+                    columnG,
+                    key = { it.id }
+                ) {
+                    TileUI(tile = it)
+                }
+            }
+
+            LazyColumn {
+                items(
+                    columnH,
+                    key = { it.id }
+                ) {
+                    TileUI(tile = it)
+                }
+            }
+
+            LazyColumn {
+                items(
+                    columnI,
                     key = { it.id }
                 ) {
                     TileUI(tile = it)
@@ -186,4 +258,10 @@ fun TileUI(
             .size(width = 58.5.dp, height = 50.6.dp)
             .clickable { }
     )
+}
+
+@Preview
+@Composable
+fun GameScreenPreview() {
+    GameScreen()
 }
