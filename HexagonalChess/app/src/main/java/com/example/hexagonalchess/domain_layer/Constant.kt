@@ -25,11 +25,13 @@ enum class PieceType {
     ROOK,
     QUEEN,
     KING,
+    NONE
 }
 
 enum class PieceColor {
     BLACK,
-    WHITE
+    WHITE,
+    NONE
 }
 
 enum class TileDirections {
