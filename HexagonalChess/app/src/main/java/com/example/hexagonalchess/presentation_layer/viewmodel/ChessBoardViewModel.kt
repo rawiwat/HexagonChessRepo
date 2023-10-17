@@ -170,7 +170,8 @@ class ChessBoardViewModel(
                 }
             }
         }
-        for(tile in _chessBoard.value) {
+
+        for(tile in chessBoard.value) {
             println("${tile.id} : ${tile.isAPossibleMove}")
         }
     }

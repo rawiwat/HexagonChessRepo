@@ -5,13 +5,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,9 +36,27 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
 
     val tileUiManager = TileUiManager()
 
+    val columnA by rememberSaveable { mutableStateOf(chessBoard.subList(0,8)) }
+
+    val columnB by rememberSaveable { mutableStateOf(chessBoard.subList(8,17)) }
+
+    val columnC by rememberSaveable { mutableStateOf(chessBoard.subList(17,27)) }
+
+    val columnD by rememberSaveable { mutableStateOf(chessBoard.subList(27,38)) }
+
+    val columnE by rememberSaveable { mutableStateOf(chessBoard.subList(38,50)) }
+
+    val columnF by rememberSaveable { mutableStateOf(chessBoard.subList(50,61)) }
+
+    val columnG by rememberSaveable { mutableStateOf(chessBoard.subList(61,71)) }
+
+    val columnH by rememberSaveable { mutableStateOf(chessBoard.subList(71,80)) }
+
+    val columnI by rememberSaveable { mutableStateOf(chessBoard.subList(80,88)) }
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -44,7 +65,7 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
                     )
             ) {
                 items(
-                    chessBoard.subList(0,8),
+                    columnA,
                     key = { it.id }
                 ) {
                     TileUI(
@@ -63,7 +84,7 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
                     )
             ) {
                 items(
-                    chessBoard.subList(8,17),
+                    columnB,
                     key = { it.id }
                 ) {
                     TileUI(
@@ -82,7 +103,7 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
                     )
             ) {
                 items(
-                    chessBoard.subList(17,27),
+                    columnC,
                     key = { it.id }
                 ) {
                     TileUI(
@@ -101,7 +122,7 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
                     )
             ) {
                 items(
-                    chessBoard.subList(27,38),
+                    columnD,
                     key = { it.id }
                 ) {
                     TileUI(
@@ -120,7 +141,7 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
                     )
             ) {
                 items(
-                    chessBoard.subList(38,50),
+                    columnE,
                     key = { it.id }
                 ) {
                     TileUI(
@@ -139,7 +160,7 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
                     )
             ) {
                 items(
-                    chessBoard.subList(50,61),
+                    columnF,
                     key = { it.id }
                 ) {
                     TileUI(
@@ -158,7 +179,7 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
                     )
             ) {
                 items(
-                    chessBoard.subList(61,71),
+                    columnE,
                     key = { it.id }
                 ) {
                     TileUI(
@@ -177,7 +198,7 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
                     )
             ) {
                 items(
-                    chessBoard.subList(71,80),
+                    columnG,
                     key = { it.id }
                 ) {
                     TileUI(
@@ -196,7 +217,7 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
                     )
             ) {
                 items(
-                    chessBoard.subList(80,88),
+                    columnI,
                     key = { it.id }
                 ) {
                     TileUI(
@@ -206,6 +227,16 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
                     )
                 }
             }
+        }
+
+        Button(
+            onClick = {
+                for (tile in chessBoard) {
+                    println("${tile.id} : ${ tile.isAPossibleMove }")
+                }
+            }
+        ) {
+            Text(text = "check board")
         }
     }
 }
@@ -249,6 +280,7 @@ fun TileUI(
                     .clickable { chessBoardViewModel.onClickTargeted(tile) }
             )
         }
+
         if(tile.chessPiece != null) {
             Image(
                 painter = painterResource(id = getChessPieceImage(tile.chessPiece!!)),
