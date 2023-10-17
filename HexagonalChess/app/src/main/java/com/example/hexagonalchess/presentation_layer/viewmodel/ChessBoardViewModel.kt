@@ -1,6 +1,7 @@
 package com.example.hexagonalchess.presentation_layer.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.example.hexagonalchess.data_layer.model.database.Database
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.PieceType
 import com.example.hexagonalchess.domain_layer.TileDirections
@@ -11,7 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class ChessBoardViewModel(
-  val allTiles:List<Tile>
+    allTiles:List<Tile>,
+    //private val database: Database
 ) : ViewModel() {
     private val _chessBoard = MutableStateFlow(allTiles)
 
@@ -22,6 +24,8 @@ class ChessBoardViewModel(
 
     private val _blackCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
     val blackCaptured:StateFlow<List<ChessPiece>> = _blackCaptured
+
+    private var selectedTile:Tile? = null
 
     fun findTile(id: TileId, direction: TileDirections): TileId? {
         var result: TileId? = null
@@ -45,10 +49,10 @@ class ChessBoardViewModel(
     fun onClickPieces(tile:Tile) {
         if (tile.chessPiece != null) {
             for (tiles in _chessBoard.value) {
-                tiles.isSelected = false
+                selectedTile = null
                 tiles.isAPossibleMove = false
             }
-            tile.isSelected = true
+            selectedTile = tile
 
             when (tile.chessPiece!!.type) {
                 PieceType.PAWN -> pawnMove(tile)
@@ -57,7 +61,7 @@ class ChessBoardViewModel(
         }
     }
 
-    fun onClickTargeted(pieceMove:Tile,targetedTile: Tile) {
+    fun onClickTargeted(targetedTile: Tile) {
         if (targetedTile.chessPiece != null) {
             if (targetedTile.chessPiece!!.color == PieceColor.BLACK) {
                 _blackCaptured.value.add(targetedTile.chessPiece!!)
@@ -65,8 +69,20 @@ class ChessBoardViewModel(
                 _whiteCaptured.value.add(targetedTile.chessPiece!!)
             }
         }
-        targetedTile.chessPiece = pieceMove.chessPiece
-        pieceMove.chessPiece = null
+
+        for (tile in _chessBoard.value) {
+            if (tile.id == targetedTile.id) {
+                tile.chessPiece = selectedTile!!.chessPiece
+                for (tiles in _chessBoard.value) {
+                    if(tiles == selectedTile) {
+                        tiles.chessPiece = null
+                        break
+                    }
+                }
+                break
+            }
+        }
+        //selectedTile?.let { database.movePieces(it,targetedTile) }
     }
 
     private fun containPiece(tileId: TileId?): Boolean {

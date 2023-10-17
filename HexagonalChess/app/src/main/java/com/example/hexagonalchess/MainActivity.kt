@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import com.example.hexagonalchess.data_layer.model.database.FirebaseRealtimeDatabase
 import com.example.hexagonalchess.data_layer.model.tile.ChessboardData
 import com.example.hexagonalchess.presentation_layer.GameScreen
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
@@ -16,7 +17,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val allTiles = ChessboardData().allTiles
-        val chessBoardViewModel = ChessBoardViewModel(allTiles)
+        val database = FirebaseRealtimeDatabase()
+        val chessBoardViewModel = ChessBoardViewModel(allTiles,database)
         setContent {
             HexagonalChessTheme {
                 // A surface container using the 'background' color from the theme

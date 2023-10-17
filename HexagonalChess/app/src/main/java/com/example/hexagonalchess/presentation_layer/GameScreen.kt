@@ -28,6 +28,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.hexagonalchess.R
+import com.example.hexagonalchess.data_layer.model.database.FirebaseRealtimeDatabase
 import com.example.hexagonalchess.data_layer.model.tile.ChessboardData
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.TileUiManager
@@ -214,7 +215,6 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
             }
         }
     }
-
 }
 
 @Composable
@@ -251,7 +251,7 @@ fun TileUI(
                         width = tileUiManager.tileWidth.dp,
                         height = tileUiManager.tileHeight.dp
                     )
-                    .clickable { chessBoardViewModel.onClickPieces(tile) }
+                    .clickable { chessBoardViewModel.onClickTargeted(tile) }
             )
         }
     }
@@ -261,6 +261,9 @@ fun TileUI(
 @Composable
 fun GameScreenPreview() {
     val allTiles = ChessboardData().allTiles
-    val chessBoardViewModel = ChessBoardViewModel(allTiles)
+    val chessBoardViewModel = ChessBoardViewModel(
+        allTiles,
+        //FirebaseRealtimeDatabase()
+    )
     GameScreen(chessBoardViewModel)
 }
