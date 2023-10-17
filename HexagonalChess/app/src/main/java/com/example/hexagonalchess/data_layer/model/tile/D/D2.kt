@@ -4,9 +4,6 @@ import com.example.hexagonalchess.TileColor
 import com.example.hexagonalchess.TileId
 import com.example.hexagonalchess.data_layer.model.tile.C.C1
 import com.example.hexagonalchess.data_layer.model.tile.C.C2
-import com.example.hexagonalchess.data_layer.model.tile.E.E2
-import com.example.hexagonalchess.data_layer.model.tile.E.E3
-import com.example.hexagonalchess.data_layer.model.tile.Tile
 
 class D2: com.example.hexagonalchess.data_layer.model.tile.Tile(
     id = TileId.D2,

@@ -31,3 +31,12 @@ enum class PieceColor {
     BLACK,
     WHITE
 }
+
+enum class TileDirections {
+    TOP,
+    UPPER_RIGHT,
+    UNDER_RIGHT,
+    BOTTOM,
+    UPPER_LEFT,
+    UNDER_LEFT
+}
