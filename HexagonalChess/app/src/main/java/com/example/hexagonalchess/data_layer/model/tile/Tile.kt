@@ -3,8 +3,6 @@ package com.example.hexagonalchess.data_layer.model.tile
 import com.example.hexagonalchess.TileColor
 import com.example.hexagonalchess.TileId
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
-import com.example.hexagonalchess.data_layer.model.tile.G.G3
-import com.example.hexagonalchess.data_layer.model.tile.I.I7
 
 open class Tile(
     val id: TileId,

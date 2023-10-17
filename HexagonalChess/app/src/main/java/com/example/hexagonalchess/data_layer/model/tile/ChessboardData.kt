@@ -5,7 +5,7 @@ import com.example.hexagonalchess.TileId
 
 class ChessboardData {
 
-    val a1 = Tile(
+    private val a1 = Tile(
         id = TileId.A1,
         color = TileColor.DARK,
         topTile = TileId.A2,
@@ -16,9 +16,9 @@ class ChessboardData {
         upperLeftTile = null
     )
 
-    val a2 = Tile(
+    private val a2 = Tile(
         id = TileId.A2,
-        color = TileColor.MID,
+        color = TileColor.LIGHT,
         topTile = TileId.A3,
         upperRightTile = TileId.B3,
         underRightTile = TileId.B2,
@@ -27,9 +27,9 @@ class ChessboardData {
         upperLeftTile = null
     )
 
-    val a3 = Tile(
+    private val a3 = Tile(
         id = TileId.A3,
-        color = TileColor.LIGHT,
+        color = TileColor.MID,
         topTile = TileId.A4,
         upperRightTile = TileId.B4,
         underRightTile = TileId.B3,
@@ -38,7 +38,7 @@ class ChessboardData {
         upperLeftTile = null
     )
 
-    val a4 = Tile(
+    private val a4 = Tile(
         id = TileId.A4,
         color = TileColor.DARK,
         topTile = TileId.A5,
@@ -49,7 +49,7 @@ class ChessboardData {
         upperLeftTile = null
     )
 
-    val a5 = Tile(
+    private val a5 = Tile(
         id = TileId.A5,
         color = TileColor.LIGHT,
         topTile = TileId.A6,
@@ -60,7 +60,7 @@ class ChessboardData {
         upperLeftTile = null
     )
 
-    val a6 = Tile(
+    private val a6 = Tile(
         id = TileId.A6,
         color = TileColor.MID,
         topTile = TileId.A7,
@@ -71,7 +71,7 @@ class ChessboardData {
         upperLeftTile = null
     )
 
-    val a7 = Tile(
+    private val a7 = Tile(
         id = TileId.A7,
         color = TileColor.DARK,
         topTile = TileId.A8,
@@ -82,7 +82,7 @@ class ChessboardData {
         upperLeftTile = null
     )
 
-    val a8 = Tile(
+    private val a8 = Tile(
         id = TileId.A8,
         color = TileColor.LIGHT,
         topTile = null,
@@ -93,7 +93,7 @@ class ChessboardData {
         upperLeftTile = null
     )
 
-    val b1 = Tile(
+    private val b1 = Tile(
         id = TileId.B1,
         color = TileColor.LIGHT,
         topTile = TileId.B2,
@@ -104,7 +104,7 @@ class ChessboardData {
         upperLeftTile = TileId.A1
     )
 
-    val b2 = Tile(
+    private val b2 = Tile(
         id = TileId.B2,
         color = TileColor.MID,
         topTile = TileId.B3,
@@ -115,7 +115,7 @@ class ChessboardData {
         upperLeftTile = TileId.A2
     )
 
-    val b3 = Tile(
+    private val b3 = Tile(
         id = TileId.B3,
         color = TileColor.DARK,
         topTile = TileId.B4,
@@ -126,7 +126,7 @@ class ChessboardData {
         upperLeftTile = TileId.A3
     )
 
-    val b4 = Tile(
+    private val b4 = Tile(
         id = TileId.B4,
         color = TileColor.LIGHT,
         topTile = TileId.B5,
@@ -137,7 +137,7 @@ class ChessboardData {
         upperLeftTile = TileId.A4
     )
 
-    val b5 = Tile(
+    private val b5 = Tile(
         id = TileId.B5,
         color = TileColor.MID,
         topTile = TileId.B6,
@@ -148,7 +148,7 @@ class ChessboardData {
         upperLeftTile = TileId.A5
     )
 
-    val b6 = Tile(
+    private val b6 = Tile(
         id = TileId.B6,
         color = TileColor.DARK,
         topTile = TileId.B7,
@@ -159,7 +159,7 @@ class ChessboardData {
         upperLeftTile = TileId.A6
     )
 
-    val b7 = Tile(
+    private val b7 = Tile(
         id = TileId.B7,
         color = TileColor.LIGHT,
         topTile = TileId.B8,
@@ -170,7 +170,7 @@ class ChessboardData {
         upperLeftTile = TileId.A7
     )
 
-    val b8 = Tile(
+    private val b8 = Tile(
         id = TileId.B8,
         color = TileColor.MID,
         topTile = TileId.B9,
@@ -181,7 +181,7 @@ class ChessboardData {
         upperLeftTile = TileId.A8
     )
 
-    val b9 = Tile(
+    private val b9 = Tile(
         id = TileId.B9,
         color = TileColor.DARK,
         topTile = null,
@@ -192,7 +192,7 @@ class ChessboardData {
         upperLeftTile = null
     )
 
-    val c1 = Tile(
+    private val c1 = Tile(
         id = TileId.C1,
         color = TileColor.MID,
         topTile = TileId.C2,
@@ -203,7 +203,7 @@ class ChessboardData {
         upperLeftTile = TileId.B1
     )
 
-    val c2 = Tile(
+    private val c2 = Tile(
         id = TileId.C2,
         color = TileColor.DARK,
         topTile = TileId.C3,
@@ -214,7 +214,7 @@ class ChessboardData {
         upperLeftTile = TileId.B2
     )
 
-    val c3 = Tile(
+    private val c3 = Tile(
         id = TileId.C3,
         color = TileColor.LIGHT,
         topTile = TileId.C4,
@@ -225,7 +225,7 @@ class ChessboardData {
         upperLeftTile = TileId.B3
     )
 
-    val c4 = Tile(
+    private val c4 = Tile(
         id = TileId.C4,
         color = TileColor.MID,
         topTile = TileId.C5,
@@ -236,7 +236,7 @@ class ChessboardData {
         upperLeftTile = TileId.B4
     )
 
-    val c5 = Tile(
+    private val c5 = Tile(
         id = TileId.C5,
         color = TileColor.DARK,
         topTile = TileId.C6,
@@ -247,7 +247,7 @@ class ChessboardData {
         upperLeftTile = TileId.B5
     )
 
-    val c6 = Tile(
+    private val c6 = Tile(
         id = TileId.C6,
         color = TileColor.LIGHT,
         topTile = TileId.C7,
@@ -258,7 +258,7 @@ class ChessboardData {
         upperLeftTile = TileId.B6
     )
 
-    val c7 = Tile(
+    private val c7 = Tile(
         id = TileId.C7,
         color = TileColor.MID,
         topTile = TileId.C8,
@@ -269,7 +269,7 @@ class ChessboardData {
         upperLeftTile = TileId.B7
     )
 
-    val c8 = Tile(
+    private val c8 = Tile(
         id = TileId.C8,
         color = TileColor.DARK,
         topTile = TileId.C9,
@@ -280,7 +280,7 @@ class ChessboardData {
         upperLeftTile = TileId.B8
     )
 
-    val c9 = Tile(
+    private val c9 = Tile(
         id = TileId.C9,
         color = TileColor.LIGHT,
         topTile = TileId.C10,
@@ -291,7 +291,7 @@ class ChessboardData {
         upperLeftTile = TileId.B9
     )
 
-    val c10 = Tile(
+    private val c10 = Tile(
         id = TileId.C10,
         color = TileColor.MID,
         topTile = null,
@@ -302,7 +302,7 @@ class ChessboardData {
         upperLeftTile = null
     )
 
-    val d1 = Tile(
+    private val d1 = Tile(
         id = TileId.D1,
         color = TileColor.DARK,
         topTile = TileId.D2,
@@ -313,7 +313,7 @@ class ChessboardData {
         upperLeftTile = TileId.C1
     )
 
-    val d2 = Tile(
+    private val d2 = Tile(
         id = TileId.D2,
         color = TileColor.LIGHT,
         topTile = TileId.D3,
@@ -324,7 +324,7 @@ class ChessboardData {
         upperLeftTile = TileId.C2
     )
 
-    val d3 = Tile(
+    private val d3 = Tile(
         id = TileId.D3,
         color = TileColor.MID,
         topTile = TileId.D4,
@@ -335,7 +335,7 @@ class ChessboardData {
         upperLeftTile = TileId.C3
     )
 
-    val d4 = Tile(
+    private val d4 = Tile(
         id = TileId.D4,
         color = TileColor.DARK,
         topTile = TileId.D5,
@@ -346,9 +346,9 @@ class ChessboardData {
         upperLeftTile = TileId.C4
     )
 
-    val d5 = Tile(
+    private val d5 = Tile(
         id = TileId.D5,
-        color = TileColor.DARK,
+        color = TileColor.LIGHT,
         topTile = TileId.D6,
         upperRightTile = TileId.E6,
         underRightTile = TileId.E5,
@@ -357,7 +357,7 @@ class ChessboardData {
         upperLeftTile = TileId.C5
     )
 
-    val d6 = Tile(
+    private val d6 = Tile(
         id = TileId.D6,
         color = TileColor.MID,
         topTile = TileId.D7,
@@ -368,7 +368,7 @@ class ChessboardData {
         upperLeftTile = TileId.C6
     )
 
-    val d7 = Tile(
+    private val d7 = Tile(
         id = TileId.D7,
         color = TileColor.DARK,
         topTile = TileId.D8,
@@ -379,7 +379,7 @@ class ChessboardData {
         upperLeftTile = TileId.C7
     )
 
-    val d8 = Tile(
+    private val d8 = Tile(
         id = TileId.D8,
         color = TileColor.LIGHT,
         topTile = TileId.D9,
@@ -390,7 +390,7 @@ class ChessboardData {
         upperLeftTile = TileId.C8
     )
 
-    val d9 = Tile(
+    private val d9 = Tile(
         id = TileId.D9,
         color = TileColor.MID,
         topTile = TileId.D10,
@@ -400,7 +400,7 @@ class ChessboardData {
         underLeftTile = TileId.C8,
         upperLeftTile = TileId.C9
     )
-    val d10 = Tile(
+    private val d10 = Tile(
         id = TileId.D10,
         color = TileColor.DARK,
         topTile = TileId.D11,
@@ -411,7 +411,7 @@ class ChessboardData {
         upperLeftTile = TileId.C10
     )
 
-    val d11 = Tile(
+    private val d11 = Tile(
         id = TileId.D11,
         color = TileColor.LIGHT,
         topTile = null,
@@ -422,7 +422,7 @@ class ChessboardData {
         upperLeftTile = null
     )
 
-    val e1 = Tile(
+    private val e1 = Tile(
         id = TileId.E1,
         color = TileColor.LIGHT,
         topTile = TileId.E2,
@@ -433,7 +433,7 @@ class ChessboardData {
         upperLeftTile = TileId.D1
     )
 
-    val e2 = Tile(
+    private val e2 = Tile(
         id = TileId.E2,
         color = TileColor.MID,
         topTile = TileId.E3,
@@ -444,7 +444,7 @@ class ChessboardData {
         upperLeftTile = TileId.D1
     )
 
-    val e3 = Tile(
+    private val e3 = Tile(
         id = TileId.E3,
         color = TileColor.DARK,
         topTile = TileId.E4,
@@ -455,7 +455,7 @@ class ChessboardData {
         upperLeftTile = TileId.D2
     )
 
-    val e4 = Tile(
+    private val e4 = Tile(
         id = TileId.E4,
         color = TileColor.LIGHT,
         topTile = TileId.E5,
@@ -466,7 +466,7 @@ class ChessboardData {
         upperLeftTile = TileId.D3
     )
 
-    val e5 = Tile(
+    private val e5 = Tile(
         id = TileId.E5,
         color = TileColor.MID,
         topTile = TileId.E6,
@@ -477,7 +477,7 @@ class ChessboardData {
         upperLeftTile = TileId.D4
     )
 
-    val e6 = Tile(
+    private val e6 = Tile(
         id = TileId.E6,
         color = TileColor.DARK,
         topTile = TileId.E7,
@@ -488,7 +488,7 @@ class ChessboardData {
         upperLeftTile = TileId.D5
     )
 
-    val e7 = Tile(
+    private val e7 = Tile(
         id = TileId.E7,
         color = TileColor.LIGHT,
         topTile = TileId.E8,
@@ -499,7 +499,7 @@ class ChessboardData {
         upperLeftTile = TileId.D6
     )
 
-    val e8 = Tile(
+    private val e8 = Tile(
         id = TileId.E8,
         color = TileColor.MID,
         topTile = TileId.E9,
@@ -510,7 +510,7 @@ class ChessboardData {
         upperLeftTile = TileId.D6
     )
 
-    val e9 = Tile(
+    private val e9 = Tile(
         id = TileId.E9,
         color = TileColor.DARK,
         topTile = TileId.E10,
@@ -521,7 +521,7 @@ class ChessboardData {
         upperLeftTile = TileId.D7
     )
 
-    val e10 = Tile(
+    private val e10 = Tile(
         id = TileId.E10,
         color = TileColor.LIGHT,
         topTile = TileId.E11,
@@ -532,7 +532,7 @@ class ChessboardData {
         upperLeftTile = TileId.D8
     )
 
-    val e11 = Tile(
+    private val e11 = Tile(
         id = TileId.E11,
         color = TileColor.MID,
         topTile = TileId.E12,
@@ -543,7 +543,7 @@ class ChessboardData {
         upperLeftTile = TileId.D9
     )
 
-    val e12 = Tile(
+    private val e12 = Tile(
         id = TileId.E12,
         color = TileColor.DARK,
         topTile = null,
@@ -554,7 +554,7 @@ class ChessboardData {
         upperLeftTile = null
     )
 
-    val f1 = Tile(
+    private val f1 = Tile(
         id = TileId.F1,
         color = TileColor.DARK,
         topTile = TileId.F2,
@@ -565,7 +565,7 @@ class ChessboardData {
         upperLeftTile = TileId.E2
     )
 
-    val f2 = Tile(
+    private val f2 = Tile(
         id = TileId.F2,
         color = TileColor.LIGHT,
         topTile = TileId.F3,
@@ -576,7 +576,7 @@ class ChessboardData {
         upperLeftTile = TileId.E3
     )
 
-    val f3 = Tile(
+    private val f3 = Tile(
         id = TileId.F3,
         color = TileColor.MID,
         topTile = TileId.F4,
@@ -587,7 +587,7 @@ class ChessboardData {
         upperLeftTile = TileId.E4
     )
 
-    val f4 = Tile(
+    private val f4 = Tile(
         id = TileId.F4,
         color = TileColor.DARK,
         topTile = TileId.F5,
@@ -598,7 +598,7 @@ class ChessboardData {
         upperLeftTile = TileId.E5
     )
 
-    val f5 = Tile(
+    private val f5 = Tile(
         id = TileId.F5,
         color = TileColor.LIGHT,
         topTile = TileId.F6,
@@ -609,7 +609,7 @@ class ChessboardData {
         upperLeftTile = TileId.E6
     )
 
-    val f6 = Tile(
+    private val f6 = Tile(
         id = TileId.F6,
         color = TileColor.MID,
         topTile = TileId.F7,
@@ -620,7 +620,7 @@ class ChessboardData {
         upperLeftTile = TileId.E7
     )
 
-    val f7 = Tile(
+    private val f7 = Tile(
         id = TileId.F7,
         color = TileColor.DARK,
         topTile = TileId.F8,
@@ -631,7 +631,7 @@ class ChessboardData {
         upperLeftTile = TileId.E8
     )
 
-    val f8 = Tile(
+    private val f8 = Tile(
         id = TileId.F8,
         color = TileColor.LIGHT,
         topTile = TileId.F9,
@@ -642,7 +642,7 @@ class ChessboardData {
         upperLeftTile = TileId.E9
     )
 
-    val f9 = Tile(
+    private val f9 = Tile(
         id = TileId.F9,
         color = TileColor.MID,
         topTile = TileId.F10,
@@ -653,7 +653,7 @@ class ChessboardData {
         upperLeftTile = TileId.E10
     )
 
-    val f10 = Tile(
+    private val f10 = Tile(
         id = TileId.F10,
         color = TileColor.DARK,
         topTile = TileId.F11,
@@ -664,7 +664,7 @@ class ChessboardData {
         upperLeftTile = TileId.E11
     )
 
-    val f11 = Tile(
+    private val f11 = Tile(
         id = TileId.F11,
         color = TileColor.LIGHT,
         topTile = null,
@@ -675,7 +675,7 @@ class ChessboardData {
         upperLeftTile = TileId.E12
     )
 
-    val g1 = Tile(
+    private val g1 = Tile(
         id = TileId.G1,
         color = TileColor.MID,
         topTile = TileId.G2,
@@ -686,7 +686,7 @@ class ChessboardData {
         upperLeftTile = TileId.F2
     )
 
-    val g2 = Tile(
+    private val g2 = Tile(
         id = TileId.G2,
         color = TileColor.DARK,
         topTile = TileId.G3,
@@ -697,7 +697,7 @@ class ChessboardData {
         upperLeftTile = TileId.F3
     )
 
-    val g3 = Tile(
+    private val g3 = Tile(
         id = TileId.G3,
         color = TileColor.LIGHT,
         topTile = TileId.G4,
@@ -708,7 +708,7 @@ class ChessboardData {
         upperLeftTile = TileId.F4
     )
 
-    val g4 = Tile(
+    private val g4 = Tile(
         id = TileId.G4,
         color = TileColor.MID,
         topTile = TileId.G5,
@@ -719,7 +719,7 @@ class ChessboardData {
         upperLeftTile = TileId.F5
     )
 
-    val g5 = Tile(
+    private val g5 = Tile(
         id = TileId.G5,
         color = TileColor.DARK,
         topTile = TileId.G6,
@@ -730,7 +730,7 @@ class ChessboardData {
         upperLeftTile = TileId.F6
     )
 
-    val g6 = Tile(
+    private val g6 = Tile(
         id = TileId.G6,
         color = TileColor.LIGHT,
         topTile = TileId.G7,
@@ -741,7 +741,7 @@ class ChessboardData {
         upperLeftTile = TileId.F7
     )
 
-    val g7 = Tile(
+    private val g7 = Tile(
         id = TileId.G7,
         color = TileColor.MID,
         topTile = TileId.G8,
@@ -752,7 +752,7 @@ class ChessboardData {
         upperLeftTile = TileId.F8
     )
 
-    val g8 = Tile(
+    private val g8 = Tile(
         id = TileId.G8,
         color = TileColor.DARK,
         topTile = TileId.G9,
@@ -763,7 +763,7 @@ class ChessboardData {
         upperLeftTile = TileId.F9
     )
 
-    val g9 = Tile(
+    private val g9 = Tile(
         id = TileId.G9,
         color = TileColor.LIGHT,
         topTile = TileId.G10,
@@ -774,7 +774,7 @@ class ChessboardData {
         upperLeftTile = TileId.F10
     )
 
-    val g10 = Tile(
+    private val g10 = Tile(
         id = TileId.G10,
         color = TileColor.MID,
         topTile = null,
@@ -785,7 +785,7 @@ class ChessboardData {
         upperLeftTile = TileId.F11
     )
 
-    val h1 = Tile(
+    private val h1 = Tile(
         id = TileId.H1,
         color = TileColor.LIGHT,
         topTile = TileId.H2,
@@ -796,7 +796,7 @@ class ChessboardData {
         upperLeftTile = TileId.G2
     )
 
-    val h2 = Tile(
+    private val h2 = Tile(
         id = TileId.H2,
         color = TileColor.MID,
         topTile = TileId.B3,
@@ -807,7 +807,7 @@ class ChessboardData {
         upperLeftTile = TileId.G3
     )
 
-    val h3 = Tile(
+    private val h3 = Tile(
         id = TileId.H3,
         color = TileColor.DARK,
         topTile = TileId.H4,
@@ -818,7 +818,7 @@ class ChessboardData {
         upperLeftTile = TileId.G4
     )
 
-    val h4 = Tile(
+    private val h4 = Tile(
         id = TileId.H4,
         color = TileColor.LIGHT,
         topTile = TileId.H5,
@@ -829,7 +829,7 @@ class ChessboardData {
         upperLeftTile = TileId.G5
     )
 
-    val h5 = Tile(
+    private val h5 = Tile(
         id = TileId.H5,
         color = TileColor.MID,
         topTile = TileId.H6,
@@ -840,7 +840,7 @@ class ChessboardData {
         upperLeftTile = TileId.G6
     )
 
-    val h6 = Tile(
+    private val h6 = Tile(
         id = TileId.H6,
         color = TileColor.DARK,
         topTile = TileId.H7,
@@ -851,9 +851,9 @@ class ChessboardData {
         upperLeftTile = TileId.G7
     )
 
-    val h7 = Tile(
+    private val h7 = Tile(
         id = TileId.H7,
-        color = TileColor.MID,
+        color = TileColor.LIGHT,
         topTile = TileId.H8,
         upperRightTile = TileId.I7,
         underRightTile = TileId.I6,
@@ -862,7 +862,7 @@ class ChessboardData {
         upperLeftTile = TileId.G8
     )
 
-    val h8 = Tile(
+    private val h8 = Tile(
         id = TileId.H8,
         color = TileColor.MID,
         topTile = TileId.H9,
@@ -873,7 +873,7 @@ class ChessboardData {
         upperLeftTile = TileId.G9
     )
 
-    val h9 = Tile(
+    private val h9 = Tile(
         id = TileId.H9,
         color = TileColor.DARK,
         topTile = null,
@@ -884,7 +884,7 @@ class ChessboardData {
         upperLeftTile = TileId.G10
     )
 
-    val i1 = Tile(
+    private val i1 = Tile(
         id = TileId.I1,
         color = TileColor.DARK,
         topTile = TileId.I2,
@@ -895,7 +895,7 @@ class ChessboardData {
         upperLeftTile = TileId.H2
     )
 
-    val i2 = Tile(
+    private val i2 = Tile(
         id = TileId.I2,
         color = TileColor.LIGHT,
         topTile = TileId.I3,
@@ -906,7 +906,7 @@ class ChessboardData {
         upperLeftTile = TileId.H3
     )
 
-    val i3 = Tile(
+    private val i3 = Tile(
         id = TileId.I3,
         color = TileColor.MID,
         topTile = TileId.I4,
@@ -917,7 +917,7 @@ class ChessboardData {
         upperLeftTile = TileId.H4
     )
 
-    val i4 = Tile(
+    private val i4 = Tile(
         id = TileId.I4,
         color = TileColor.DARK,
         topTile = TileId.I5,
@@ -928,7 +928,7 @@ class ChessboardData {
         upperLeftTile = TileId.H5
     )
 
-    val i5 = Tile(
+    private val i5 = Tile(
         id = TileId.I5,
         color = TileColor.LIGHT,
         topTile = TileId.I6,
@@ -939,7 +939,7 @@ class ChessboardData {
         upperLeftTile = TileId.H6
     )
 
-    val i6 = Tile(
+    private val i6 = Tile(
         id = TileId.I6,
         color = TileColor.MID,
         topTile = TileId.I7,
@@ -950,7 +950,7 @@ class ChessboardData {
         upperLeftTile = TileId.H7
     )
 
-    val i7 = Tile(
+    private val i7 = Tile(
         id = TileId.I7,
         color = TileColor.DARK,
         topTile = TileId.I8,
@@ -961,7 +961,7 @@ class ChessboardData {
         upperLeftTile = TileId.H8
     )
 
-    val i8 = Tile(
+    private val i8 = Tile(
         id = TileId.I8,
         color = TileColor.LIGHT,
         topTile = null,
@@ -970,5 +970,17 @@ class ChessboardData {
         bottomTile = TileId.I7,
         underLeftTile = TileId.H8,
         upperLeftTile = TileId.H9
+    )
+
+    val allTiles = listOf(
+        a8,a7,a6,a5,a4,a3,a2,a1,
+        b9,b8,b7,b6,b5,b4,b3,b2,b1,
+        c10,c9,c8,c7,c6,c5,c4,c3,c2,c1,
+        d11,d10,d9,d8,d7,d6,d5,d4,d3,d2,d1,
+        e12,e11,e10,e9,e8,e7,e6,e5,e4,e3,e2,e1,
+        f11,f10,f9,f8,f7,f6,f5,f4,f3,f2,f1,
+        g10,g9,g8,g7,g6,g5,g4,g3,g2,g1,
+        h9,h8,h7,h6,h5,h4,h3,h2,h1,
+        i8,i7,i6,i5,i4,i3,i2,i1,
     )
 }
