@@ -1,25 +1,17 @@
 package com.example.hexagonalchess.presentation_layer
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,21 +20,22 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.hexagonalchess.R
-import com.example.hexagonalchess.data_layer.model.database.FirebaseRealtimeDatabase
 import com.example.hexagonalchess.data_layer.model.tile.ChessboardData
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.TileUiManager
+import com.example.hexagonalchess.domain_layer.getChessPieceImage
 import com.example.hexagonalchess.domain_layer.getTileImage
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 
 @Composable
 fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
     val chessBoard by chessBoardViewModel.chessBoard.collectAsState()
+
     val tileUiManager = TileUiManager()
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -223,6 +216,8 @@ fun TileUI(
     tileUiManager: TileUiManager,
     chessBoardViewModel: ChessBoardViewModel
 ) {
+    val isPossibleMove by remember { mutableStateOf(tile.isAPossibleMove) }
+
     Box(
         modifier = Modifier.wrapContentSize(),
     ) {
@@ -242,7 +237,7 @@ fun TileUI(
                 color = Color.Red
             )
         )
-        if (tile.isAPossibleMove) {
+        if (isPossibleMove) {
             Image(
                 painter = painterResource(id = R.drawable.target_border_default),
                 contentDescription = null,
@@ -252,6 +247,17 @@ fun TileUI(
                         height = tileUiManager.tileHeight.dp
                     )
                     .clickable { chessBoardViewModel.onClickTargeted(tile) }
+            )
+        }
+        if(tile.chessPiece != null) {
+            Image(
+                painter = painterResource(id = getChessPieceImage(tile.chessPiece!!)),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(
+                        width = tileUiManager.tileWidth.dp,
+                        height = tileUiManager.tileHeight.dp
+                    )
             )
         }
     }

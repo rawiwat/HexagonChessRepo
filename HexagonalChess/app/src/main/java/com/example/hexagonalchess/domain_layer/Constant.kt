@@ -56,5 +56,4 @@ enum class ChessPieceKeyWord(key:String) {
     BLACK_ROOK("bR"),
     BLACK_QUEEN("bQ"),
     BLACK_KING("bK"),
-    NONE("none")
 }

@@ -10,17 +10,6 @@ import com.google.firebase.database.ValueEventListener
 class FirebaseRealtimeDatabase: Database {
     private val myRef = FirebaseDatabase.getInstance().getReference("game")
 
-    override fun initialBoard(player1Name: String, player2Name: String) {
-        myRef.child("game_room").child(player1Name + player2Name).child("a1").setValue(ChessPieceKeyWord.WHITE_PAWN.name)
-        myRef.child("game_room").child(player1Name + player2Name).child("a2").setValue(ChessPieceKeyWord.NONE.name)
-        myRef.child("game_room").child(player1Name + player2Name).child("a3").setValue(ChessPieceKeyWord.NONE.name)
-        myRef.child("game_room").child(player1Name + player2Name).child("a4").setValue(ChessPieceKeyWord.NONE.name)
-        myRef.child("game_room").child(player1Name + player2Name).child("a5").setValue(ChessPieceKeyWord.NONE.name)
-        myRef.child("game_room").child(player1Name + player2Name).child("a6").setValue(ChessPieceKeyWord.NONE.name)
-        myRef.child("game_room").child(player1Name + player2Name).child("a7").setValue(ChessPieceKeyWord.NONE.name)
-        myRef.child("game_room").child(player1Name + player2Name).child("a8").setValue(ChessPieceKeyWord.BLACK_PAWN.name)
-    }
-
     override fun sendPlayerToOnlineWaitingRoom(name: String) {
         myRef.child("waitingroom").child("player")
     }

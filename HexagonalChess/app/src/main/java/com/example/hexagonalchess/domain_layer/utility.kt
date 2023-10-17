@@ -1,5 +1,6 @@
 package com.example.hexagonalchess.domain_layer
 
+import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 
 fun getChessPieceFromKeyWord(chessPieceKeyWord: ChessPieceKeyWord): ChessPiece {
@@ -16,7 +17,6 @@ fun getChessPieceFromKeyWord(chessPieceKeyWord: ChessPieceKeyWord): ChessPiece {
         ChessPieceKeyWord.WHITE_ROOK -> ChessPiece(type = PieceType.ROOK, color = PieceColor.WHITE,ChessPieceKeyWord.WHITE_ROOK)
         ChessPieceKeyWord.WHITE_QUEEN -> ChessPiece(type = PieceType.QUEEN, color = PieceColor.WHITE,ChessPieceKeyWord.WHITE_QUEEN)
         ChessPieceKeyWord.WHITE_KING -> ChessPiece(type = PieceType.KING, color = PieceColor.WHITE,ChessPieceKeyWord.WHITE_KING)
-        ChessPieceKeyWord.NONE -> ChessPiece(type = PieceType.NONE,color = PieceColor.NONE,ChessPieceKeyWord.NONE)
     }
 }
 
@@ -35,5 +35,22 @@ fun getChessPieceFromKeyWordName(chessPieceKeyWord: String): ChessPiece? {
         ChessPieceKeyWord.WHITE_QUEEN.name -> ChessPiece(type = PieceType.QUEEN, color = PieceColor.WHITE,ChessPieceKeyWord.WHITE_QUEEN)
         ChessPieceKeyWord.WHITE_KING.name -> ChessPiece(type = PieceType.KING, color = PieceColor.WHITE,ChessPieceKeyWord.WHITE_KING)
         else -> null
+    }
+}
+
+fun getChessPieceImage(chessPiece: ChessPiece): Int {
+    return when(chessPiece.keyWord) {
+        ChessPieceKeyWord.BLACK_PAWN -> R.drawable.black_pawn
+        ChessPieceKeyWord.BLACK_BISHOP -> R.drawable.black_bishop
+        ChessPieceKeyWord.BLACK_KNIGHT -> R.drawable.white_knight
+        ChessPieceKeyWord.BLACK_ROOK -> R.drawable.black_rook
+        ChessPieceKeyWord.BLACK_QUEEN -> R.drawable.black_queen
+        ChessPieceKeyWord.BLACK_KING -> R.drawable.black_king
+        ChessPieceKeyWord.WHITE_PAWN -> R.drawable.white_pawn
+        ChessPieceKeyWord.WHITE_BISHOP -> R.drawable.white_bishop
+        ChessPieceKeyWord.WHITE_KNIGHT -> R.drawable.white_knight
+        ChessPieceKeyWord.WHITE_ROOK -> R.drawable.white_rook
+        ChessPieceKeyWord.WHITE_QUEEN -> R.drawable.white_queen
+        ChessPieceKeyWord.WHITE_KING -> R.drawable.white_king
     }
 }

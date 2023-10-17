@@ -18,7 +18,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val allTiles = ChessboardData().allTiles
         val database = FirebaseRealtimeDatabase()
-        val chessBoardViewModel = ChessBoardViewModel(allTiles,database)
+        val chessBoardViewModel = ChessBoardViewModel(
+            allTiles,
+            //database
+        )
         setContent {
             HexagonalChessTheme {
                 // A surface container using the 'background' color from the theme

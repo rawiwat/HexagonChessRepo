@@ -1,5 +1,8 @@
 package com.example.hexagonalchess.presentation_layer.viewmodel
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.hexagonalchess.data_layer.model.database.Database
 import com.example.hexagonalchess.domain_layer.PieceColor
@@ -16,8 +19,7 @@ class ChessBoardViewModel(
     //private val database: Database
 ) : ViewModel() {
     private val _chessBoard = MutableStateFlow(allTiles)
-
-    val chessBoard:StateFlow<List<Tile>> = _chessBoard
+    val chessBoard: StateFlow<List<Tile>> = _chessBoard
 
     private val _whiteCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
     val whiteCaptured:StateFlow<List<ChessPiece>> = _whiteCaptured
@@ -27,7 +29,7 @@ class ChessBoardViewModel(
 
     private var selectedTile:Tile? = null
 
-    fun findTile(id: TileId, direction: TileDirections): TileId? {
+    private fun findTile(id: TileId, direction: TileDirections): TileId? {
         var result: TileId? = null
 
         for (tile in _chessBoard.value) {
@@ -47,13 +49,12 @@ class ChessBoardViewModel(
     }
 
     fun onClickPieces(tile:Tile) {
+
         if (tile.chessPiece != null) {
             for (tiles in _chessBoard.value) {
-                selectedTile = null
                 tiles.isAPossibleMove = false
             }
             selectedTile = tile
-
             when (tile.chessPiece!!.type) {
                 PieceType.PAWN -> pawnMove(tile)
                 else -> {}
@@ -162,11 +163,15 @@ class ChessBoardViewModel(
             if (containPiece(attack2)) {
                 result.add(attack2)
             }
+
             for (tiles in _chessBoard.value) {
                 if (result.contains(tiles.id)) {
                     tiles.isAPossibleMove = true
                 }
             }
+        }
+        for(tile in _chessBoard.value) {
+            println("${tile.id} : ${tile.isAPossibleMove}")
         }
     }
 }
