@@ -1,7 +1,6 @@
 package com.example.hexagonalchess.domain_layer
 
 import com.example.hexagonalchess.R
-import com.example.hexagonalchess.TileColor
 
 fun getTileImage(tileColor: TileColor): Int {
     return when(tileColor) {

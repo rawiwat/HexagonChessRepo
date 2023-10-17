@@ -1,4 +1,4 @@
-package com.example.hexagonalchess
+package com.example.hexagonalchess.domain_layer
 
 enum class TileId {
     A1,A2,A3,A4,A5,A6,A7,A8,
@@ -39,4 +39,20 @@ enum class TileDirections {
     BOTTOM,
     UPPER_LEFT,
     UNDER_LEFT
+}
+
+enum class ChessPieceKeyWord(key:String) {
+    WHITE_PAWN("wP"),
+    WHITE_KNIGHT("wN"),
+    WHITE_BISHOP("wB"),
+    WHITE_ROOK("wR"),
+    WHITE_QUEEN("wQ"),
+    WHITE_KING("wK"),
+    BLACK_PAWN("bP"),
+    BLACK_KNIGHT("bN"),
+    BLACK_BISHOP("bB"),
+    BLACK_ROOK("bR"),
+    BLACK_QUEEN("bQ"),
+    BLACK_KING("bK"),
+    NONE("none")
 }

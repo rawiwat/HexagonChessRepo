@@ -1,10 +1,10 @@
 package com.example.hexagonalchess.presentation_layer.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.hexagonalchess.PieceColor
-import com.example.hexagonalchess.PieceType
-import com.example.hexagonalchess.TileDirections
-import com.example.hexagonalchess.TileId
+import com.example.hexagonalchess.domain_layer.PieceColor
+import com.example.hexagonalchess.domain_layer.PieceType
+import com.example.hexagonalchess.domain_layer.TileDirections
+import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,8 +23,8 @@ class ChessBoardViewModel(
     private val _blackCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
     val blackCaptured:StateFlow<List<ChessPiece>> = _blackCaptured
 
-    fun findTile(id: TileId, direction: TileDirections):TileId? {
-        var result:TileId? = null
+    fun findTile(id: TileId, direction: TileDirections): TileId? {
+        var result: TileId? = null
 
         for (tile in _chessBoard.value) {
             if (tile.id == id) {

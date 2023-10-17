@@ -52,7 +52,8 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
             ) {
                 TileUI(
                     tile = it,
-                    tileUiManager = tileUiManager
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel
                 )
             }
         }
@@ -70,7 +71,8 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
             ) {
                 TileUI(
                     tile = it,
-                    tileUiManager = tileUiManager
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel
                 )
             }
         }
@@ -88,7 +90,8 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
             ) {
                 TileUI(
                     tile = it,
-                    tileUiManager = tileUiManager
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel
                 )
             }
         }
@@ -106,7 +109,8 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
             ) {
                 TileUI(
                     tile = it,
-                    tileUiManager = tileUiManager
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel
 
                 )
             }
@@ -124,7 +128,8 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
             ) {
                 TileUI(
                     tile = it,
-                    tileUiManager = tileUiManager
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel
                 )
             }
         }
@@ -142,7 +147,8 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
             ) {
                 TileUI(
                     tile = it,
-                    tileUiManager = tileUiManager
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel
                 )
             }
         }
@@ -160,7 +166,8 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
             ) {
                 TileUI(
                     tile = it,
-                    tileUiManager = tileUiManager
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel
                 )
             }
         }
@@ -178,7 +185,8 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
             ) {
                 TileUI(
                     tile = it,
-                    tileUiManager = tileUiManager
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel
                 )
             }
         }
@@ -196,7 +204,8 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
             ) {
                 TileUI(
                     tile = it,
-                    tileUiManager = tileUiManager
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel
                 )
             }
         }
@@ -206,7 +215,8 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
 @Composable
 fun TileUI(
     tile: Tile,
-    tileUiManager: TileUiManager
+    tileUiManager: TileUiManager,
+    chessBoardViewModel: ChessBoardViewModel
 ) {
     Box(modifier = Modifier.wrapContentSize()) {
         Image(

@@ -1,7 +1,7 @@
 package com.example.hexagonalchess.data_layer.model.tile
 
-import com.example.hexagonalchess.TileColor
-import com.example.hexagonalchess.TileId
+import com.example.hexagonalchess.domain_layer.TileColor
+import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 
 open class Tile(
