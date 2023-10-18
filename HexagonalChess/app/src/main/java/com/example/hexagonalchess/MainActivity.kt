@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val allTiles = ChessboardData().allTiles
-        val database = FirebaseRealtimeDatabase()
+        //val database = FirebaseRealtimeDatabase()
         val chessBoardViewModel = ChessBoardViewModel(
             allTiles,
             //database

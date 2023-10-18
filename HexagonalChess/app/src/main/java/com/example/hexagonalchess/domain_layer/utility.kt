@@ -42,7 +42,7 @@ fun getChessPieceImage(chessPiece: ChessPiece): Int {
     return when(chessPiece.keyWord) {
         ChessPieceKeyWord.BLACK_PAWN -> R.drawable.black_pawn
         ChessPieceKeyWord.BLACK_BISHOP -> R.drawable.black_bishop
-        ChessPieceKeyWord.BLACK_KNIGHT -> R.drawable.white_knight
+        ChessPieceKeyWord.BLACK_KNIGHT -> R.drawable.black_knight
         ChessPieceKeyWord.BLACK_ROOK -> R.drawable.black_rook
         ChessPieceKeyWord.BLACK_QUEEN -> R.drawable.black_queen
         ChessPieceKeyWord.BLACK_KING -> R.drawable.black_king

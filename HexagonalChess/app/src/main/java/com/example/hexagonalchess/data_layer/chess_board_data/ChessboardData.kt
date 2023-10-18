@@ -1,11 +1,5 @@
 package com.example.hexagonalchess.data_layer.chess_board_data
 
-import com.example.hexagonalchess.data_layer.model.tile.Tile
-import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
-import com.example.hexagonalchess.domain_layer.TileColor
-import com.example.hexagonalchess.domain_layer.TileId
-import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
-
 class ChessboardData {
     private val columnA = ColumnA().columnA
     private val columnB = ColumnB().columnB
