@@ -85,8 +85,10 @@ class ChessBoardViewModel(
 
     private fun containPiece(tileId: TileId?): Boolean {
         val targetIndex = tileId?.let { getTileIndex(it) }
-        if (_chessBoard.value[targetIndex!!].chessPiece != null ) {
-            return true
+        targetIndex?.let {
+            if (_chessBoard.value[targetIndex].chessPiece != null ) {
+                return true
+            }
         }
         /*for (tile in _chessBoard.value) {
             if (tileId == tile.id && tile.chessPiece != null) {

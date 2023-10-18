@@ -815,10 +815,10 @@ class ChessboardData {
     private val h2 = Tile(
         id = TileId.H2,
         color = TileColor.MID,
-        topTile = TileId.B3,
+        topTile = TileId.H3,
         upperRightTile = TileId.I2,
         underRightTile = TileId.I1,
-        bottomTile = TileId.B1,
+        bottomTile = TileId.H1,
         underLeftTile = TileId.G2,
         upperLeftTile = TileId.G3,
         chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN)
