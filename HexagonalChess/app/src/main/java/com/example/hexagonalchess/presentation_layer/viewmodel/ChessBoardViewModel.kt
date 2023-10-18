@@ -340,6 +340,8 @@ class ChessBoardViewModel(
                 )
             )
         )
+        
+        resolveMoveResult(result)
     }
 
     private fun queenMove(selectedTile: Tile) {
