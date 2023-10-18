@@ -56,6 +56,7 @@ class ChessBoardViewModel(
                 else -> {  }
             }
         }
+        updateBoard()
     }
 
     fun onClickTargeted(targetedTile: Tile) {
@@ -180,14 +181,14 @@ class ChessBoardViewModel(
             val attack2 = findTile(selectedTile.id, TileDirections.UNDER_RIGHT)
             val attack1Index = attack1?.let { getTileIndex(it) }
             attack1Index?.let {
-                if (_chessBoard.value[it].chessPiece != null && _chessBoard.value[it].chessPiece!!.color == PieceColor.BLACK) {
+                if (_chessBoard.value[it].chessPiece != null && _chessBoard.value[it].chessPiece!!.color == PieceColor.WHITE) {
                     result.add(attack1)
                 }
             }
 
             val attack2Index = attack2?.let { getTileIndex(it) }
             attack2Index?.let {
-                if (_chessBoard.value[it].chessPiece != null && _chessBoard.value[it].chessPiece!!.color == PieceColor.BLACK) {
+                if (_chessBoard.value[it].chessPiece != null && _chessBoard.value[it].chessPiece!!.color == PieceColor.WHITE) {
                     result.add(attack2)
                 }
             }
@@ -204,10 +205,9 @@ class ChessBoardViewModel(
                 }
             }
         }
-        updateBoard()
     }
 
-    fun updateBoard() {
+    private fun updateBoard() {
         val updatedChessBoard = _chessBoard.value.map { tile ->
             tile.copy()
         }

@@ -450,8 +450,8 @@ class ChessboardData {
         upperRightTile = TileId.F2,
         underRightTile = TileId.F1,
         bottomTile = TileId.E1,
-        underLeftTile = TileId.D2,
-        upperLeftTile = TileId.D1
+        underLeftTile = TileId.D1,
+        upperLeftTile = TileId.D2
     )
 
     private val e3 = Tile(
@@ -461,8 +461,8 @@ class ChessboardData {
         upperRightTile = TileId.F3,
         underRightTile = TileId.F2,
         bottomTile = TileId.E2,
-        underLeftTile = TileId.D3,
-        upperLeftTile = TileId.D2
+        underLeftTile = TileId.D2,
+        upperLeftTile = TileId.D3
     )
 
     private val e4 = Tile(
@@ -472,8 +472,8 @@ class ChessboardData {
         upperRightTile = TileId.F4,
         underRightTile = TileId.F3,
         bottomTile = TileId.E3,
-        underLeftTile = TileId.D4,
-        upperLeftTile = TileId.D3
+        underLeftTile = TileId.D3,
+        upperLeftTile = TileId.D4
     )
 
     private val e5 = Tile(
@@ -483,8 +483,8 @@ class ChessboardData {
         upperRightTile = TileId.F5,
         underRightTile = TileId.F4,
         bottomTile = TileId.E4,
-        underLeftTile = TileId.D5,
-        upperLeftTile = TileId.D4,
+        underLeftTile = TileId.D4,
+        upperLeftTile = TileId.D5,
         chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN)
     )
 
@@ -495,8 +495,8 @@ class ChessboardData {
         upperRightTile = TileId.F6,
         underRightTile = TileId.F5,
         bottomTile = TileId.E5,
-        underLeftTile = TileId.D6,
-        upperLeftTile = TileId.D5
+        underLeftTile = TileId.D5,
+        upperLeftTile = TileId.D6
     )
 
     private val e7 = Tile(
@@ -505,9 +505,9 @@ class ChessboardData {
         topTile = TileId.E8,
         upperRightTile = TileId.F7,
         underRightTile = TileId.F6,
-        bottomTile = TileId.F6,
-        underLeftTile = TileId.D7,
-        upperLeftTile = TileId.D6
+        bottomTile = TileId.E6,
+        underLeftTile = TileId.D6,
+        upperLeftTile = TileId.D7
     )
 
     private val e8 = Tile(
@@ -518,7 +518,7 @@ class ChessboardData {
         underRightTile = TileId.F7,
         bottomTile = TileId.E7,
         underLeftTile = TileId.D7,
-        upperLeftTile = TileId.D6,
+        upperLeftTile = TileId.D8,
         chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_PAWN)
     )
 
@@ -530,7 +530,7 @@ class ChessboardData {
         underRightTile = TileId.F8,
         bottomTile = TileId.E8,
         underLeftTile = TileId.D8,
-        upperLeftTile = TileId.D7
+        upperLeftTile = TileId.D9
     )
 
     private val e10 = Tile(
@@ -541,7 +541,7 @@ class ChessboardData {
         underRightTile = TileId.F9,
         bottomTile = TileId.E9,
         underLeftTile = TileId.D9,
-        upperLeftTile = TileId.D8
+        upperLeftTile = TileId.D10
     )
 
     private val e11 = Tile(
@@ -552,7 +552,7 @@ class ChessboardData {
         underRightTile = TileId.F10,
         bottomTile = TileId.E10,
         underLeftTile = TileId.D10,
-        upperLeftTile = TileId.D9
+        upperLeftTile = TileId.D11
     )
 
     private val e12 = Tile(
