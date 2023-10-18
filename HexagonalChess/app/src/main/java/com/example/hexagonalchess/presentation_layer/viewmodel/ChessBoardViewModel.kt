@@ -314,15 +314,18 @@ class ChessBoardViewModel(
 
     private fun getAllTileInDirection(selectedTile: Tile, direction: TileDirections):List<TileId?> {
         val result = mutableListOf<TileId?>()
-        val firstTileId = findTile(selectedTile.id,direction)
+        val firstTileId = findTile(selectedTile.id, direction)
         firstTileId?.let {
             var currentTile = _chessBoard.value[getTileIndex(it)]
             result.add(currentTile.id)
-            while (currentTile.chessPiece == null) {
-                val nextTile = findTile(currentTile.id,direction)
+            for (i in 1 until _chessBoard.value.size) {
+                val nextTile = findTile(currentTile.id, direction)
                 nextTile?.let { nextTileId ->
                     currentTile = _chessBoard.value[getTileIndex(nextTileId)]
                     result.add(nextTile)
+                } ?: break
+                if (currentTile.chessPiece != null) {
+                    break
                 }
             }
         }
@@ -334,13 +337,6 @@ class ChessBoardViewModel(
             tile.copy()
         }
         _chessBoard.value = updatedChessBoard
-    }
-
-    fun recomposeTest() {
-        for (tile in _chessBoard.value) {
-            tile.isAPossibleMove = !tile.isAPossibleMove
-        }
-        updateBoard()
     }
 }
 
