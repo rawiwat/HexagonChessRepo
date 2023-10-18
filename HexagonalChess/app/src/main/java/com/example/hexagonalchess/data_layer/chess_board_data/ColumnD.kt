@@ -27,7 +27,8 @@ class ColumnD {
         underRightTile = TileId.E2,
         bottomTile = TileId.D1,
         underLeftTile = TileId.C1,
-        upperLeftTile = TileId.C2
+        upperLeftTile = TileId.C2,
+        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_QUEEN)
     )
 
     private val d3 = Tile(
@@ -108,6 +109,7 @@ class ColumnD {
         underLeftTile = TileId.C8,
         upperLeftTile = TileId.C9
     )
+
     private val d10 = Tile(
         id = TileId.D10,
         color = TileColor.DARK,
@@ -116,7 +118,8 @@ class ColumnD {
         underRightTile = TileId.E10,
         bottomTile = TileId.D9,
         underLeftTile = TileId.C9,
-        upperLeftTile = TileId.C10
+        upperLeftTile = TileId.C10,
+        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_QUEEN)
     )
 
     private val d11 = Tile(

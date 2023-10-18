@@ -28,7 +28,8 @@ class ColumnE {
         underRightTile = TileId.F1,
         bottomTile = TileId.E1,
         underLeftTile = TileId.D1,
-        upperLeftTile = TileId.D2
+        upperLeftTile = TileId.D2,
+        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_BISHOP)
     )
 
     private val e3 = Tile(
@@ -39,7 +40,8 @@ class ColumnE {
         underRightTile = TileId.F2,
         bottomTile = TileId.E2,
         underLeftTile = TileId.D2,
-        upperLeftTile = TileId.D3
+        upperLeftTile = TileId.D3,
+        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_BISHOP)
     )
 
     private val e4 = Tile(
@@ -118,7 +120,8 @@ class ColumnE {
         underRightTile = TileId.F9,
         bottomTile = TileId.E9,
         underLeftTile = TileId.D9,
-        upperLeftTile = TileId.D10
+        upperLeftTile = TileId.D10,
+        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_BISHOP)
     )
 
     private val e11 = Tile(
@@ -129,7 +132,8 @@ class ColumnE {
         underRightTile = TileId.F10,
         bottomTile = TileId.E10,
         underLeftTile = TileId.D10,
-        upperLeftTile = TileId.D11
+        upperLeftTile = TileId.D11,
+        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_BISHOP)
     )
 
     private val e12 = Tile(

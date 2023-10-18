@@ -346,7 +346,7 @@ class ChessBoardViewModel(
         bishopMove(selectedTile)
         rookMove(selectedTile)
     }
-    
+
     private fun kingMove(selectedTile: Tile) {
         val result = mutableListOf<TileId>()
         val move1 = findTile(selectedTile.id,TileDirections.TOP)

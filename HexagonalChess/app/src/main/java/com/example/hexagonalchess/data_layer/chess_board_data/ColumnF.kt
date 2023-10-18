@@ -26,7 +26,8 @@ class ColumnF {
         underRightTile = TileId.G1,
         bottomTile = TileId.F1,
         underLeftTile = TileId.E2,
-        upperLeftTile = TileId.E3
+        upperLeftTile = TileId.E3,
+        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_BISHOP)
     )
 
     private val f3 = Tile(
@@ -116,7 +117,8 @@ class ColumnF {
         underRightTile = TileId.G9,
         bottomTile = TileId.F9,
         underLeftTile = TileId.E10,
-        upperLeftTile = TileId.E11
+        upperLeftTile = TileId.E11,
+        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_BISHOP)
     )
 
     private val f11 = Tile(
