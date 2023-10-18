@@ -62,7 +62,6 @@ class ChessBoardViewModel(
                 else -> {  }
             }
         }
-        updateBoard()
     }
 
     fun onClickTargeted(targetedTile: Tile) {
@@ -152,6 +151,12 @@ class ChessBoardViewModel(
                 }
             }
 
+            val updatedChessBoard = _chessBoard.value.map { tile ->
+                tile.copy()
+            }
+            _chessBoard.value = updatedChessBoard
+
+            //updateBoard()
             /*for (tiles in _chessBoard.value) {
                 if (result.contains(tiles.id)) {
                     tiles.isAPossibleMove = true
@@ -198,6 +203,11 @@ class ChessBoardViewModel(
                     tiles.isAPossibleMove = true
                 }
             }
+            //updateBoard()
+            val updatedChessBoard = _chessBoard.value.map { tile ->
+                tile.copy()
+            }
+            _chessBoard.value = updatedChessBoard
         }
     }
 

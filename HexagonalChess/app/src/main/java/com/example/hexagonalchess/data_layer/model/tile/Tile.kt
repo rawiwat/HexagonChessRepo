@@ -4,7 +4,7 @@ import com.example.hexagonalchess.domain_layer.TileColor
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 
-data class Tile(
+open class Tile(
     val id: TileId,
     val color: TileColor,
     var topTile: TileId?,
@@ -16,7 +16,7 @@ data class Tile(
     var isAPossibleMove: Boolean = false,
     var chessPiece: ChessPiece? = null
 ) {
-    /*fun copy(): Tile {
+    fun copy(): Tile {
         return Tile(
             this.id,
             this.color,
@@ -29,5 +29,5 @@ data class Tile(
             this.isAPossibleMove,
             this.chessPiece
         )
-    }*/
+    }
 }
