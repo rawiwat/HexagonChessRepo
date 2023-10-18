@@ -15,7 +15,8 @@ class ColumnB {
         underRightTile = TileId.C1,
         bottomTile = null,
         underLeftTile = null,
-        upperLeftTile = TileId.A1
+        upperLeftTile = TileId.A1,
+        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_ROOK)
     )
 
     private val b2 = Tile(
@@ -105,7 +106,8 @@ class ColumnB {
         underRightTile = TileId.C9,
         bottomTile = TileId.B8,
         underLeftTile = TileId.A8,
-        upperLeftTile = null
+        upperLeftTile = null,
+        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_ROOK)
     )
 
     val columnB = listOf(b9,b8,b7,b6,b5,b4,b3,b2,b1)
