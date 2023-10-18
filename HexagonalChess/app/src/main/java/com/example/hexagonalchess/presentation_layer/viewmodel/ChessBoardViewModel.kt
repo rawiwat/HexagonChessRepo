@@ -47,13 +47,17 @@ class ChessBoardViewModel(
             when (tile.chessPiece!!.type) {
                 PieceType.PAWN -> pawnMove(tile)
                 PieceType.KNIGHT -> knightMove(tile)
+                PieceType.BISHOP -> bishopMove(tile)
                 PieceType.ROOK -> rookMove(tile)
+                PieceType.QUEEN -> queenMove(tile)
                 PieceType.KING -> kingMove(tile)
                 else -> {  }
             }
         }
         updateBoard()
     }
+
+
 
     fun onClickTargeted(targetedTile: Tile) {
         for (tile in _chessBoard.value) {
@@ -279,6 +283,70 @@ class ChessBoardViewModel(
         resolveMoveResult(result)
     }
 
+    private fun bishopMove(selectedTile: Tile) {
+        val result = mutableListOf<TileId?>()
+        result.addAll(
+            getAllTileInMultiDirection(
+                selectedTile,
+                listOf(
+                    TileDirections.TOP,
+                    TileDirections.UPPER_RIGHT
+                )
+            )
+        )
+        result.addAll(
+            getAllTileInMultiDirection(
+                selectedTile,
+                listOf(
+                    TileDirections.TOP,
+                    TileDirections.UPPER_LEFT
+                )
+            )
+        )
+        result.addAll(
+            getAllTileInMultiDirection(
+                selectedTile,
+                listOf(
+                    TileDirections.UPPER_RIGHT,
+                    TileDirections.UNDER_RIGHT
+                )
+            )
+        )
+
+        result.addAll(
+            getAllTileInMultiDirection(
+                selectedTile,
+                listOf(
+                    TileDirections.BOTTOM,
+                    TileDirections.UNDER_RIGHT
+                )
+            )
+        )
+        result.addAll(
+            getAllTileInMultiDirection(
+                selectedTile,
+                listOf(
+                    TileDirections.BOTTOM,
+                    TileDirections.UNDER_LEFT
+                )
+            )
+        )
+        result.addAll(
+            getAllTileInMultiDirection(
+                selectedTile,
+                listOf(
+                    TileDirections.UNDER_LEFT,
+                    TileDirections.UPPER_LEFT
+                )
+            )
+        )
+    }
+
+    private fun queenMove(selectedTile: Tile) {
+        bishopMove(selectedTile)
+        rookMove(selectedTile)
+    }
+    
     private fun kingMove(selectedTile: Tile) {
         val result = mutableListOf<TileId>()
         val move1 = findTile(selectedTile.id,TileDirections.TOP)
@@ -326,6 +394,38 @@ class ChessBoardViewModel(
             result.add(currentTile.id)
             for (i in 1 until 12) {
                 val nextTile = findTile(currentTile.id,direction)
+                nextTile?.let { nextTileId ->
+                    currentTile = _chessBoard.value[getTileIndex(nextTileId)]
+                    result.add(nextTile)
+                }
+                if (currentTile.chessPiece != null) {
+                    break
+                }
+            }
+        }
+        return result
+    }
+
+    private fun getAllTileInMultiDirection(selectedTile: Tile, directions: List<TileDirections>):List<TileId?> {
+        val result = mutableListOf<TileId?>()
+        var firstTileId:TileId? = selectedTile.id
+        for (direction in directions) {
+            firstTileId = firstTileId?.let { findTile(it, direction) }
+        }
+        firstTileId?.let {
+            var currentTile = _chessBoard.value[getTileIndex(it)]
+            currentTile.chessPiece?.let { adjacentTileWithPiece ->
+                if (adjacentTileWithPiece.color != selectedTile.chessPiece!!.color) {
+                    result.add(currentTile.id)
+                }
+                return result
+            }
+            result.add(currentTile.id)
+            for (i in 1 until 12) {
+                var nextTile:TileId? = currentTile.id
+                for (direction in directions) {
+                    nextTile = nextTile?.let { nextTileId-> findTile(nextTileId, direction) }
+                }
                 nextTile?.let { nextTileId ->
                     currentTile = _chessBoard.value[getTileIndex(nextTileId)]
                     result.add(nextTile)
