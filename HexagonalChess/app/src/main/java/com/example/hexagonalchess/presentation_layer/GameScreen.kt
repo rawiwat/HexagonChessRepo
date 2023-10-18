@@ -59,6 +59,10 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
         ) {
             Text(text = "check board2")
         }
+
+        Button(onClick = { chessBoardViewModel.recomposeTest() }) {
+            Text(text = "Test Efficiency")
+        }
     }
 }
 

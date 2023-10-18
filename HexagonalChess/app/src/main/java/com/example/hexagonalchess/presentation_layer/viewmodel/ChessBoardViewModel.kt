@@ -63,20 +63,7 @@ class ChessBoardViewModel(
         _chessBoard.value[targetedIndex].chessPiece = selectedTile!!.chessPiece
         val selectedTileIndex = getTileIndex(selectedTile!!.id)
         _chessBoard.value[selectedTileIndex].chessPiece = null
-        /*for (tile in _chessBoard.value) {
-            if (tile.id == targetedTile.id) {
-                tile.chessPiece = selectedTile!!.chessPiece
-                break
-            }
-        }
-        for (tiles in _chessBoard.value) {
-            if(tiles.id == selectedTile!!.id) {
-                tiles.chessPiece = null
-                break
-            }
-        }*/
         updateBoard()
-        //selectedTile?.let { database.movePieces(it,targetedTile) }
     }
 
     private fun containPiece(tileId: TileId?): Boolean {
@@ -283,15 +270,12 @@ class ChessBoardViewModel(
 
     private fun rookMove(selectedTile: Tile) {
         val result = mutableListOf<TileId?>()
-        val directionTop = mutableListOf<TileId?>()
-        val topTileId = findTile(selectedTile.id,TileDirections.TOP)
-        var currentTopTile = _chessBoard.value[getTileIndex(topTileId!!)]
-        while (currentTopTile.chessPiece == null) {
-            directionTop.add(currentTopTile.id)
-            val nextTopTile = findTile(currentTopTile.id,TileDirections.TOP)
-            nextTopTile?.let { currentTopTile = _chessBoard.value[getTileIndex(it)] }
-        }
-        result.addAll(directionTop)
+        result.addAll(getAllTileInDirection(selectedTile, TileDirections.TOP))
+        result.addAll(getAllTileInDirection(selectedTile, TileDirections.UPPER_RIGHT))
+        result.addAll(getAllTileInDirection(selectedTile, TileDirections.UNDER_RIGHT))
+        result.addAll(getAllTileInDirection(selectedTile, TileDirections.BOTTOM))
+        result.addAll(getAllTileInDirection(selectedTile, TileDirections.UNDER_LEFT))
+        result.addAll(getAllTileInDirection(selectedTile, TileDirections.UPPER_LEFT))
         resolveMoveResult(result)
     }
 
@@ -328,11 +312,35 @@ class ChessBoardViewModel(
         }
     }
 
+    private fun getAllTileInDirection(selectedTile: Tile, direction: TileDirections):List<TileId?> {
+        val result = mutableListOf<TileId?>()
+        val firstTileId = findTile(selectedTile.id,direction)
+        firstTileId?.let {
+            var currentTile = _chessBoard.value[getTileIndex(it)]
+            result.add(currentTile.id)
+            while (currentTile.chessPiece == null) {
+                val nextTile = findTile(currentTile.id,direction)
+                nextTile?.let { nextTileId ->
+                    currentTile = _chessBoard.value[getTileIndex(nextTileId)]
+                    result.add(nextTile)
+                }
+            }
+        }
+        return result
+    }
+
     private fun updateBoard() {
         val updatedChessBoard = _chessBoard.value.map { tile ->
             tile.copy()
         }
         _chessBoard.value = updatedChessBoard
+    }
+
+    fun recomposeTest() {
+        for (tile in _chessBoard.value) {
+            tile.isAPossibleMove = !tile.isAPossibleMove
+        }
+        updateBoard()
     }
 }
 
