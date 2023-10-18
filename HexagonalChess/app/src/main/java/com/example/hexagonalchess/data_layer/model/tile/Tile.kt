@@ -14,6 +14,20 @@ open class Tile(
     var underLeftTile: TileId?,
     var upperLeftTile: TileId?,
     var isAPossibleMove: Boolean = false,
-    var isSelected: Boolean = false,
     var chessPiece: ChessPiece? = null
-)
+) {
+    fun copy(): Tile {
+        return Tile(
+            this.id,
+            this.color,
+            this.topTile,
+            this.upperRightTile,
+            this.underRightTile,
+            this.bottomTile,
+            this.underLeftTile,
+            this.upperLeftTile,
+            this.isAPossibleMove,
+            this.chessPiece
+        )
+    }
+}

@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.hexagonalchess.data_layer.model.database.Database
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.PieceType
@@ -13,6 +14,7 @@ import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class ChessBoardViewModel(
     allTiles:List<Tile>,
@@ -21,11 +23,11 @@ class ChessBoardViewModel(
     private val _chessBoard = MutableStateFlow(allTiles)
     val chessBoard: StateFlow<List<Tile>> = _chessBoard
 
-    private val _whiteCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
-    val whiteCaptured:StateFlow<List<ChessPiece>> = _whiteCaptured
+    //private val _whiteCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
+    //val whiteCaptured:StateFlow<List<ChessPiece>> = _whiteCaptured
 
-    private val _blackCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
-    val blackCaptured:StateFlow<List<ChessPiece>> = _blackCaptured
+    //private val _blackCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
+    //val blackCaptured:StateFlow<List<ChessPiece>> = _blackCaptured
 
     private var selectedTile:Tile? = null
 
@@ -49,33 +51,28 @@ class ChessBoardViewModel(
     }
 
     fun onClickPieces(tile:Tile) {
-
         if (tile.chessPiece != null) {
+
             for (tiles in _chessBoard.value) {
                 tiles.isAPossibleMove = false
             }
+
             selectedTile = tile
+
             when (tile.chessPiece!!.type) {
                 PieceType.PAWN -> pawnMove(tile)
-                else -> {}
+                else -> {  }
             }
+
         }
     }
 
     fun onClickTargeted(targetedTile: Tile) {
-        if (targetedTile.chessPiece != null) {
-            if (targetedTile.chessPiece!!.color == PieceColor.BLACK) {
-                _blackCaptured.value.add(targetedTile.chessPiece!!)
-            } else {
-                _whiteCaptured.value.add(targetedTile.chessPiece!!)
-            }
-        }
-
         for (tile in _chessBoard.value) {
             if (tile.id == targetedTile.id) {
                 tile.chessPiece = selectedTile!!.chessPiece
                 for (tiles in _chessBoard.value) {
-                    if(tiles == selectedTile) {
+                    if(tiles.id == selectedTile!!.id) {
                         tiles.chessPiece = null
                         break
                     }
@@ -83,6 +80,7 @@ class ChessBoardViewModel(
                 break
             }
         }
+        updateBoard()
         //selectedTile?.let { database.movePieces(it,targetedTile) }
     }
 
@@ -120,48 +118,16 @@ class ChessBoardViewModel(
             val attack1 = findTile(selectedTile.id, TileDirections.UPPER_LEFT)
             val attack2 = findTile(selectedTile.id, TileDirections.UPPER_RIGHT)
 
-            if (containPiece(attack1)) {
-                result.add(attack1)
-            }
-
-            if (containPiece(attack2)) {
-                result.add(attack2)
-            }
             for (tiles in _chessBoard.value) {
-                if (result.contains(tiles.id)) {
-                    tiles.isAPossibleMove = true
-                }
-            }
-        } else {
-            val result = mutableListOf<TileId?>()
-            val forward1 = findTile(selectedTile.id, TileDirections.BOTTOM)
-            val forward2 = findTile(forward1!!, TileDirections.BOTTOM)
-
-            if (!containPiece(forward1)) {
-                result.add(forward1)
-                when(selectedTile.id) {
-                    TileId.A8 -> result.add(forward2)
-                    TileId.B8 -> result.add(forward2)
-                    TileId.C8 -> result.add(forward2)
-                    TileId.D8 -> result.add(forward2)
-                    TileId.E8 -> result.add(forward2)
-                    TileId.F8 -> result.add(forward2)
-                    TileId.G8 -> result.add(forward2)
-                    TileId.H8 -> result.add(forward2)
-                    TileId.I8 -> result.add(forward2)
-                    else -> { }
+                if (tiles.id == attack1 && tiles.chessPiece != null && tiles.chessPiece!!.color == PieceColor.BLACK) {
+                    result.add(attack1)
                 }
             }
 
-            val attack1 = findTile(selectedTile.id, TileDirections.UNDER_LEFT)
-            val attack2 = findTile(selectedTile.id, TileDirections.UNDER_RIGHT)
-
-            if (containPiece(attack1)) {
-                result.add(attack1)
-            }
-
-            if (containPiece(attack2)) {
-                result.add(attack2)
+            for (tiles in _chessBoard.value) {
+                if (tiles.id == attack2 && tiles.chessPiece != null && tiles.chessPiece!!.color == PieceColor.BLACK) {
+                    result.add(attack2)
+                }
             }
 
             for (tiles in _chessBoard.value) {
@@ -169,11 +135,58 @@ class ChessBoardViewModel(
                     tiles.isAPossibleMove = true
                 }
             }
-        }
+        } else {
+            viewModelScope.launch {
+                val result = mutableListOf<TileId?>()
+                val forward1 = findTile(selectedTile.id, TileDirections.BOTTOM)
+                val forward2 = findTile(forward1!!, TileDirections.BOTTOM)
 
-        for(tile in chessBoard.value) {
-            println("${tile.id} : ${tile.isAPossibleMove}")
+                if (!containPiece(forward1)) {
+                    result.add(forward1)
+                    when(selectedTile.id) {
+                        TileId.A8 -> result.add(forward2)
+                        TileId.B8 -> result.add(forward2)
+                        TileId.C8 -> result.add(forward2)
+                        TileId.D8 -> result.add(forward2)
+                        TileId.E8 -> result.add(forward2)
+                        TileId.F8 -> result.add(forward2)
+                        TileId.G8 -> result.add(forward2)
+                        TileId.H8 -> result.add(forward2)
+                        TileId.I8 -> result.add(forward2)
+                        else -> { }
+                    }
+                }
+
+                val attack1 = findTile(selectedTile.id, TileDirections.UNDER_LEFT)
+                val attack2 = findTile(selectedTile.id, TileDirections.UNDER_RIGHT)
+
+                for (tiles in _chessBoard.value) {
+                    if (tiles.id == attack1 && tiles.chessPiece != null && tiles.chessPiece!!.color == PieceColor.WHITE) {
+                        result.add(attack1)
+                    }
+                }
+
+                for (tiles in _chessBoard.value) {
+                    if (tiles.id == attack2 && tiles.chessPiece != null && tiles.chessPiece!!.color == PieceColor.WHITE) {
+                        result.add(attack2)
+                    }
+                }
+
+                for (tiles in _chessBoard.value) {
+                    if (result.contains(tiles.id)) {
+                        tiles.isAPossibleMove = true
+                    }
+                }
+            }
         }
+        updateBoard()
+    }
+
+    private fun updateBoard() {
+        val updatedChessBoard = _chessBoard.value.map { tile ->
+            tile.copy()
+        }
+        _chessBoard.value = updatedChessBoard
     }
 }
 
