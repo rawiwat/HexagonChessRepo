@@ -53,6 +53,7 @@ class ChessBoardViewModel(
             selectedTile = tile
             when (tile.chessPiece!!.type) {
                 PieceType.PAWN -> pawnMove(tile)
+                PieceType.KNIGHT -> knightMove(tile)
                 else -> {  }
             }
         }
@@ -205,6 +206,21 @@ class ChessBoardViewModel(
                 index?.let {
                     _chessBoard.value[it].isAPossibleMove = true
                 }
+            }
+        }
+    }
+
+    private fun knightMove(selectedTile: Tile) {
+        val result = mutableListOf<TileId?>()
+        var move1 = findTile(selectedTile.id,TileDirections.TOP)
+        move1?.let { move1 = findTile(it,TileDirections.TOP) }
+        move1?.let { move1 = findTile(it,TileDirections.UNDER_LEFT) }
+        result.add(move1)
+
+        for (tileId in result) {
+            val index = tileId?.let { getTileIndex(it) }
+            index?.let {
+                _chessBoard.value[it].isAPossibleMove = true
             }
         }
     }

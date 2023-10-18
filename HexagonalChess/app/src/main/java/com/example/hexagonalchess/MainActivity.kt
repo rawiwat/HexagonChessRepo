@@ -8,7 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.hexagonalchess.data_layer.model.database.FirebaseRealtimeDatabase
-import com.example.hexagonalchess.data_layer.model.tile.ChessboardData
+import com.example.hexagonalchess.data_layer.chess_board_data.ChessboardData
 import com.example.hexagonalchess.presentation_layer.GameScreen
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 import com.example.hexagonalchess.ui.theme.HexagonalChessTheme
@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
         )
         setContent {
             HexagonalChessTheme {
-                // A surface container using the 'background' color from the theme
+                // ColumnA surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

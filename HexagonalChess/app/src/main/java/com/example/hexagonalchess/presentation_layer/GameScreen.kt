@@ -21,7 +21,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.hexagonalchess.R
-import com.example.hexagonalchess.data_layer.model.tile.ChessboardData
+import com.example.hexagonalchess.data_layer.chess_board_data.ChessboardData
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.TileUiManager
 import com.example.hexagonalchess.domain_layer.getChessPieceImage
