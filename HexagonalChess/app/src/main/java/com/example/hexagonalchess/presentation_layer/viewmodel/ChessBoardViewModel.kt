@@ -33,22 +33,16 @@ class ChessBoardViewModel(
     private var selectedTile:Tile? = null
 
     private fun findTile(id: TileId, direction: TileDirections): TileId? {
-        var result: TileId? = null
-
-        for (tile in _chessBoard.value) {
-            if (tile.id == id) {
-                result = when(direction) {
-                    TileDirections.TOP -> tile.topTile
-                    TileDirections.UPPER_RIGHT -> tile.upperRightTile
-                    TileDirections.UNDER_RIGHT -> tile.underRightTile
-                    TileDirections.BOTTOM -> tile.bottomTile
-                    TileDirections.UNDER_LEFT -> tile.underLeftTile
-                    TileDirections.UPPER_LEFT -> tile.upperLeftTile
-                }
-                break
-            }
+        val targetIndex = getTileIndex(id)
+        val targetedTile = _chessBoard.value[targetIndex]
+        return when(direction) {
+                    TileDirections.TOP -> targetedTile.topTile
+                    TileDirections.UPPER_RIGHT -> targetedTile.upperRightTile
+                    TileDirections.UNDER_RIGHT -> targetedTile.underRightTile
+                    TileDirections.BOTTOM -> targetedTile.bottomTile
+                    TileDirections.UNDER_LEFT -> targetedTile.underLeftTile
+                    TileDirections.UPPER_LEFT -> targetedTile.upperLeftTile
         }
-        return result
     }
 
     fun onClickPieces(tile: Tile) {
@@ -65,6 +59,9 @@ class ChessBoardViewModel(
     }
 
     fun onClickTargeted(targetedTile: Tile) {
+        for (tile in _chessBoard.value) {
+            tile.isAPossibleMove = false
+        }
         val targetedIndex = getTileIndex(targetedTile.id)
         _chessBoard.value[targetedIndex].chessPiece = selectedTile!!.chessPiece
         val selectedTileIndex = getTileIndex(selectedTile!!.id)
@@ -150,13 +147,6 @@ class ChessBoardViewModel(
                     _chessBoard.value[it].isAPossibleMove = true
                 }
             }
-
-            val updatedChessBoard = _chessBoard.value.map { tile ->
-                tile.copy()
-            }
-            _chessBoard.value = updatedChessBoard
-
-            //updateBoard()
             /*for (tiles in _chessBoard.value) {
                 if (result.contains(tiles.id)) {
                     tiles.isAPossibleMove = true
@@ -169,6 +159,9 @@ class ChessBoardViewModel(
 
             if (!containPiece(forward1)) {
                 result.add(forward1)
+            }
+
+            if(!containPiece(forward1) && !containPiece(forward2)) {
                 when(selectedTile.id) {
                     TileId.A8 -> result.add(forward2)
                     TileId.B8 -> result.add(forward2)
@@ -185,33 +178,36 @@ class ChessBoardViewModel(
 
             val attack1 = findTile(selectedTile.id, TileDirections.UNDER_LEFT)
             val attack2 = findTile(selectedTile.id, TileDirections.UNDER_RIGHT)
-
-            for (tiles in _chessBoard.value) {
-                if (tiles.id == attack1 && tiles.chessPiece != null && tiles.chessPiece!!.color == PieceColor.WHITE) {
+            val attack1Index = attack1?.let { getTileIndex(it) }
+            attack1Index?.let {
+                if (_chessBoard.value[it].chessPiece != null && _chessBoard.value[it].chessPiece!!.color == PieceColor.BLACK) {
                     result.add(attack1)
                 }
             }
 
-            for (tiles in _chessBoard.value) {
-                if (tiles.id == attack2 && tiles.chessPiece != null && tiles.chessPiece!!.color == PieceColor.WHITE) {
+            val attack2Index = attack2?.let { getTileIndex(it) }
+            attack2Index?.let {
+                if (_chessBoard.value[it].chessPiece != null && _chessBoard.value[it].chessPiece!!.color == PieceColor.BLACK) {
                     result.add(attack2)
                 }
             }
 
-            for (tiles in _chessBoard.value) {
-                if (result.contains(tiles.id)) {
-                    tiles.isAPossibleMove = true
+            /*for (tiles in _chessBoard.value) {
+                if (tiles.id == attack2 && tiles.chessPiece != null && tiles.chessPiece!!.color == PieceColor.BLACK) {
+                    result.add(attack2)
+                }
+            }*/
+            for (tileId in result) {
+                val index = tileId?.let { getTileIndex(it) }
+                index?.let {
+                    _chessBoard.value[it].isAPossibleMove = true
                 }
             }
-            //updateBoard()
-            val updatedChessBoard = _chessBoard.value.map { tile ->
-                tile.copy()
-            }
-            _chessBoard.value = updatedChessBoard
         }
+        updateBoard()
     }
 
-    private fun updateBoard() {
+    fun updateBoard() {
         val updatedChessBoard = _chessBoard.value.map { tile ->
             tile.copy()
         }

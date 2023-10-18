@@ -3,7 +3,9 @@ package com.example.hexagonalchess.data_layer.model.tile
 import com.example.hexagonalchess.domain_layer.TileColor
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
+import com.google.errorprone.annotations.Immutable
 
+@Immutable
 open class Tile(
     val id: TileId,
     val color: TileColor,

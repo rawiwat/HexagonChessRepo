@@ -49,6 +49,16 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
         ) {
             Text(text = "check board")
         }
+
+        Button(
+            onClick = {
+                for (tile in chessBoard) {
+                    println("${tile.id} : ${tile.chessPiece?.keyWord}")
+                }
+            }
+        ) {
+            Text(text = "check board2")
+        }
     }
 }
 
@@ -58,7 +68,6 @@ fun TileUI(
     tileUiManager: TileUiManager,
     chessBoardViewModel: ChessBoardViewModel
 ) {
-
     Box(
         modifier = Modifier.wrapContentSize(),
     ) {
@@ -112,23 +121,23 @@ fun ChessBoardUI(
     chessBoardData:List<Tile>,
     chessBoardViewModel: ChessBoardViewModel
 ) {
-    val columnA by remember { mutableStateOf(chessBoardData.subList(0,8)) }
+    val columnA = chessBoardData.subList(0,8)
 
-    val columnB by remember { mutableStateOf(chessBoardData.subList(8,17)) }
+    val columnB = chessBoardData.subList(8,17)
 
-    val columnC by remember { mutableStateOf(chessBoardData.subList(17,27)) }
+    val columnC = chessBoardData.subList(17,27)
 
-    val columnD by remember { mutableStateOf(chessBoardData.subList(27,38)) }
+    val columnD = chessBoardData.subList(27,38)
 
-    val columnE by remember { mutableStateOf(chessBoardData.subList(38,50)) }
+    val columnE = chessBoardData.subList(38,50)
 
-    val columnF by remember { mutableStateOf(chessBoardData.subList(50,61)) }
+    val columnF = chessBoardData.subList(50,61)
 
-    val columnG by remember { mutableStateOf(chessBoardData.subList(61,71)) }
+    val columnG = chessBoardData.subList(61,71)
 
-    val columnH by remember { mutableStateOf(chessBoardData.subList(71,80)) }
+    val columnH = chessBoardData.subList(71,80)
 
-    val columnI by remember { mutableStateOf(chessBoardData.subList(80,88)) }
+    val columnI = chessBoardData.subList(80,88)
 
     val tileUiManager = TileUiManager()
 
