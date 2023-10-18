@@ -1,21 +1,14 @@
 package com.example.hexagonalchess.presentation_layer.viewmodel
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.hexagonalchess.data_layer.model.database.Database
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.PieceType
 import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
-import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.getTileIndex
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 class ChessBoardViewModel(
     allTiles:List<Tile>,
@@ -54,6 +47,8 @@ class ChessBoardViewModel(
             when (tile.chessPiece!!.type) {
                 PieceType.PAWN -> pawnMove(tile)
                 PieceType.KNIGHT -> knightMove(tile)
+                PieceType.ROOK -> rookMove(tile)
+                PieceType.KING -> kingMove(tile)
                 else -> {  }
             }
         }
@@ -275,13 +270,59 @@ class ChessBoardViewModel(
 
         for (tileId in result) {
             val index = tileId?.let { getTileIndex(it) }
-            var colorCheck:PieceColor
             index?.let { currentIndex ->
-                _chessBoard.value[currentIndex].chessPiece?.let {
-                    colorCheck = it.color
-                    if (colorCheck != selectedTile.chessPiece!!.color) {
-                        _chessBoard.value[currentIndex].isAPossibleMove = true
-                    }
+                if (_chessBoard.value[currentIndex].chessPiece == null) {
+                    _chessBoard.value[currentIndex].isAPossibleMove = true
+                }
+                if (_chessBoard.value[currentIndex].chessPiece != null && _chessBoard.value[currentIndex].chessPiece!!.color != selectedTile.chessPiece!!.color) {
+                    _chessBoard.value[currentIndex].isAPossibleMove = true
+                }
+            }
+        }
+    }
+
+    private fun rookMove(selectedTile: Tile) {
+        val result = mutableListOf<TileId?>()
+        val directionTop = mutableListOf<TileId?>()
+        val topTileId = findTile(selectedTile.id,TileDirections.TOP)
+        var currentTopTile = _chessBoard.value[getTileIndex(topTileId!!)]
+        while (currentTopTile.chessPiece == null) {
+            directionTop.add(currentTopTile.id)
+            val nextTopTile = findTile(currentTopTile.id,TileDirections.TOP)
+            nextTopTile?.let { currentTopTile = _chessBoard.value[getTileIndex(it)] }
+        }
+        result.addAll(directionTop)
+        resolveMoveResult(result)
+    }
+
+    private fun kingMove(selectedTile: Tile) {
+        val result = mutableListOf<TileId>()
+        val move1 = findTile(selectedTile.id,TileDirections.TOP)
+        val move2 = findTile(selectedTile.id,TileDirections.UPPER_RIGHT)
+        val move3 = findTile(selectedTile.id,TileDirections.UNDER_RIGHT)
+        val move4 = findTile(selectedTile.id,TileDirections.BOTTOM)
+        val move5 = findTile(selectedTile.id,TileDirections.UNDER_LEFT)
+        val move6 = findTile(selectedTile.id,TileDirections.UPPER_LEFT)
+
+        move1?.let { result.add(it) }
+        move2?.let { result.add(it) }
+        move3?.let { result.add(it) }
+        move4?.let { result.add(it) }
+        move5?.let { result.add(it) }
+        move6?.let { result.add(it) }
+
+        resolveMoveResult(result)
+    }
+
+    private fun resolveMoveResult(result:List<TileId?>) {
+        for (tileId in result) {
+            val index = tileId?.let { getTileIndex(it) }
+            index?.let { currentIndex ->
+                if (_chessBoard.value[currentIndex].chessPiece == null) {
+                    _chessBoard.value[currentIndex].isAPossibleMove = true
+                }
+                if (_chessBoard.value[currentIndex].chessPiece != null && _chessBoard.value[currentIndex].chessPiece!!.color != selectedTile!!.chessPiece!!.color) {
+                    _chessBoard.value[currentIndex].isAPossibleMove = true
                 }
             }
         }
