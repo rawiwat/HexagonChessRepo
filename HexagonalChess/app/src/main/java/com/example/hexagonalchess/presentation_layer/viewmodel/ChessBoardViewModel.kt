@@ -487,11 +487,68 @@ class ChessBoardViewModel(
         }
         return result
     }
-    private fun checkDiscoverCheck() {
 
+    private fun wasPinned(tile: Tile):Boolean {
+        val selectedPiece = tile.chessPiece
+        _chessBoard.value[getTileIndex(tile.id)].chessPiece = null
+        for (simulatedTile in _chessBoard.value) {
+            simulatedTile.chessPiece?.let {
+                when(it.type) {
+                    PieceType.BISHOP -> {
+                        for (move in bishopMove(simulatedTile)) {
+                            move?.let { moveId ->
+                                _chessBoard.value[getTileIndex(moveId)].chessPiece?.let { mockChessPiece ->
+                                    if (mockChessPiece.type == PieceType.KING) {
+                                        _chessBoard.value[getTileIndex(tile.id)].chessPiece = selectedPiece
+                                        return true
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    PieceType.ROOK -> {
+                        for (move in rookMove(simulatedTile)) {
+                            move?.let { moveId ->
+                                _chessBoard.value[getTileIndex(moveId)].chessPiece?.let { mockChessPiece ->
+                                    if (mockChessPiece.type == PieceType.KING) {
+                                        _chessBoard.value[getTileIndex(tile.id)].chessPiece = selectedPiece
+                                        return true
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    PieceType.QUEEN -> {
+                        for (move in queenMove(simulatedTile)) {
+                            move?.let { moveId ->
+                                _chessBoard.value[getTileIndex(moveId)].chessPiece?.let { mockChessPiece ->
+                                    if (mockChessPiece.type == PieceType.KING) {
+                                        _chessBoard.value[getTileIndex(tile.id)].chessPiece = selectedPiece
+                                        return true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else -> {  }
+                }
+            }
+        }
+        _chessBoard.value[getTileIndex(tile.id)].chessPiece = selectedPiece
+        return false
+    }
+
+    private fun wasKingCheck():Boolean {
+        return false
     }
 
     private fun checkForCheckMate() {
+
+    }
+
+    private fun enPassantEnable() {
 
     }
 }
