@@ -438,9 +438,6 @@ class ChessBoardViewModel(
         }
     }
 
-    private fun checkDiscoverCheck() {
-
-    }
     private fun updateBoard() {
         val updatedChessBoard = _chessBoard.value.map { tile ->
             tile.copy()
@@ -489,6 +486,13 @@ class ChessBoardViewModel(
             }
         }
         return result
+    }
+    private fun checkDiscoverCheck() {
+
+    }
+
+    private fun checkForCheckMate() {
+
     }
 }
 

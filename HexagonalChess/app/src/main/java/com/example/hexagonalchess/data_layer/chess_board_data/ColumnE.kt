@@ -143,7 +143,7 @@ class ColumnE {
         upperRightTile = null,
         underRightTile = TileId.F11,
         bottomTile = TileId.E11,
-        underLeftTile = TileId.F11,
+        underLeftTile = TileId.D11,
         upperLeftTile = null,
         chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_KING)
     )
