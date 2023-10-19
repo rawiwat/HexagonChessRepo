@@ -1,5 +1,6 @@
 package com.example.hexagonalchess.presentation_layer
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.chess_board_data.ChessboardData
 import com.example.hexagonalchess.data_layer.model.tile.Tile
+import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.TileUiManager
 import com.example.hexagonalchess.domain_layer.getChessPieceImage
 import com.example.hexagonalchess.domain_layer.getTileImage
@@ -32,6 +36,7 @@ import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewMod
 fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
 
     val chessBoard by chessBoardViewModel.chessBoard.collectAsState()
+    val currentTurn by chessBoardViewModel.currentTurn.collectAsState()
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
@@ -312,6 +317,26 @@ fun ChessBoardUI(
                     chessBoardViewModel = chessBoardViewModel
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun PlayerUI(
+    alignment: Alignment,
+    currentTurn: PieceColor,
+    color: PieceColor
+) {
+    val borderWidth = if (currentTurn == color)
+    Surface(
+        border = BorderStroke(10.dp,color = Color.White),
+        modifier = Modifier
+                .fillMaxWidth()
+    ) {
+        Box(
+            contentAlignment = alignment,
+        ) {
+            Text(text = "PLAYER")
         }
     }
 }
