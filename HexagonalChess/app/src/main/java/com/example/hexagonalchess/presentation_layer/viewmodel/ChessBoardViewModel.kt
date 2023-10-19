@@ -3,10 +3,10 @@ package com.example.hexagonalchess.presentation_layer.viewmodel
 import androidx.lifecycle.ViewModel
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.domain_layer.PieceColor
-import com.example.hexagonalchess.domain_layer.PieceType
 import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.data_layer.model.tile.Tile
+import com.example.hexagonalchess.domain_layer.PieceType.*
 import com.example.hexagonalchess.domain_layer.getTileIndex
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -43,23 +43,25 @@ class ChessBoardViewModel(
     }
 
     fun onClickPieces(tile: Tile) {
-        if (checkTurn(tile)) {
-            for (tiles in _chessBoard.value) {
-                tiles.isAPossibleMove = false
+        tile.chessPiece?.let {
+            if (checkTurn(tile)) {
+                for (tiles in _chessBoard.value) {
+                    tiles.isAPossibleMove = false
+                }
+                selectedTile = tile
+                if (wasPinned(tile)) { return }
+                val result:List<TileId?> = when(it.type) {
+                    PAWN -> pawnMove(tile)
+                    KNIGHT -> knightMove(tile)
+                    BISHOP -> bishopMove(tile)
+                    ROOK -> rookMove(tile)
+                    QUEEN -> queenMove(tile)
+                    KING -> kingMove(tile)
+                }
+                resolveMoveResult(result)
             }
-            selectedTile = tile
-            if (wasPinned(tile)) { return }
-            val result:List<TileId?> = when (tile.chessPiece!!.type) {
-                PieceType.PAWN -> pawnMove(tile)
-                PieceType.KNIGHT -> knightMove(tile)
-                PieceType.BISHOP -> bishopMove(tile)
-                PieceType.ROOK -> rookMove(tile)
-                PieceType.QUEEN -> queenMove(tile)
-                PieceType.KING -> kingMove(tile)
-            }
-            resolveMoveResult(result)
+            updateBoard()
         }
-        updateBoard()
     }
 
     fun onClickTargeted(targetedTile: Tile) {
@@ -468,12 +470,12 @@ class ChessBoardViewModel(
             tile.chessPiece?.let {
                 if (it.color == pieceColor) {
                     result += when(it.type) {
-                        PieceType.KNIGHT -> knightMove(tile)
-                        PieceType.PAWN -> checkPawnAttack(tile)
-                        PieceType.BISHOP -> bishopMove(tile)
-                        PieceType.ROOK -> rookMove(tile)
-                        PieceType.QUEEN -> queenMove(tile)
-                        PieceType.KING ->
+                        KNIGHT -> knightMove(tile)
+                        PAWN -> checkPawnAttack(tile)
+                        BISHOP -> bishopMove(tile)
+                        ROOK -> rookMove(tile)
+                        QUEEN -> queenMove(tile)
+                        KING ->
                             listOf(
                                 findTile(tile.id,TileDirections.TOP),
                                 findTile(tile.id,TileDirections.UPPER_RIGHT),
@@ -489,64 +491,49 @@ class ChessBoardViewModel(
         return result
     }
 
-    private fun wasPinned(selectedTile: Tile):Boolean {
+    private fun wasPinned(selectedTile: Tile): Boolean {
         val selectedPiece = selectedTile.chessPiece
         _chessBoard.value[getTileIndex(selectedTile.id)].chessPiece = null
-        for (simulatedTile in _chessBoard.value) {
-            simulatedTile.chessPiece?.let {
-                if (it.color != selectedTile.chessPiece?.color) {
-                    when(it.type) {
-                        PieceType.BISHOP -> {
-                            for (move in bishopMove(simulatedTile)) {
-                                move?.let { moveId ->
-                                    _chessBoard.value[getTileIndex(moveId)].chessPiece?.let { mockChessPiece ->
-                                        if (mockChessPiece.type == PieceType.KING) {
-                                            _chessBoard.value[getTileIndex(selectedTile.id)].chessPiece = selectedPiece
-                                            return true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        PieceType.ROOK -> {
-                            for (move in rookMove(simulatedTile)) {
-                                move?.let { moveId ->
-                                    _chessBoard.value[getTileIndex(moveId)].chessPiece?.let { mockChessPiece ->
-                                        if (mockChessPiece.type == PieceType.KING) {
-                                            _chessBoard.value[getTileIndex(selectedTile.id)].chessPiece = selectedPiece
-                                            return true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        PieceType.QUEEN -> {
-                            for (move in queenMove(simulatedTile)) {
-                                move?.let { moveId ->
-                                    _chessBoard.value[getTileIndex(moveId)].chessPiece?.let { mockChessPiece ->
-                                        if (mockChessPiece.type == PieceType.KING) {
-                                            _chessBoard.value[getTileIndex(selectedTile.id)].chessPiece = selectedPiece
-                                            return true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else -> {  }
-                    }
-                }
+        selectedPiece?.let {
+            if (wasKingChecked(it.color)) {
+                _chessBoard.value[getTileIndex(selectedTile.id)].chessPiece = selectedPiece
+                return true
             }
         }
         _chessBoard.value[getTileIndex(selectedTile.id)].chessPiece = selectedPiece
         return false
     }
 
-    private fun checkForCheckMate(color: PieceColor) {
+    private fun wasKingChecked(kingColor: PieceColor): Boolean {
         for (tile in _chessBoard.value) {
+            tile.chessPiece?.let {
+                when(it.type) {
+                    KNIGHT -> return doesMoveAttackKing(knightMove(tile), kingColor)
+                    PAWN -> return doesMoveAttackKing(pawnMove(tile), kingColor)
+                    BISHOP -> return doesMoveAttackKing(bishopMove(tile), kingColor)
+                    ROOK -> return doesMoveAttackKing(rookMove(tile), kingColor)
+                    QUEEN -> return doesMoveAttackKing(queenMove(tile), kingColor)
+                    KING -> return doesMoveAttackKing(kingMove(tile), kingColor)
+                }
+            }
         }
+        return false
     }
+
+    private fun doesMoveAttackKing(moves: List<TileId?>, kingColor: PieceColor): Boolean {
+        for (move in moves) {
+            move?.let { moveId ->
+                _chessBoard.value[getTileIndex(moveId)].chessPiece?.let { currentPiece ->
+                    if (currentPiece.type == KING && currentPiece.color == kingColor) {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+
+    private fun checkForCheckMate(color: PieceColor) {}
 
     private fun enPassantEnable() {
 
