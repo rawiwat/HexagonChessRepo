@@ -24,8 +24,9 @@ class ChessBoardViewModel(
     private val _blackCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
     val blackCaptured:StateFlow<List<ChessPiece>> = _blackCaptured
 
-    private val _currentTurn = MutableStateFlow(PieceColor.BLACK)
+    private val _currentTurn = MutableStateFlow(PieceColor.WHITE)
     val currentTurn:StateFlow<PieceColor> = _currentTurn
+
     private var selectedTile:Tile? = null
 
     private fun findTile(id: TileId, direction: TileDirections): TileId? {
@@ -47,15 +48,15 @@ class ChessBoardViewModel(
                 tiles.isAPossibleMove = false
             }
             selectedTile = tile
-            when (tile.chessPiece!!.type) {
+            val result:List<TileId?> = when (tile.chessPiece!!.type) {
                 PieceType.PAWN -> pawnMove(tile)
                 PieceType.KNIGHT -> knightMove(tile)
                 PieceType.BISHOP -> bishopMove(tile)
                 PieceType.ROOK -> rookMove(tile)
                 PieceType.QUEEN -> queenMove(tile)
                 PieceType.KING -> kingMove(tile)
-                else -> {  }
             }
+            resolveMoveResult(result)
         }
         updateBoard()
     }
@@ -87,9 +88,9 @@ class ChessBoardViewModel(
         return false
     }
 
-    private fun pawnMove(selectedTile: Tile) {
+    private fun pawnMove(selectedTile: Tile):List<TileId?> {
+        val result = mutableListOf<TileId?>()
         if (selectedTile.chessPiece!!.color == PieceColor.WHITE) {
-            val result = mutableListOf<TileId?>()
             val forward1 = findTile(selectedTile.id, TileDirections.TOP)
             val forward2 = findTile(forward1!!, TileDirections.TOP)
 
@@ -127,25 +128,13 @@ class ChessBoardViewModel(
                     result.add(attack2)
                 }
             }
-
-            /*for (tiles in _chessBoard.value) {
-                if (tiles.id == attack2 && tiles.chessPiece != null && tiles.chessPiece!!.color == PieceColor.BLACK) {
-                    result.add(attack2)
-                }
-            }*/
-            for (tileId in result) {
+            /*for (tileId in result) {
                 val index = tileId?.let { getTileIndex(it) }
                 index?.let {
                     _chessBoard.value[it].isAPossibleMove = true
                 }
-            }
-            /*for (tiles in _chessBoard.value) {
-                if (result.contains(tiles.id)) {
-                    tiles.isAPossibleMove = true
-                }
             }*/
         } else {
-            val result = mutableListOf<TileId?>()
             val forward1 = findTile(selectedTile.id, TileDirections.BOTTOM)
             val forward2 = findTile(forward1!!, TileDirections.BOTTOM)
 
@@ -188,17 +177,18 @@ class ChessBoardViewModel(
                 if (tiles.id == attack2 && tiles.chessPiece != null && tiles.chessPiece!!.color == PieceColor.BLACK) {
                     result.add(attack2)
                 }
-            }*/
+            }
             for (tileId in result) {
                 val index = tileId?.let { getTileIndex(it) }
                 index?.let {
                     _chessBoard.value[it].isAPossibleMove = true
                 }
-            }
+            }*/
         }
+        return result
     }
 
-    private fun knightMove(selectedTile: Tile) {
+    private fun knightMove(selectedTile: Tile):List<TileId?> {
         val result = mutableListOf<TileId?>()
 
         var move1 = findTile(selectedTile.id,TileDirections.TOP)
@@ -261,20 +251,10 @@ class ChessBoardViewModel(
         move12?.let { move12 = findTile(it,TileDirections.UPPER_RIGHT) }
         result.add(move12)
 
-        for (tileId in result) {
-            val index = tileId?.let { getTileIndex(it) }
-            index?.let { currentIndex ->
-                if (_chessBoard.value[currentIndex].chessPiece == null) {
-                    _chessBoard.value[currentIndex].isAPossibleMove = true
-                }
-                if (_chessBoard.value[currentIndex].chessPiece != null && _chessBoard.value[currentIndex].chessPiece!!.color != selectedTile.chessPiece!!.color) {
-                    _chessBoard.value[currentIndex].isAPossibleMove = true
-                }
-            }
-        }
+        return result
     }
 
-    private fun rookMove(selectedTile: Tile) {
+    private fun rookMove(selectedTile: Tile):List<TileId?> {
         val result = mutableListOf<TileId?>()
         result.addAll(getAllTileInDirection(selectedTile, TileDirections.TOP))
         result.addAll(getAllTileInDirection(selectedTile, TileDirections.UPPER_RIGHT))
@@ -282,10 +262,10 @@ class ChessBoardViewModel(
         result.addAll(getAllTileInDirection(selectedTile, TileDirections.BOTTOM))
         result.addAll(getAllTileInDirection(selectedTile, TileDirections.UNDER_LEFT))
         result.addAll(getAllTileInDirection(selectedTile, TileDirections.UPPER_LEFT))
-        resolveMoveResult(result)
+        return result
     }
 
-    private fun bishopMove(selectedTile: Tile) {
+    private fun bishopMove(selectedTile: Tile):List<TileId?> {
         val result = mutableListOf<TileId?>()
         result.addAll(
             getAllTileInMultiDirection(
@@ -342,16 +322,14 @@ class ChessBoardViewModel(
                 )
             )
         )
-        
-        resolveMoveResult(result)
+        return result
     }
 
-    private fun queenMove(selectedTile: Tile) {
-        bishopMove(selectedTile)
-        rookMove(selectedTile)
+    private fun queenMove(selectedTile: Tile):List<TileId?> {
+        return  bishopMove(selectedTile) + rookMove(selectedTile)
     }
 
-    private fun kingMove(selectedTile: Tile) {
+    private fun kingMove(selectedTile: Tile):List<TileId?> {
         val result = mutableListOf<TileId>()
         val move1 = findTile(selectedTile.id,TileDirections.TOP)
         val move2 = findTile(selectedTile.id,TileDirections.UPPER_RIGHT)
@@ -366,8 +344,17 @@ class ChessBoardViewModel(
         move4?.let { result.add(it) }
         move5?.let { result.add(it) }
         move6?.let { result.add(it) }
+        val opposingColor = if (selectedTile.chessPiece!!.color == PieceColor.BLACK) { PieceColor.WHITE } else { PieceColor.BLACK }
 
-        resolveMoveResult(result)
+        val moveLeadToCheck = checkKingUnavailableMove(opposingColor)
+        val iterator = result.iterator()
+        while (iterator.hasNext()) {
+            val item = iterator.next()
+            if (moveLeadToCheck.contains(item)) {
+                iterator.remove()
+            }
+        }   
+        return result
     }
 
     private fun resolveMoveResult(result:List<TileId?>) {
@@ -443,6 +430,17 @@ class ChessBoardViewModel(
         return result
     }
 
+    private fun checkPawnAttack(tile: Tile):List<TileId?> {
+        return if(tile.chessPiece!!.color == PieceColor.BLACK) {
+            listOf(findTile(tile.id,TileDirections.UNDER_LEFT),findTile(tile.id,TileDirections.UNDER_RIGHT))
+        } else {
+            listOf(findTile(tile.id,TileDirections.UPPER_LEFT),findTile(tile.id,TileDirections.UPPER_RIGHT))
+        }
+    }
+
+    private fun checkDiscoverCheck() {
+
+    }
     private fun updateBoard() {
         val updatedChessBoard = _chessBoard.value.map { tile ->
             tile.copy()
@@ -452,7 +450,7 @@ class ChessBoardViewModel(
 
     private fun changeTurn() {
         when(_currentTurn.value) {
-            PieceColor.BLACK -> _currentTurn.value = PieceColor.BLACK
+            PieceColor.BLACK -> _currentTurn.value = PieceColor.WHITE
             PieceColor.WHITE -> _currentTurn.value = PieceColor.BLACK
         }
     }
@@ -464,6 +462,33 @@ class ChessBoardViewModel(
             }
         }
         return false
+    }
+
+    private fun checkKingUnavailableMove(pieceColor: PieceColor):List<TileId?> {
+        val result = mutableListOf<TileId?>()
+        for (tile in _chessBoard.value) {
+            tile.chessPiece?.let {
+                if (it.color == pieceColor) {
+                    result += when(it.type) {
+                        PieceType.KNIGHT -> knightMove(tile)
+                        PieceType.PAWN -> checkPawnAttack(tile)
+                        PieceType.BISHOP -> bishopMove(tile)
+                        PieceType.ROOK -> rookMove(tile)
+                        PieceType.QUEEN -> queenMove(tile)
+                        PieceType.KING ->
+                            listOf(
+                                findTile(tile.id,TileDirections.TOP),
+                                findTile(tile.id,TileDirections.UPPER_RIGHT),
+                                findTile(tile.id,TileDirections.UNDER_RIGHT),
+                                findTile(tile.id,TileDirections.BOTTOM),
+                                findTile(tile.id,TileDirections.UNDER_LEFT),
+                                findTile(tile.id,TileDirections.UPPER_LEFT)
+                            )
+                    }
+                }
+            }
+        }
+        return result
     }
 }
 

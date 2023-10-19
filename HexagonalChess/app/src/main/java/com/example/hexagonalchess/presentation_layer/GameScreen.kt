@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -39,6 +40,17 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
     val currentTurn by chessBoardViewModel.currentTurn.collectAsState()
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        PlayerUI(
+            alignment = Alignment.CenterEnd,
+            currentTurn = currentTurn,
+            color = PieceColor.WHITE
+        )
+
+        PlayerUI(
+            alignment = Alignment.CenterEnd,
+            currentTurn = currentTurn,
+            color = PieceColor.BLACK
+        )
 
         ChessBoardUI(
             chessBoardData = chessBoard,
@@ -86,12 +98,13 @@ fun TileUI(
                 )
 
         )
-        Text(
+
+        /*Text(
             text = tile.id.toString(),
             style = TextStyle(
                 color = Color.Red
             )
-        )
+        )*/
 
         if(tile.chessPiece != null) {
             Image(
@@ -327,11 +340,13 @@ fun PlayerUI(
     currentTurn: PieceColor,
     color: PieceColor
 ) {
-    val borderWidth = if (currentTurn == color)
+    val borderWidth = if (currentTurn == color) { 6.dp } else { 0.dp }
+
     Surface(
-        border = BorderStroke(10.dp,color = Color.White),
+        border = BorderStroke(borderWidth,color = Color.White),
         modifier = Modifier
-                .fillMaxWidth()
+            .fillMaxWidth()
+            .height(30.dp)
     ) {
         Box(
             contentAlignment = alignment,
