@@ -374,9 +374,15 @@ class ChessBoardViewModel(
                 if (_chessBoard.value[currentIndex].chessPiece == null) {
                     _chessBoard.value[currentIndex].isAPossibleMove = true
                 }
-                if (_chessBoard.value[currentIndex].chessPiece != null && _chessBoard.value[currentIndex].chessPiece!!.color != selectedTile!!.chessPiece!!.color) {
-                    _chessBoard.value[currentIndex].isAPossibleMove = true
+                _chessBoard.value[currentIndex].chessPiece?.let { piece ->
+                    selectedTile!!.chessPiece?.let {
+                        if (piece.color != it.color) {
+                            _chessBoard.value[currentIndex].isAPossibleMove = true
+                        }
+                    }
+
                 }
+
             }
         }
     }
@@ -506,8 +512,10 @@ class ChessBoardViewModel(
             move?.let { moveId ->
                 mockBoard[getTileIndex(selectedTile.id)].chessPiece = null
                 mockBoard[getTileIndex(moveId)].chessPiece = selectedPiece
-                if (wasKingChecked(selectedTile.chessPiece!!.color, mockBoard)) {
-                    return true
+                selectedTile.chessPiece?.let {
+                    if (wasKingChecked(it.color, mockBoard)) {
+                        return true
+                    }
                 }
             }
             mockBoard = initMockBoard
