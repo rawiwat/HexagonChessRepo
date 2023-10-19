@@ -48,6 +48,7 @@ class ChessBoardViewModel(
                 tiles.isAPossibleMove = false
             }
             selectedTile = tile
+            if (wasPinned(tile)) { return }
             val result:List<TileId?> = when (tile.chessPiece!!.type) {
                 PieceType.PAWN -> pawnMove(tile)
                 PieceType.KNIGHT -> knightMove(tile)
@@ -488,67 +489,70 @@ class ChessBoardViewModel(
         return result
     }
 
-    private fun wasPinned(tile: Tile):Boolean {
-        val selectedPiece = tile.chessPiece
-        _chessBoard.value[getTileIndex(tile.id)].chessPiece = null
+    private fun wasPinned(selectedTile: Tile):Boolean {
+        val selectedPiece = selectedTile.chessPiece
+        _chessBoard.value[getTileIndex(selectedTile.id)].chessPiece = null
         for (simulatedTile in _chessBoard.value) {
             simulatedTile.chessPiece?.let {
-                when(it.type) {
-                    PieceType.BISHOP -> {
-                        for (move in bishopMove(simulatedTile)) {
-                            move?.let { moveId ->
-                                _chessBoard.value[getTileIndex(moveId)].chessPiece?.let { mockChessPiece ->
-                                    if (mockChessPiece.type == PieceType.KING) {
-                                        _chessBoard.value[getTileIndex(tile.id)].chessPiece = selectedPiece
-                                        return true
+                if (it.color != selectedTile.chessPiece?.color) {
+                    when(it.type) {
+                        PieceType.BISHOP -> {
+                            for (move in bishopMove(simulatedTile)) {
+                                move?.let { moveId ->
+                                    _chessBoard.value[getTileIndex(moveId)].chessPiece?.let { mockChessPiece ->
+                                        if (mockChessPiece.type == PieceType.KING) {
+                                            _chessBoard.value[getTileIndex(selectedTile.id)].chessPiece = selectedPiece
+                                            return true
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    PieceType.ROOK -> {
-                        for (move in rookMove(simulatedTile)) {
-                            move?.let { moveId ->
-                                _chessBoard.value[getTileIndex(moveId)].chessPiece?.let { mockChessPiece ->
-                                    if (mockChessPiece.type == PieceType.KING) {
-                                        _chessBoard.value[getTileIndex(tile.id)].chessPiece = selectedPiece
-                                        return true
+                        PieceType.ROOK -> {
+                            for (move in rookMove(simulatedTile)) {
+                                move?.let { moveId ->
+                                    _chessBoard.value[getTileIndex(moveId)].chessPiece?.let { mockChessPiece ->
+                                        if (mockChessPiece.type == PieceType.KING) {
+                                            _chessBoard.value[getTileIndex(selectedTile.id)].chessPiece = selectedPiece
+                                            return true
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    PieceType.QUEEN -> {
-                        for (move in queenMove(simulatedTile)) {
-                            move?.let { moveId ->
-                                _chessBoard.value[getTileIndex(moveId)].chessPiece?.let { mockChessPiece ->
-                                    if (mockChessPiece.type == PieceType.KING) {
-                                        _chessBoard.value[getTileIndex(tile.id)].chessPiece = selectedPiece
-                                        return true
+                        PieceType.QUEEN -> {
+                            for (move in queenMove(simulatedTile)) {
+                                move?.let { moveId ->
+                                    _chessBoard.value[getTileIndex(moveId)].chessPiece?.let { mockChessPiece ->
+                                        if (mockChessPiece.type == PieceType.KING) {
+                                            _chessBoard.value[getTileIndex(selectedTile.id)].chessPiece = selectedPiece
+                                            return true
+                                        }
                                     }
                                 }
                             }
                         }
+                        else -> {  }
                     }
-                    else -> {  }
                 }
             }
         }
-        _chessBoard.value[getTileIndex(tile.id)].chessPiece = selectedPiece
+        _chessBoard.value[getTileIndex(selectedTile.id)].chessPiece = selectedPiece
         return false
     }
 
-    private fun wasKingCheck():Boolean {
-        return false
-    }
-
-    private fun checkForCheckMate() {
-
+    private fun checkForCheckMate(color: PieceColor) {
+        for (tile in _chessBoard.value) {
+        }
     }
 
     private fun enPassantEnable() {
+
+    }
+
+    private fun gameOver() {
 
     }
 }
