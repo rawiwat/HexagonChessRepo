@@ -30,8 +30,7 @@ enum class PieceType {
 
 enum class PieceColor {
     BLACK,
-    WHITE,
-    NONE
+    WHITE
 }
 
 enum class TileDirections {

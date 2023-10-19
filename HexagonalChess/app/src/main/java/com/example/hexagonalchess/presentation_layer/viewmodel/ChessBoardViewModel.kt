@@ -1,6 +1,7 @@
 package com.example.hexagonalchess.presentation_layer.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.PieceType
 import com.example.hexagonalchess.domain_layer.TileDirections
@@ -17,12 +18,14 @@ class ChessBoardViewModel(
     private val _chessBoard = MutableStateFlow(allTiles)
     val chessBoard: StateFlow<List<Tile>> = _chessBoard
 
-    //private val _whiteCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
-    //val whiteCaptured:StateFlow<List<ChessPiece>> = _whiteCaptured
+    private val _whiteCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
+    val whiteCaptured:StateFlow<List<ChessPiece>> = _whiteCaptured
 
-    //private val _blackCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
-    //val blackCaptured:StateFlow<List<ChessPiece>> = _blackCaptured
+    private val _blackCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
+    val blackCaptured:StateFlow<List<ChessPiece>> = _blackCaptured
 
+    private val _currentTurn = MutableStateFlow(PieceColor.BLACK)
+    val currentTurn:StateFlow<PieceColor> = _currentTurn
     private var selectedTile:Tile? = null
 
     private fun findTile(id: TileId, direction: TileDirections): TileId? {
@@ -39,7 +42,7 @@ class ChessBoardViewModel(
     }
 
     fun onClickPieces(tile: Tile) {
-        if (tile.chessPiece != null) {
+        if (checkTurn(tile)) {
             for (tiles in _chessBoard.value) {
                 tiles.isAPossibleMove = false
             }
@@ -57,8 +60,6 @@ class ChessBoardViewModel(
         updateBoard()
     }
 
-
-
     fun onClickTargeted(targetedTile: Tile) {
         for (tile in _chessBoard.value) {
             tile.isAPossibleMove = false
@@ -67,6 +68,7 @@ class ChessBoardViewModel(
         _chessBoard.value[targetedIndex].chessPiece = selectedTile!!.chessPiece
         val selectedTileIndex = getTileIndex(selectedTile!!.id)
         _chessBoard.value[selectedTileIndex].chessPiece = null
+        changeTurn()
         updateBoard()
     }
 
@@ -446,6 +448,22 @@ class ChessBoardViewModel(
             tile.copy()
         }
         _chessBoard.value = updatedChessBoard
+    }
+
+    private fun changeTurn() {
+        when(_currentTurn.value) {
+            PieceColor.BLACK -> _currentTurn.value = PieceColor.BLACK
+            PieceColor.WHITE -> _currentTurn.value = PieceColor.BLACK
+        }
+    }
+
+    private fun checkTurn(selectedTile: Tile):Boolean {
+        selectedTile.chessPiece?.let {
+            if (it.color == _currentTurn.value) {
+                return true
+            }
+        }
+        return false
     }
 }
 
