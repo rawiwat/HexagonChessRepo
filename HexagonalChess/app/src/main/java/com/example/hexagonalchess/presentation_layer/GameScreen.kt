@@ -27,10 +27,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,6 +47,7 @@ import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.TileUiManager
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 import com.example.hexagonalchess.domain_layer.getChessPieceImage
+import com.example.hexagonalchess.domain_layer.getPromotionKeyWordFromColor
 import com.example.hexagonalchess.domain_layer.getTileImage
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 
@@ -115,6 +119,9 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        val popUpBoxWidth by remember { mutableStateOf(250.dp) }
+        val popUpBoxHeight by remember { mutableStateOf(130.dp) }
+
         AnimatedVisibility(
             visible = (gameState == GameState.GAME_OVER),
             enter = scaleIn(
@@ -125,8 +132,8 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
             Box(
                 modifier = Modifier
                     .size(
-                        width = 250.dp,
-                        height = 130.dp
+                        width = popUpBoxWidth,
+                        height = popUpBoxHeight
                     )
                     .background(
                         color = Color.White
@@ -143,10 +150,37 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
         AnimatedVisibility(
             visible = (gameState == GameState.PROMOTE),
         ) {
-            
+            val listOfPromotion = getPromotionKeyWordFromColor(currentTurn)
+            Box(
+                modifier = Modifier
+                    .size(
+                        width = popUpBoxWidth,
+                        height = popUpBoxHeight
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Column {
+                    Text(
+                        text = "PROMOTION",
+                        modifier = Modifier.padding(5.dp),
+                        fontSize = 25.sp,
+                        style = TextStyle(
+                            color = Color.Yellow
+                        )
+                    )
+
+                    LazyRow {
+                        items(listOfPromotion) { promotionOption ->
+                            PromotionIcon(
+                                chessBoardViewModel = chessBoardViewModel,
+                                keyWord = promotionOption
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
-
 }
 
 @Composable
