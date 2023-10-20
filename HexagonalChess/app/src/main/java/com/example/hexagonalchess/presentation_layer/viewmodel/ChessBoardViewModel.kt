@@ -6,6 +6,7 @@ import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.data_layer.model.tile.Tile
+import com.example.hexagonalchess.domain_layer.GameEndMethod
 import com.example.hexagonalchess.domain_layer.PieceType.*
 import com.example.hexagonalchess.domain_layer.getTileIndex
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +22,7 @@ class ChessBoardViewModel(
     private val _whiteCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
     val whiteCaptured:StateFlow<List<ChessPiece>> = _whiteCaptured
 
-    var whiteMaterial = 0
+    private var whiteMaterial = 0
 
     private val _whiteAdvantage = MutableStateFlow(0)
     val whiteAdvantage:StateFlow<Int> = _whiteAdvantage
@@ -29,13 +30,19 @@ class ChessBoardViewModel(
     private val _blackCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
     val blackCaptured:StateFlow<List<ChessPiece>> = _blackCaptured
 
-    var blackMaterial = 0
+    private var blackMaterial = 0
 
     private val _blackAdvantage = MutableStateFlow(0)
     val blackAdvantage:StateFlow<Int> = _blackAdvantage
 
     private val _currentTurn = MutableStateFlow(PieceColor.WHITE)
     val currentTurn:StateFlow<PieceColor> = _currentTurn
+
+    private val _gameOverState = MutableStateFlow(false)
+    val gameOverState:StateFlow<Boolean> = _gameOverState
+
+    private val _gameOverMessage = MutableStateFlow("")
+    val gameOverMessage:StateFlow<String> = _gameOverMessage
 
     private var movingTile:Tile? = null
 
@@ -53,22 +60,24 @@ class ChessBoardViewModel(
     }
 
     fun onClickPieces(tile: Tile) {
-        for (tiles in _chessBoard.value) {
-            tiles.isAPossibleMove = false
-        }
-        tile.chessPiece?.let {
-            if (checkTurn(tile)) {
-                val result: List<TileId?> = when(it.type) {
-                    PAWN -> pawnMove(tile, _chessBoard.value)
-                    KNIGHT -> knightMove(tile, _chessBoard.value)
-                    BISHOP -> bishopMove(tile, _chessBoard.value)
-                    ROOK -> rookMove(tile, _chessBoard.value)
-                    QUEEN -> queenMove(tile, _chessBoard.value)
-                    KING -> kingMove(tile, _chessBoard.value)
+        if (!_gameOverState.value) {
+            for (tiles in _chessBoard.value) {
+                tiles.isAPossibleMove = false
+            }
+            tile.chessPiece?.let {
+                if (checkTurn(tile)) {
+                    val result: List<TileId?> = when(it.type) {
+                        PAWN -> pawnMove(tile, _chessBoard.value)
+                        KNIGHT -> knightMove(tile, _chessBoard.value)
+                        BISHOP -> bishopMove(tile, _chessBoard.value)
+                        ROOK -> rookMove(tile, _chessBoard.value)
+                        QUEEN -> queenMove(tile, _chessBoard.value)
+                        KING -> kingMove(tile, _chessBoard.value)
+                    }
+                    //result.removeAll(filterIllegalMove(tile,result))
+                    resolveMoveResult(result, tile)
+                    updateBoard()
                 }
-                //result.removeAll(filterIllegalMove(tile,result))
-                resolveMoveResult(result, tile)
-                updateBoard()
             }
         }
     }
@@ -588,10 +597,12 @@ class ChessBoardViewModel(
                 PieceColor.BLACK -> {
                     _whiteCaptured.value.add(piece)
                     whiteMaterial += piece.materialValue
+                    if (piece.type == KING) gameOver(PieceColor.WHITE, method = GameEndMethod.KING_WAS_CAPTURED)
                 }
                 PieceColor.WHITE -> {
                     _blackCaptured.value.add(piece)
                     blackMaterial += piece.materialValue
+                    if (piece.type == KING) gameOver(PieceColor.BLACK, method = GameEndMethod.KING_WAS_CAPTURED)
                 }
             }
             _whiteAdvantage.value = whiteMaterial - blackMaterial
@@ -599,8 +610,27 @@ class ChessBoardViewModel(
         }
     }
 
-    private fun gameOver() {
+    private fun gameOver(winnerColor: PieceColor, method:GameEndMethod) {
+        _gameOverState.value = true
+        val winnerColorInMessage = when(winnerColor) {
+            PieceColor.BLACK -> "Black"
+            PieceColor.WHITE -> "White"
+        }
 
+        val loserColorInMessage = when(winnerColor) {
+            PieceColor.BLACK -> "Black"
+            PieceColor.WHITE -> "White"
+        }
+        val gameEndMessage = when(method){
+            GameEndMethod.KING_WAS_CAPTURED -> "$winnerColorInMessage Wins\n"
+            GameEndMethod.DRAW -> "$winnerColorInMessage accept the draw offer"
+            GameEndMethod.RESIGN -> "$loserColorInMessage resign"
+        }
+        _gameOverMessage.value = gameEndMessage
+    }
+
+    private fun drawAccepted(color: PieceColor) {
+        gameOver(color, method = GameEndMethod.DRAW)
     }
 }
 

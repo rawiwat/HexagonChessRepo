@@ -55,3 +55,9 @@ enum class ChessPieceKeyWord(key:String) {
     BLACK_QUEEN("bQ"),
     BLACK_KING("bK"),
 }
+
+enum class GameEndMethod {
+    KING_WAS_CAPTURED,
+    DRAW,
+    RESIGN,
+}
