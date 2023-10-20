@@ -21,8 +21,18 @@ class ChessBoardViewModel(
     private val _whiteCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
     val whiteCaptured:StateFlow<List<ChessPiece>> = _whiteCaptured
 
+    var whiteMaterial = 0
+
+    private val _whiteAdvantage = MutableStateFlow(0)
+    val whiteAdvantage:StateFlow<Int> = _whiteAdvantage
+
     private val _blackCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
     val blackCaptured:StateFlow<List<ChessPiece>> = _blackCaptured
+
+    var blackMaterial = 0
+
+    private val _blackAdvantage = MutableStateFlow(0)
+    val blackAdvantage:StateFlow<Int> = _blackAdvantage
 
     private val _currentTurn = MutableStateFlow(PieceColor.WHITE)
     val currentTurn:StateFlow<PieceColor> = _currentTurn
@@ -48,7 +58,7 @@ class ChessBoardViewModel(
         }
         tile.chessPiece?.let {
             if (checkTurn(tile)) {
-                var result:List<TileId?> = when(it.type) {
+                val result: List<TileId?> = when(it.type) {
                     PAWN -> pawnMove(tile, _chessBoard.value)
                     KNIGHT -> knightMove(tile, _chessBoard.value)
                     BISHOP -> bishopMove(tile, _chessBoard.value)
@@ -56,9 +66,7 @@ class ChessBoardViewModel(
                     QUEEN -> queenMove(tile, _chessBoard.value)
                     KING -> kingMove(tile, _chessBoard.value)
                 }
-                //result = filterIllegalMove(it, tile.id, result.toMutableList())
-                result -= filterIllegalMove(tile,result)
-
+                //result.removeAll(filterIllegalMove(tile,result))
                 resolveMoveResult(result, tile)
                 updateBoard()
             }
@@ -71,6 +79,9 @@ class ChessBoardViewModel(
                 tile.isAPossibleMove = false
             }
             val targetedIndex = getTileIndex(targetedTile.id)
+            if (_chessBoard.value[targetedIndex].chessPiece != null ) {
+                capturePiece(_chessBoard.value[targetedIndex].chessPiece)
+            }
             _chessBoard.value[targetedIndex].chessPiece = it.chessPiece
             val selectedTileIndex = getTileIndex(it.id)
             _chessBoard.value[selectedTileIndex].chessPiece = null
@@ -505,7 +516,7 @@ class ChessBoardViewModel(
         return result
     }
 
-    private fun filterIllegalMove(selectedTile: Tile, moves: List<TileId?>):List<TileId?> {
+    /*private fun filterIllegalMove(selectedTile: Tile, moves: List<TileId?>):List<TileId?> {
         val illegalMoves = mutableListOf<TileId?>()
         val initialMockBoard = mutableListOf<Tile>()
         for (tile in _chessBoard.value) {
@@ -561,11 +572,31 @@ class ChessBoardViewModel(
             }
         }
         return false
+    }*/
+
+    private fun checkForCheckMate(color: PieceColor) {
+
     }
-    private fun checkForCheckMate(color: PieceColor) {}
 
-    private fun enPassantEnable() {
+    private fun checkForEnPassant() {
 
+    }
+
+    private fun capturePiece(piece:ChessPiece?) {
+        piece?.let {
+            when(piece.color) {
+                PieceColor.BLACK -> {
+                    _whiteCaptured.value.add(piece)
+                    whiteMaterial += piece.materialValue
+                }
+                PieceColor.WHITE -> {
+                    _blackCaptured.value.add(piece)
+                    blackMaterial += piece.materialValue
+                }
+            }
+            _whiteAdvantage.value = whiteMaterial - blackMaterial
+            _blackAdvantage.value = blackMaterial - whiteMaterial
+        }
     }
 
     private fun gameOver() {
