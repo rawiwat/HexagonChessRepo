@@ -41,7 +41,7 @@ class ChessBoardViewModel(
     private val _gameOverState = MutableStateFlow(false)
     val gameOverState:StateFlow<Boolean> = _gameOverState
 
-    private val _gameOverMessage = MutableStateFlow("")
+    private val _gameOverMessage = MutableStateFlow("Game Over man Game Over")
     val gameOverMessage:StateFlow<String> = _gameOverMessage
 
     private var movingTile:Tile? = null

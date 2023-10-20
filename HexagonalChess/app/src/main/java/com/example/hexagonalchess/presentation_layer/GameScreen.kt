@@ -1,11 +1,17 @@
 package com.example.hexagonalchess.presentation_layer
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -27,16 +33,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.chess_board_data.ChessboardData
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
+import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.TileUiManager
+import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 import com.example.hexagonalchess.domain_layer.getChessPieceImage
 import com.example.hexagonalchess.domain_layer.getTileImage
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
 
@@ -44,6 +54,8 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
     val currentTurn by chessBoardViewModel.currentTurn.collectAsState()
     val blackCaptured by chessBoardViewModel.blackCaptured.collectAsState()
     val whiteCaptured by chessBoardViewModel.whiteCaptured.collectAsState()
+    val gameOverState by chessBoardViewModel.gameOverState.collectAsState()
+    val gameOverMessage by chessBoardViewModel.gameOverMessage.collectAsState()
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         PlayerUI(
@@ -85,8 +97,7 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
             }
         ) {
             Text(text = "check board2")
-        }*/
-
+        }
         Button(
             onClick = {
                 for (piece in blackCaptured) {
@@ -97,9 +108,38 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
                 }
             }
         ) {
+        }*/
+    }
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        AnimatedVisibility(
+            visible = gameOverState,
+            enter = scaleIn(
+                animationSpec = tween(150, 150)
+            )
+        ) {
 
+            Box(
+                modifier = Modifier
+                    .size(
+                        width = 250.dp,
+                        height = 130.dp
+                    )
+                    .background(
+                        color = Color.White
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = gameOverMessage,
+                    fontSize = 20.sp
+                )
+            }
         }
     }
+
 }
 
 @Composable
@@ -377,7 +417,7 @@ fun PlayerUI(
         border = BorderStroke(borderWidth,color = Color.White),
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
+            .height(50.dp)
     ) {
         Box(
             contentAlignment = alignment,
@@ -389,14 +429,14 @@ fun PlayerUI(
                     contentDescription = null
                 )
                 Column {
-                    Text(text = "PLAYER")
+                    Text(text = if (color == PieceColor.WHITE) "Player White" else "Player Black")
                     Row {
                         LazyRow {
                             items(listOfCapturedPiece) {
                                 Image(
                                     painter = painterResource(id = getChessPieceImage(it)),
                                     contentDescription = null,
-                                    modifier = Modifier.size(10.dp)
+                                    modifier = Modifier.size(20.dp)
                                 )
                             }
                         }
@@ -417,4 +457,21 @@ fun GameScreenPreview() {
         //FirebaseRealtimeDatabase()
     )
     GameScreen(chessBoardViewModel)
+}
+
+@Preview
+@Composable
+fun PlayerPreview() {
+    PlayerUI(
+        alignment = Alignment.CenterStart,
+        currentTurn = PieceColor.BLACK,
+        color = PieceColor.BLACK,
+        chessBoardViewModel = ChessBoardViewModel(ChessboardData().allTiles),
+        listOfCapturedPiece = listOf(
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_BISHOP),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_ROOK)
+        )
+    )
 }
