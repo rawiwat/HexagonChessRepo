@@ -1,13 +1,18 @@
 package com.example.hexagonalchess.presentation_layer.viewmodel
 
+import androidx.compose.animation.core.keyframes
 import androidx.lifecycle.ViewModel
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.data_layer.model.tile.Tile
+import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.GameEndMethod
+import com.example.hexagonalchess.domain_layer.GameState
+import com.example.hexagonalchess.domain_layer.PieceType
 import com.example.hexagonalchess.domain_layer.PieceType.*
+import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 import com.example.hexagonalchess.domain_layer.getTileIndex
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,13 +43,20 @@ class ChessBoardViewModel(
     private val _currentTurn = MutableStateFlow(PieceColor.WHITE)
     val currentTurn:StateFlow<PieceColor> = _currentTurn
 
-    private val _gameOverState = MutableStateFlow(false)
-    val gameOverState:StateFlow<Boolean> = _gameOverState
+    private val _gameState = MutableStateFlow(GameState.OPEN)
+    val gameState:StateFlow<GameState> = _gameState
 
     private val _gameOverMessage = MutableStateFlow("Game Over man Game Over")
     val gameOverMessage:StateFlow<String> = _gameOverMessage
 
     private var movingTile:Tile? = null
+
+    private val listOfPromotionTile = listOf(
+        TileId.A8, TileId.B9, TileId.C10, TileId.D11, TileId.E12,
+        TileId.F11, TileId.G10, TileId.H9, TileId.I1, TileId.A1,
+        TileId.B1, TileId.C1, TileId.D1, TileId.E1, TileId.F1,
+        TileId.G1, TileId.H1, TileId.I1
+    )
 
     private fun findTile(id: TileId, direction: TileDirections, board: List<Tile>): TileId? {
         val targetIndex = getTileIndex(id)
@@ -60,7 +72,7 @@ class ChessBoardViewModel(
     }
 
     fun onClickPieces(tile: Tile) {
-        if (!_gameOverState.value) {
+        if (_gameState.value == GameState.OPEN) {
             for (tiles in _chessBoard.value) {
                 tiles.isAPossibleMove = false
             }
@@ -83,7 +95,7 @@ class ChessBoardViewModel(
     }
 
     fun onClickTargeted(targetedTile: Tile) {
-        movingTile?.let {
+        movingTile?.let { movingTile ->
             for (tile in _chessBoard.value) {
                 tile.isAPossibleMove = false
             }
@@ -91,9 +103,12 @@ class ChessBoardViewModel(
             if (_chessBoard.value[targetedIndex].chessPiece != null ) {
                 capturePiece(_chessBoard.value[targetedIndex].chessPiece)
             }
-            _chessBoard.value[targetedIndex].chessPiece = it.chessPiece
-            val selectedTileIndex = getTileIndex(it.id)
+            _chessBoard.value[targetedIndex].chessPiece = movingTile.chessPiece
+            val selectedTileIndex = getTileIndex(movingTile.id)
             _chessBoard.value[selectedTileIndex].chessPiece = null
+            if (movingTile.chessPiece!!.type == PAWN && listOfPromotionTile.contains(targetedTile.id)) {
+                _gameState.value = GameState.PROMOTE
+            }
             changeTurn()
             updateBoard()
         }
@@ -162,7 +177,10 @@ class ChessBoardViewModel(
             }*/
         } else {
             val forward1 = findTile(selectedTile.id, TileDirections.BOTTOM, board)
-            val forward2 = findTile(forward1!!, TileDirections.BOTTOM, board)
+            var forward2 = forward1
+            forward1?.let {
+                forward2 = findTile(forward1, TileDirections.BOTTOM, board)
+            }
 
             if (!containPiece(forward1)) {
                 result.add(forward1)
@@ -581,7 +599,7 @@ class ChessBoardViewModel(
             }
         }
         return false
-    }*/
+    }
 
     private fun checkForCheckMate(color: PieceColor) {
 
@@ -589,19 +607,21 @@ class ChessBoardViewModel(
 
     private fun checkForEnPassant() {
 
-    }
+    }*/
 
     private fun capturePiece(piece:ChessPiece?) {
         piece?.let {
             when(piece.color) {
                 PieceColor.BLACK -> {
                     _whiteCaptured.value.add(piece)
+                    _whiteCaptured.value.sortBy { it.materialValue }
                     whiteMaterial += piece.materialValue
                     if (piece.type == KING) gameOver(PieceColor.WHITE, method = GameEndMethod.KING_WAS_CAPTURED)
                 }
                 PieceColor.WHITE -> {
                     _blackCaptured.value.add(piece)
                     blackMaterial += piece.materialValue
+                    _blackCaptured.value.sortBy { it.materialValue }
                     if (piece.type == KING) gameOver(PieceColor.BLACK, method = GameEndMethod.KING_WAS_CAPTURED)
                 }
             }
@@ -611,7 +631,7 @@ class ChessBoardViewModel(
     }
 
     private fun gameOver(winnerColor: PieceColor, method:GameEndMethod) {
-        _gameOverState.value = true
+        _gameState.value = GameState.GAME_OVER
         val winnerColorInMessage = when(winnerColor) {
             PieceColor.BLACK -> "Black"
             PieceColor.WHITE -> "White"
@@ -622,7 +642,7 @@ class ChessBoardViewModel(
             PieceColor.WHITE -> "White"
         }
         val gameEndMessage = when(method){
-            GameEndMethod.KING_WAS_CAPTURED -> "$winnerColorInMessage Wins\n"
+            GameEndMethod.KING_WAS_CAPTURED -> "$winnerColorInMessage Wins\nCaptured the King"
             GameEndMethod.DRAW -> "$winnerColorInMessage accept the draw offer"
             GameEndMethod.RESIGN -> "$loserColorInMessage resign"
         }
@@ -631,6 +651,11 @@ class ChessBoardViewModel(
 
     private fun drawAccepted(color: PieceColor) {
         gameOver(color, method = GameEndMethod.DRAW)
+    }
+
+    fun promotePawn(chosenPromotion:ChessPieceKeyWord) {
+        _chessBoard.value[getTileIndex(movingTile!!.id)].chessPiece = getChessPieceFromKeyWord(chosenPromotion)
+        _gameState.value = GameState.OPEN
     }
 }
 

@@ -36,3 +36,20 @@ fun getChessPieceImage(chessPiece: ChessPiece): Int {
         ChessPieceKeyWord.WHITE_KING -> R.drawable.white_king
     }
 }
+
+fun getPromotionKeyWordFromColor(color: PieceColor):List<ChessPieceKeyWord> {
+    return when(color) {
+        PieceColor.BLACK -> listOf(
+            ChessPieceKeyWord.BLACK_BISHOP,
+            ChessPieceKeyWord.BLACK_KNIGHT,
+            ChessPieceKeyWord.BLACK_ROOK,
+            ChessPieceKeyWord.BLACK_QUEEN
+        )
+        PieceColor.WHITE -> listOf(
+            ChessPieceKeyWord.WHITE_BISHOP,
+            ChessPieceKeyWord.WHITE_KNIGHT,
+            ChessPieceKeyWord.WHITE_ROOK,
+            ChessPieceKeyWord.WHITE_QUEEN
+        )
+    }
+}

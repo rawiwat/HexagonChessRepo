@@ -39,6 +39,7 @@ import com.example.hexagonalchess.data_layer.chess_board_data.ChessboardData
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
+import com.example.hexagonalchess.domain_layer.GameState
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.TileUiManager
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
@@ -54,7 +55,7 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
     val currentTurn by chessBoardViewModel.currentTurn.collectAsState()
     val blackCaptured by chessBoardViewModel.blackCaptured.collectAsState()
     val whiteCaptured by chessBoardViewModel.whiteCaptured.collectAsState()
-    val gameOverState by chessBoardViewModel.gameOverState.collectAsState()
+    val gameState by chessBoardViewModel.gameState.collectAsState()
     val gameOverMessage by chessBoardViewModel.gameOverMessage.collectAsState()
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -115,7 +116,7 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
         contentAlignment = Alignment.Center
     ) {
         AnimatedVisibility(
-            visible = gameOverState,
+            visible = (gameState == GameState.GAME_OVER),
             enter = scaleIn(
                 animationSpec = tween(150, 150)
             )
@@ -138,6 +139,12 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
                 )
             }
         }
+
+        AnimatedVisibility(
+            visible = (gameState == GameState.PROMOTE),
+        ) {
+            
+        }
     }
 
 }
@@ -152,7 +159,7 @@ fun TileUI(
         modifier = Modifier.wrapContentSize(),
     ) {
         Image(
-            painter = painterResource(id = getTileImage(tile.color)),
+            painter =  painterResource(id = getTileImage(tile.color)),
             contentDescription = null,
             modifier = Modifier
                 .size(
@@ -448,6 +455,21 @@ fun PlayerUI(
     }
 }
 
+@Composable
+fun PromotionIcon(
+    chessBoardViewModel: ChessBoardViewModel,
+    keyWord: ChessPieceKeyWord
+) {
+    Image(
+        painter = painterResource(id = getChessPieceImage(getChessPieceFromKeyWord(keyWord))),
+        contentDescription = null,
+        modifier = Modifier
+            .clickable {
+                chessBoardViewModel.promotePawn(keyWord)
+            }
+            .size(60.dp)
+    )
+}
 @Preview
 @Composable
 fun GameScreenPreview() {

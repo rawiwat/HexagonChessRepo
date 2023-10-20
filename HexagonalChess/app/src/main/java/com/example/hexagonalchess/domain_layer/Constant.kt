@@ -61,3 +61,9 @@ enum class GameEndMethod {
     DRAW,
     RESIGN,
 }
+
+enum class GameState {
+    OPEN,
+    PROMOTE,
+    GAME_OVER
+}
