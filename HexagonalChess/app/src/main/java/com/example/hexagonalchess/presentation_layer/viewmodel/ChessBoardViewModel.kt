@@ -51,11 +51,13 @@ class ChessBoardViewModel(
 
     private var movingTile:Tile? = null
 
+    private var selectingTile:Tile? = null
+
     private val listOfPromotionTile = listOf(
         TileId.A8, TileId.B9, TileId.C10, TileId.D11, TileId.E12,
         TileId.F11, TileId.G10, TileId.H9, TileId.I1, TileId.A1,
         TileId.B1, TileId.C1, TileId.D1, TileId.E1, TileId.F1,
-        TileId.G1, TileId.H1, TileId.I1
+        TileId.G1, TileId.H1, TileId.I8
     )
 
     private fun findTile(id: TileId, direction: TileDirections, board: List<Tile>): TileId? {
@@ -96,6 +98,7 @@ class ChessBoardViewModel(
 
     fun onClickTargeted(targetedTile: Tile) {
         movingTile?.let { movingTile ->
+            selectingTile = targetedTile
             for (tile in _chessBoard.value) {
                 tile.isAPossibleMove = false
             }
@@ -133,8 +136,10 @@ class ChessBoardViewModel(
         val result = mutableListOf<TileId?>()
         if (selectedTile.chessPiece!!.color == PieceColor.WHITE) {
             val forward1 = findTile(selectedTile.id, TileDirections.TOP, board)
-            val forward2 = findTile(forward1!!, TileDirections.TOP, board)
-
+            var forward2 = forward1
+            forward1?.let {
+                forward2 = findTile(forward1, TileDirections.TOP, board)
+            }
             if (!containPiece(forward1)) {
                 result.add(forward1)
             }
@@ -653,8 +658,8 @@ class ChessBoardViewModel(
         gameOver(color, method = GameEndMethod.DRAW)
     }
 
-    fun promotePawn(chosenPromotion:ChessPieceKeyWord) {
-        _chessBoard.value[getTileIndex(movingTile!!.id)].chessPiece = getChessPieceFromKeyWord(chosenPromotion)
+    fun promotePawn(chosenPromotion : ChessPieceKeyWord) {
+        _chessBoard.value[getTileIndex(selectingTile!!.id)].chessPiece = getChessPieceFromKeyWord(chosenPromotion)
         _gameState.value = GameState.OPEN
     }
 }
