@@ -84,7 +84,7 @@ class ChessBoardViewModel(
                         QUEEN -> queenMove(tile, _chessBoard.value)
                         KING -> kingMove(tile, _chessBoard.value)
                     }.toMutableList()
-                    result.removeAll(filterIllegalMove(tile,result))
+                    //result.removeAll(filterIllegalMove(tile,result))
                     resolveMoveResult(result, tile)
                     updateBoard()
                 }
@@ -112,8 +112,18 @@ class ChessBoardViewModel(
                 startingPoint = movingTile.id,
                 endPoint = selectingTile!!.id
             )
-            if (movingTile.chessPiece!!.type == PAWN) {
-                enPassantEnable(currentMovePath,targetedTile)
+            movingTile.chessPiece?.let {
+                if (it.type == PAWN) {
+                    enPassantEnable(currentMovePath,targetedTile)
+                    checkAndPerformEnPassant(
+                        movingTileId = movingTile.id,
+                        targetedTileId = targetedTile.id,
+                        enPassantLeftEnable = it.enPassantLeftEnable,
+                        enPassantRightEnable = it.enPassantRightEnable,
+                        color = it.color,
+                        board = _chessBoard.value
+                    )
+                }
             }
             changeTurn()
             updateBoard()
@@ -477,21 +487,41 @@ class ChessBoardViewModel(
         targetedTileId: TileId,
         enPassantLeftEnable: Boolean,
         enPassantRightEnable: Boolean,
-        color: PieceColor
+        color: PieceColor,
+        board: List<Tile>
     ) {
         when(color) {
             PieceColor.BLACK -> {
                 val attackLeft = findTile(movingTileId,TileDirections.UNDER_LEFT,_chessBoard.value) == targetedTileId
                 if (enPassantLeftEnable && attackLeft) {
-
+                    findTile(targetedTileId,TileDirections.TOP,board)?.let {
+                        capturePiece(board[getTileIndex(it)].chessPiece)
+                        board[getTileIndex(it)].chessPiece = null
+                    }
                 }
-                val attackRight = findTile(movingTileId,TileDirections.UNDER_LEFT,_chessBoard.value) == targetedTileId
+                val attackRight = findTile(movingTileId,TileDirections.UNDER_RIGHT,_chessBoard.value) == targetedTileId
                 if (enPassantRightEnable && attackRight) {
-
+                    findTile(targetedTileId,TileDirections.TOP,board)?.let {
+                        capturePiece(board[getTileIndex(it)].chessPiece)
+                        board[getTileIndex(it)].chessPiece = null
+                    }
                 }
             }
             PieceColor.WHITE -> {
-
+                val attackLeft = findTile(movingTileId,TileDirections.UPPER_LEFT,_chessBoard.value) == targetedTileId
+                if (enPassantLeftEnable && attackLeft) {
+                    findTile(targetedTileId,TileDirections.BOTTOM, board)?.let {
+                        capturePiece(board[getTileIndex(it)].chessPiece)
+                        board[getTileIndex(it)].chessPiece = null
+                    }
+                }
+                val attackRight = findTile(movingTileId,TileDirections.UPPER_RIGHT,_chessBoard.value) == targetedTileId
+                if (enPassantRightEnable && attackRight) {
+                    findTile(targetedTileId,TileDirections.BOTTOM, board)?.let {
+                        capturePiece(board[getTileIndex(it)].chessPiece)
+                        board[getTileIndex(it)].chessPiece = null
+                    }
+                }
             }
         }
     }
