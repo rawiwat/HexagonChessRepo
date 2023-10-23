@@ -334,8 +334,29 @@ class ChessBoardViewModel(
 
     private fun changeTurn() {
         when(_currentTurn.value) {
-            PieceColor.BLACK -> _currentTurn.value = PieceColor.WHITE
-            PieceColor.WHITE -> _currentTurn.value = PieceColor.BLACK
+            PieceColor.BLACK -> {
+                _currentTurn.value = PieceColor.WHITE
+                for (tile in _chessBoard.value) {
+                    tile.chessPiece?.let {
+                        if (it.color == PieceColor.BLACK) {
+                            it.enPassantLeftEnable = false
+                            it.enPassantRightEnable = false
+                        }
+                    }
+                }
+            }
+
+            PieceColor.WHITE -> {
+                _currentTurn.value = PieceColor.BLACK
+                for (tile in _chessBoard.value) {
+                    tile.chessPiece?.let {
+                        if (it.color == PieceColor.WHITE) {
+                            it.enPassantLeftEnable = false
+                            it.enPassantRightEnable = false
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -375,7 +396,7 @@ class ChessBoardViewModel(
         return result
     }
 
-    private fun filterIllegalMove(selectedTile: Tile, moves: List<TileId?>):List<TileId?> {
+    /*private fun filterIllegalMove(selectedTile: Tile, moves: List<TileId?>):List<TileId?> {
         val illegalMoves = mutableListOf<TileId?>()
         val initialMockBoard = mutableListOf<Tile>()
         for (tile in _chessBoard.value) {
@@ -435,7 +456,7 @@ class ChessBoardViewModel(
 
     private fun checkForCheckMate(color: PieceColor) {
 
-    }
+    }*/
 
     private fun enPassantEnable(currentMovePath: TilePair,targetedTile: Tile) {
         when(movingTile?.chessPiece!!.color) {

@@ -109,11 +109,17 @@ fun pawnMove(selectedTile: Tile, board:List<Tile>): List<TileId?> {
             if (board[it].chessPiece != null && board[it].chessPiece!!.color == PieceColor.WHITE) {
                 result.add(attack1)
             }
+            if (selectedTile.chessPiece!!.enPassantLeftEnable) {
+                result.add(attack1)
+            }
         }
 
         val attack2Index = attack2?.let { getTileIndex(it) }
         attack2Index?.let {
             if (board[it].chessPiece != null && board[it].chessPiece!!.color == PieceColor.WHITE) {
+                result.add(attack2)
+            }
+            if (selectedTile.chessPiece!!.enPassantRightEnable) {
                 result.add(attack2)
             }
         }
