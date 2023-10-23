@@ -7,9 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.hexagonalchess.data_layer.model.database.FirebaseRealtimeDatabase
 import com.example.hexagonalchess.data_layer.chess_board_data.ChessboardData
-import com.example.hexagonalchess.presentation_layer.GameScreen
+import com.example.hexagonalchess.presentation_layer.composeui.GameScreen
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 import com.example.hexagonalchess.ui.theme.HexagonalChessTheme
 

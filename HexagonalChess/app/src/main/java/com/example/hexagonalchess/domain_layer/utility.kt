@@ -2,6 +2,7 @@ package com.example.hexagonalchess.domain_layer
 
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
+import kotlin.math.absoluteValue
 
 fun getChessPieceFromKeyWord(chessPieceKeyWord: ChessPieceKeyWord): ChessPiece {
     return when(chessPieceKeyWord) {
@@ -100,4 +101,9 @@ fun getPromotionKeyWordFromColor(color: PieceColor):List<ChessPieceKeyWord> {
             ChessPieceKeyWord.WHITE_QUEEN
         )
     }
+}
+
+fun generatePlayerIdFromName(input: String): Int {
+    val hashCode = input.hashCode().absoluteValue
+    return String.format("%06d", hashCode % 1000000).toInt()
 }
