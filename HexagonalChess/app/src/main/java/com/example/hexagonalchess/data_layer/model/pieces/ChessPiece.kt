@@ -8,7 +8,9 @@ open class ChessPiece(
     val type: PieceType,
     val color: PieceColor,
     val keyWord: ChessPieceKeyWord,
-    var materialValue: Int = 0
+    var materialValue: Int = 0,
+    var enPassantLeftEnable: Boolean = false,
+    var enPassantRightEnable: Boolean = false
 ) {
     init {
         materialValue = when(type) {
