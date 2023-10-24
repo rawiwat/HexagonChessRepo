@@ -104,6 +104,7 @@ class ChessBoardViewModel(
                             result.remove(move)
                         }
                     }
+
                     resolveMoveResult(result, tile)
                     updateBoard()
                 }
@@ -284,6 +285,7 @@ class ChessBoardViewModel(
                     }
                 }
             }
+
             PieceColor.WHITE -> {
                 val attackLeft = findTile(movingTileId,TileDirections.UPPER_LEFT,_chessBoard.value) == targetedTileId
                 if (enPassantLeftEnable && attackLeft) {

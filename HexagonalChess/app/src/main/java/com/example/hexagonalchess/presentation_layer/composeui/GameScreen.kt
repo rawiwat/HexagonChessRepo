@@ -44,6 +44,7 @@ import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.GameState
 import com.example.hexagonalchess.domain_layer.PieceColor
+import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.TileUiManager
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 import com.example.hexagonalchess.domain_layer.getChessPieceImage
@@ -53,7 +54,7 @@ import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewMod
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
+fun GameScreen(chessBoardViewModel: ChessBoardViewModel,theme: TileTheme) {
 
     val chessBoard by chessBoardViewModel.chessBoard.collectAsState()
     val currentTurn by chessBoardViewModel.currentTurn.collectAsState()
@@ -81,7 +82,8 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
 
         ChessBoardUI(
             chessBoardData = chessBoard,
-            chessBoardViewModel = chessBoardViewModel
+            chessBoardViewModel = chessBoardViewModel,
+            theme = theme
         )
 
         /*Button(
@@ -190,13 +192,14 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel) {
 fun TileUI(
     tile: Tile,
     tileUiManager: TileUiManager,
-    chessBoardViewModel: ChessBoardViewModel
+    chessBoardViewModel: ChessBoardViewModel,
+    theme: TileTheme
 ) {
     Box(
         modifier = Modifier.wrapContentSize(),
     ) {
         Image(
-            painter =  painterResource(id = getTileImage(tile.color)),
+            painter =  painterResource(id = getTileImage(tile.color, theme)),
             contentDescription = null,
             modifier = Modifier
                 .size(
@@ -244,7 +247,8 @@ fun TileUI(
 @Composable
 fun ChessBoardUI(
     chessBoardData:List<Tile>,
-    chessBoardViewModel: ChessBoardViewModel
+    chessBoardViewModel: ChessBoardViewModel,
+    theme: TileTheme
 ) {
     val columnA = chessBoardData.subList(0,8)
 
@@ -282,7 +286,8 @@ fun ChessBoardUI(
                 TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
                 )
             }
         }
@@ -301,7 +306,8 @@ fun ChessBoardUI(
                 TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
                 )
             }
         }
@@ -320,7 +326,8 @@ fun ChessBoardUI(
                 TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
                 )
             }
         }
@@ -339,8 +346,8 @@ fun ChessBoardUI(
                 TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel
-
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
                 )
             }
         }
@@ -358,7 +365,8 @@ fun ChessBoardUI(
                 TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
                 )
             }
         }
@@ -377,7 +385,8 @@ fun ChessBoardUI(
                 TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
                 )
             }
         }
@@ -396,7 +405,8 @@ fun ChessBoardUI(
                 TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
                 )
             }
         }
@@ -415,7 +425,8 @@ fun ChessBoardUI(
                 TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
                 )
             }
         }
@@ -434,7 +445,8 @@ fun ChessBoardUI(
                 TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
                 )
             }
         }
@@ -515,7 +527,7 @@ fun GameScreenPreview() {
         allTiles,
         //FirebaseRealtimeDatabase()
     )
-    GameScreen(chessBoardViewModel)
+    GameScreen(chessBoardViewModel,TileTheme.RED)
 }
 
 @Preview

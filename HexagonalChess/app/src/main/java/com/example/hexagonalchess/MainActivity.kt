@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.hexagonalchess.data_layer.chess_board_data.ChessboardData
+import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.presentation_layer.composeui.GameScreen
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 import com.example.hexagonalchess.ui.theme.HexagonalChessTheme
@@ -28,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    GameScreen(chessBoardViewModel)
+                    GameScreen(chessBoardViewModel, TileTheme.RED)
                 }
             }
         }

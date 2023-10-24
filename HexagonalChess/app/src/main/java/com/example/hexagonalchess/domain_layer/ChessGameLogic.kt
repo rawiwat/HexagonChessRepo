@@ -184,5 +184,6 @@ fun filterIllegalMove(
         }
         mockBoard = initMockBoard
     }
+
     return result
 }

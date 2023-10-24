@@ -73,5 +73,8 @@ enum class TileTheme {
     DEFAULT,
     RED,
     BLUE,
-    YELLOW
+    YELLOW,
+    PURPLE,
+    GREEN,
+    ORANGE
 }
