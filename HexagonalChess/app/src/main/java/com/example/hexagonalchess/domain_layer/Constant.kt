@@ -60,6 +60,7 @@ enum class GameEndMethod {
     KING_WAS_CAPTURED,
     DRAW,
     RESIGN,
+    CHECKMATE
 }
 
 enum class GameState {

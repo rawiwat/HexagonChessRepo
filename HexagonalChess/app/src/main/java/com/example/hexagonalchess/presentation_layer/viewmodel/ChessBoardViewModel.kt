@@ -84,7 +84,7 @@ class ChessBoardViewModel(
                         QUEEN -> queenMove(tile, _chessBoard.value)
                         KING -> kingMove(tile, _chessBoard.value)
                     }.toMutableList()
-                    //result.removeAll(filterIllegalMove(tile,result))
+
                     resolveMoveResult(result, tile)
                     updateBoard()
                 }
@@ -126,6 +126,7 @@ class ChessBoardViewModel(
                 }
             }
             changeTurn()
+            checkForCheckmate(_chessBoard.value, _currentTurn.value)
             updateBoard()
         }
     }
@@ -371,7 +372,7 @@ class ChessBoardViewModel(
 
     private fun checkKingUnavailableMove(pieceColor: PieceColor, board: List<Tile>):List<TileId?> {
         val result = mutableListOf<TileId?>()
-        for (tile in _chessBoard.value) {
+        for (tile in board) {
             tile.chessPiece?.let {
                 if (it.color == pieceColor) {
                     result += when(it.type) {
@@ -396,69 +397,7 @@ class ChessBoardViewModel(
         return result
     }
 
-    /*private fun filterIllegalMove(selectedTile: Tile, moves: List<TileId?>):List<TileId?> {
-        val illegalMoves = mutableListOf<TileId?>()
-        val initialMockBoard = mutableListOf<Tile>()
-        for (tile in _chessBoard.value) {
-            initialMockBoard.add(tile.copy())
-        }
-        var mockBoard = initialMockBoard
-        for (move in moves) {
-            move?.let {
-                mockBoard[getTileIndex(move)].chessPiece = selectedTile.chessPiece
-                mockBoard[getTileIndex(selectedTile.id)].chessPiece = null
-                if(checkIfKingIsAttacked(selectedTile.chessPiece!!.color,mockBoard)) {
-                    illegalMoves.add(move)
-                }
-                mockBoard = initialMockBoard
-            }
-        }
-        return illegalMoves
-    }
-
-    private fun checkIfKingIsAttacked(kingColor:PieceColor,board: List<Tile>):Boolean {
-        for (tile in board) {
-            val possibleMove = mutableListOf<TileId?>()
-            tile.chessPiece?.let { currentPiece ->
-                if (currentPiece.color != kingColor ) {
-                    possibleMove.addAll(
-                        when(currentPiece.type) {
-                            KNIGHT -> knightMove(tile, board)
-                            PAWN -> checkPawnAttack(tile, board)
-                            BISHOP -> bishopMove(tile, board)
-                            ROOK -> rookMove(tile, board)
-                            QUEEN -> queenMove(tile, board)
-                            KING ->
-                                listOf(
-                                    findTile(tile.id,TileDirections.TOP, board),
-                                    findTile(tile.id,TileDirections.UPPER_RIGHT, board),
-                                    findTile(tile.id,TileDirections.UNDER_RIGHT, board),
-                                    findTile(tile.id,TileDirections.BOTTOM, board),
-                                    findTile(tile.id,TileDirections.UNDER_LEFT, board),
-                                    findTile(tile.id,TileDirections.UPPER_LEFT, board)
-                                )
-                        }
-                    )
-                    for (move in possibleMove){
-                        move?.let {
-                            board[getTileIndex(move)].chessPiece?.let { thisPiece ->
-                                if (thisPiece.type == KING && thisPiece.color != kingColor) {
-                                    return true
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return false
-    }
-
-    private fun checkForCheckMate(color: PieceColor) {
-
-    }*/
-
-    private fun enPassantEnable(currentMovePath: TilePair,targetedTile: Tile) {
+    private fun enPassantEnable(currentMovePath: TilePair, targetedTile: Tile) {
         when(movingTile?.chessPiece!!.color) {
             PieceColor.BLACK ->
                 for (pair in blackPawnForwardTwo) {
@@ -583,6 +522,7 @@ class ChessBoardViewModel(
             GameEndMethod.KING_WAS_CAPTURED -> "$winnerColorInMessage Wins\n$loserColorInMessage King was captured"
             GameEndMethod.DRAW -> "$winnerColorInMessage accept the draw offer"
             GameEndMethod.RESIGN -> "$loserColorInMessage resign"
+            GameEndMethod.CHECKMATE -> "$winnerColorInMessage Wins\nCheckmate"
         }
         _gameOverMessage.value = gameEndMessage
     }
@@ -591,6 +531,87 @@ class ChessBoardViewModel(
         gameOver(color, method = GameEndMethod.DRAW)
     }
 
+    private fun checkForCheckmate(board: List<Tile>, kingColor: PieceColor) {
+        val viableMove = mutableListOf<TileId?>()
+        var kingWasAttacked = false
+        for (tile in board) {
+            tile.chessPiece?.let { currentPiece ->
+                if (currentPiece.color == kingColor) {
+                    viableMove.addAll(
+                        when(currentPiece.type) {
+                            KNIGHT -> knightMove(tile, board)
+                            PAWN -> pawnMove(tile, board)
+                            BISHOP -> bishopMove(tile, board)
+                            ROOK -> rookMove(tile, board)
+                            QUEEN -> queenMove(tile, board)
+                            KING -> kingMove(tile, board)
+                        }
+                    )
+                }/* else {
+                    val possibleMove = when(currentPiece.type) {
+                        KNIGHT -> knightMove(tile, board)
+                        PAWN -> pawnMove(tile, board)
+                        BISHOP -> bishopMove(tile, board)
+                        ROOK -> rookMove(tile, board)
+                        QUEEN -> queenMove(tile, board)
+                        KING -> kingMove(tile, board)
+                    }
+                    for (move in possibleMove) {
+                        move?.let { moveId ->
+                            board[getTileIndex(moveId)].chessPiece?.let { targetablePiece ->
+                                if (targetablePiece.type == KING && targetablePiece.color == kingColor) {
+                                    kingWasAttacked = true
+                                }
+                            }
+                        }
+                    }
+                }*/
+            }
+        }
+        val iterator = viableMove.iterator()
+        while (iterator.hasNext()){
+            val currentMove = iterator.next()
+            if (currentMove == null) {
+                iterator.remove()
+            }
+        }
+
+        kingWasAttacked = wasKingAttacked(board, kingColor)
+
+        if (kingWasAttacked && viableMove.isEmpty()) {
+            val opposingColor = when(kingColor){
+                PieceColor.BLACK -> PieceColor.WHITE
+                PieceColor.WHITE -> PieceColor.BLACK
+            }
+            gameOver(opposingColor, GameEndMethod.CHECKMATE)
+        }
+    }
+    private fun wasKingAttacked(board: List<Tile>,kingColor: PieceColor): Boolean {
+        for (tile in board) {
+            tile.chessPiece?.let { currentPiece ->
+                if (currentPiece.color != kingColor) {
+                    val possibleMove = when(currentPiece.type) {
+                        KNIGHT -> knightMove(tile, board)
+                        PAWN -> pawnMove(tile, board)
+                        BISHOP -> bishopMove(tile, board)
+                        ROOK -> rookMove(tile, board)
+                        QUEEN -> queenMove(tile, board)
+                        KING -> kingMove(tile, board)
+                    }
+                    for (move in possibleMove) {
+                        move?.let { moveId ->
+                            board[getTileIndex(moveId)].chessPiece?.let { targetablePiece ->
+                                if (targetablePiece.type == KING && targetablePiece.color == kingColor) {
+                                    return true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false
+    }
     fun promotePawn(chosenPromotion : ChessPieceKeyWord) {
         _chessBoard.value[getTileIndex(selectingTile!!.id)].chessPiece = getChessPieceFromKeyWord(chosenPromotion)
         _gameState.value = GameState.OPEN

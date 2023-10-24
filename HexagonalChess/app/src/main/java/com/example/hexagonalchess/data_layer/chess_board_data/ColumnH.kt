@@ -12,7 +12,7 @@ class ColumnH {
         id = TileId.H1,
         color = TileColor.LIGHT,
         topTile = TileId.H2,
-        upperRightTile = TileId.H1,
+        upperRightTile = TileId.I1,
         underRightTile = null,
         bottomTile = null,
         underLeftTile = TileId.G1,
