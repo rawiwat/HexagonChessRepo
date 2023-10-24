@@ -68,3 +68,10 @@ enum class GameState {
     PROMOTE,
     GAME_OVER
 }
+
+enum class TileTheme {
+    DEFAULT,
+    RED,
+    BLUE,
+    YELLOW
+}

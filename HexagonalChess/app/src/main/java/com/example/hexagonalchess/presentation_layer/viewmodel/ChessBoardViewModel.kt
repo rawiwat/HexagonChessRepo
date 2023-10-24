@@ -18,6 +18,7 @@ import com.example.hexagonalchess.domain_layer.PieceType.QUEEN
 import com.example.hexagonalchess.domain_layer.PieceType.ROOK
 import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
+import com.example.hexagonalchess.domain_layer.filterIllegalMove
 import com.example.hexagonalchess.domain_layer.findTile
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 import com.example.hexagonalchess.domain_layer.getTileIndex
@@ -27,6 +28,7 @@ import com.example.hexagonalchess.domain_layer.piecemove.knightMove
 import com.example.hexagonalchess.domain_layer.piecemove.pawnMove
 import com.example.hexagonalchess.domain_layer.piecemove.queenMove
 import com.example.hexagonalchess.domain_layer.piecemove.rookMove
+import com.example.hexagonalchess.domain_layer.wasKingAttacked
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -89,6 +91,19 @@ class ChessBoardViewModel(
                         KING -> kingMove(tile, _chessBoard.value)
                     }.toMutableList()
 
+                    val illegalMoves = filterIllegalMove(
+                        startingTile = tile.id,
+                        kingColor = tile.chessPiece!!.color,
+                        board = _chessBoard.value,
+                        moves = result,
+                        movingPiece = tile.chessPiece!!
+                    )
+
+                    for (move in illegalMoves) {
+                        if (result.contains(move)) {
+                            result.remove(move)
+                        }
+                    }
                     resolveMoveResult(result, tile)
                     updateBoard()
                 }
@@ -371,35 +386,6 @@ class ChessBoardViewModel(
         }
     }
 
-    private fun wasKingAttacked(board: List<Tile>,kingColor: PieceColor): Boolean {
-        for (tile in board) {
-
-            tile.chessPiece?.let { currentPiece ->
-
-                if (currentPiece.color != kingColor) {
-
-                    val possibleMove = when(currentPiece.type) {
-                        KNIGHT -> knightMove(tile, board)
-                        PAWN -> pawnMove(tile, board)
-                        BISHOP -> bishopMove(tile, board)
-                        ROOK -> rookMove(tile, board)
-                        QUEEN -> queenMove(tile, board)
-                        KING -> kingMove(tile, board)
-                    }
-                    for (move in possibleMove) {
-                        move?.let { moveId ->
-                            board[getTileIndex(moveId)].chessPiece?.let { targetablePiece ->
-                                if (targetablePiece.type == KING && targetablePiece.color == kingColor) {
-                                    return true
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return false
-    }
     fun promotePawn(chosenPromotion : ChessPieceKeyWord) {
         _chessBoard.value[getTileIndex(selectingTile!!.id)].chessPiece = getChessPieceFromKeyWord(chosenPromotion)
         _gameState.value = GameState.OPEN

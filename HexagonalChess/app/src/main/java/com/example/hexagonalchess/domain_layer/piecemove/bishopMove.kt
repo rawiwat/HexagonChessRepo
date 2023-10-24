@@ -59,6 +59,7 @@ fun bishopMove(selectedTile: Tile, board: List<Tile>):List<TileId?> {
             board
         )
     )
+
     result.addAll(
         getAllTileInMultiDirection(
             selectedTile,

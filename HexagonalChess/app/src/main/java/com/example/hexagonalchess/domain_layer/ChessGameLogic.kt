@@ -1,8 +1,11 @@
 package com.example.hexagonalchess.domain_layer
 
+import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.piecemove.bishopMove
+import com.example.hexagonalchess.domain_layer.piecemove.kingMove
 import com.example.hexagonalchess.domain_layer.piecemove.knightMove
+import com.example.hexagonalchess.domain_layer.piecemove.pawnMove
 import com.example.hexagonalchess.domain_layer.piecemove.queenMove
 import com.example.hexagonalchess.domain_layer.piecemove.rookMove
 
@@ -124,6 +127,62 @@ fun getAllTileInDirection(selectedTile: Tile, direction: TileDirections, board: 
                 break
             }
         }
+    }
+    return result
+}
+
+fun wasKingAttacked(board: List<Tile>,kingColor: PieceColor): Boolean {
+    for (tile in board) {
+
+        tile.chessPiece?.let { currentPiece ->
+
+            if (currentPiece.color != kingColor) {
+
+                val possibleMove = when(currentPiece.type) {
+                    PieceType.KNIGHT -> knightMove(tile, board)
+                    PieceType.PAWN -> pawnMove(tile, board)
+                    PieceType.BISHOP -> bishopMove(tile, board)
+                    PieceType.ROOK -> rookMove(tile, board)
+                    PieceType.QUEEN -> queenMove(tile, board)
+                    PieceType.KING -> kingMove(tile, board)
+                }
+                for (move in possibleMove) {
+                    move?.let { moveId ->
+                        board[getTileIndex(moveId)].chessPiece?.let { targetablePiece ->
+                            if (targetablePiece.type == PieceType.KING && targetablePiece.color == kingColor) {
+                                return true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return false
+}
+
+fun filterIllegalMove(
+    startingTile: TileId,
+    moves: List<TileId?>,
+    kingColor: PieceColor,
+    board: List<Tile>,
+    movingPiece: ChessPiece
+): List<TileId?> {
+    val result = mutableListOf<TileId?>()
+    val initMockBoard = mutableListOf<Tile>()
+    for (tile in board) {
+        initMockBoard.add(tile.copy())
+    }
+    var mockBoard = initMockBoard
+    for (move in moves) {
+        move?.let { moveId ->
+            mockBoard[getTileIndex(startingTile)].chessPiece = null
+            mockBoard[getTileIndex(moveId)].chessPiece = movingPiece
+            if (wasKingAttacked(mockBoard, kingColor)) {
+                result.add(move)
+            }
+        }
+        mockBoard = initMockBoard
     }
     return result
 }

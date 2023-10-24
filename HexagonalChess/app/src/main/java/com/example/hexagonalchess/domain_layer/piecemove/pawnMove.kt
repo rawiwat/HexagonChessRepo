@@ -5,6 +5,7 @@ import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.domain_layer.containPiece
+import com.example.hexagonalchess.domain_layer.filterIllegalMove
 import com.example.hexagonalchess.domain_layer.findTile
 import com.example.hexagonalchess.domain_layer.getTileIndex
 
@@ -116,5 +117,6 @@ fun pawnMove(selectedTile: Tile, board:List<Tile>): List<TileId?> {
             }
         }*/
     }
+
     return result
 }
