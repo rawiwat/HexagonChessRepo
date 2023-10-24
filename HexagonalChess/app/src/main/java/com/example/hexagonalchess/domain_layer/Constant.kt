@@ -78,3 +78,11 @@ enum class TileTheme {
     GREEN,
     ORANGE
 }
+
+class Route {
+    companion object {
+        const val main = "Main"
+        const val local = "Local"
+        const val setting = "Setting"
+    }
+}

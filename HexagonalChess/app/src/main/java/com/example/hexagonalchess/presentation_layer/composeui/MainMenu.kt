@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hexagonalchess.R
+import com.example.hexagonalchess.domain_layer.Route
 import kotlin.math.roundToInt
 
 @Composable
@@ -70,13 +71,13 @@ fun MainMenu(
 
             MenuButton(
                 text = "Play\nLocal",
-                route = "",
+                route = Route.local,
                 navController = navController
             )
 
             MenuButton(
                 text = "Quit",
-                route = "",
+                route = Route.setting,
                 navController = navController
             )
         }

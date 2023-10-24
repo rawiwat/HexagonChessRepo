@@ -1,7 +1,7 @@
 package com.example.hexagonalchess.presentation_layer.composeui
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.BorderStroke
@@ -32,6 +32,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,11 +51,14 @@ import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 import com.example.hexagonalchess.domain_layer.getChessPieceImage
 import com.example.hexagonalchess.domain_layer.getPromotionKeyWordFromColor
 import com.example.hexagonalchess.domain_layer.getTileImage
+import com.example.hexagonalchess.domain_layer.theme_setting.ThemeSharedPrefs
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun GameScreen(chessBoardViewModel: ChessBoardViewModel,theme: TileTheme) {
+fun GameScreen(
+    chessBoardViewModel: ChessBoardViewModel,
+    context: Context
+) {
 
     val chessBoard by chessBoardViewModel.chessBoard.collectAsState()
     val currentTurn by chessBoardViewModel.currentTurn.collectAsState()
@@ -62,6 +66,7 @@ fun GameScreen(chessBoardViewModel: ChessBoardViewModel,theme: TileTheme) {
     val whiteCaptured by chessBoardViewModel.whiteCaptured.collectAsState()
     val gameState by chessBoardViewModel.gameState.collectAsState()
     val gameOverMessage by chessBoardViewModel.gameOverMessage.collectAsState()
+    val theme = ThemeSharedPrefs(context).getTheme()
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         PlayerUI(
@@ -527,7 +532,7 @@ fun GameScreenPreview() {
         allTiles,
         //FirebaseRealtimeDatabase()
     )
-    GameScreen(chessBoardViewModel,TileTheme.RED)
+    GameScreen(chessBoardViewModel, LocalContext.current)
 }
 
 @Preview
