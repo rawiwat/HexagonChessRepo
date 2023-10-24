@@ -1,5 +1,6 @@
 package com.example.hexagonalchess.presentation_layer.composeui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hexagonalchess.R
+import com.example.hexagonalchess.domain_layer.Route
 import com.example.hexagonalchess.domain_layer.TileColor
 import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.getTileImage
@@ -49,7 +52,6 @@ fun SettingScreen(
     settingViewModel: SettingViewModel
 ) {
     val themeSettingEnable by settingViewModel.settingThemOpen.collectAsState()
-    val listOfThemeColor by remember { mutableStateOf(TileTheme.values().toList()) }
 
     Surface(
         modifier = Modifier.fillMaxSize()
@@ -83,6 +85,12 @@ fun SettingScreen(
             ThemeSetting(settingViewModel)
         }
     }
+    BackHandler(
+        onBack = {
+            settingViewModel.turnOffTheme()
+            navController.navigate(route = Route.main)
+        }
+    )
 }
 
 @Composable
@@ -116,7 +124,10 @@ fun SettingButton(
             fontSize = fontSize.sp,
             modifier = Modifier
                 .padding(start = 5.dp, end = 5.dp),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            style = TextStyle(
+                color = Color.Black
+            )
         )
     }
 }
@@ -129,14 +140,15 @@ fun ChangeTheme(
     themeColor: Color
 ) {
     val currentTheme by viewModel.currentTheme.collectAsState()
+    val thisTheme by rememberSaveable { mutableStateOf(theme) }
     val tileWidth by remember { mutableIntStateOf(55) }
     val tileHeight by remember { mutableIntStateOf(47) }
     val scrollState = rememberScrollState()
     Box(
         modifier = Modifier
             .size(width = 272.dp, height = 96.dp)
-            .clickable { viewModel.changeTheme(theme) }
-            .border(width = if (theme == currentTheme) 5.dp else 0.dp, color = themeColor)
+            .clickable { viewModel.changeTheme(thisTheme) }
+            .border(width = if (thisTheme == currentTheme) 5.dp else 0.dp, color = themeColor)
             .background(color = Color.DarkGray)
             .padding(top = 15.dp)
     ) {

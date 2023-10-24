@@ -20,6 +20,7 @@ class SettingViewModel(
 
     fun changeTheme(chosenTheme: TileTheme) {
         themeSharedPref.saveTheme(chosenTheme)
+        _currentTheme.value = chosenTheme
     }
 
     fun turnOnTheme() {
