@@ -1,12 +1,10 @@
 package com.example.hexagonalchess.presentation_layer.composeui
 
-import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,10 +25,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -84,7 +80,7 @@ fun SettingScreen(
         }
         
         AnimatedVisibility(visible = themeSettingEnable) {
-
+            ThemeSetting(settingViewModel)
         }
     }
 }
@@ -188,57 +184,56 @@ fun ChangeTheme(
 
 @Composable
 fun ThemeSetting(
-    context: Context
+    settingViewModel: SettingViewModel
 ) {
     Column(
         modifier = Modifier
     ) {
-
         ChangeTheme(
             theme = TileTheme.DEFAULT,
-            viewModel = SettingViewModel(context),
+            viewModel = settingViewModel,
             themeName = "Default Theme",
             themeColor = Color.White
         )
 
         ChangeTheme(
             theme = TileTheme.RED,
-            viewModel = SettingViewModel(context),
+            viewModel = settingViewModel,
             themeName = "Red Theme",
             themeColor = Color.Red
         )
 
         ChangeTheme(
             theme = TileTheme.YELLOW,
-            viewModel = SettingViewModel(context),
+            viewModel = settingViewModel,
             themeName = "Yellow Theme",
             themeColor = Color.Yellow
         )
 
         ChangeTheme(
             theme = TileTheme.BLUE,
-            viewModel = SettingViewModel(context),
+            viewModel = settingViewModel,
             themeName = "Blue Theme",
             themeColor = Color.Blue
         )
 
         ChangeTheme(
             theme = TileTheme.PURPLE,
-            viewModel = SettingViewModel(context),
+            viewModel = settingViewModel,
             themeName = "Purple Theme",
             themeColor = Color.Magenta
         )
 
         ChangeTheme(
             theme = TileTheme.GREEN,
-            viewModel = SettingViewModel(context),
+            viewModel = settingViewModel,
             themeName = "Green Theme",
             themeColor = Color.Green
         )
 
         ChangeTheme(
             theme = TileTheme.ORANGE,
-            viewModel = SettingViewModel(context),
+            viewModel = settingViewModel,
             themeName = "Orange Theme",
             themeColor = Color(0xFFFFA500)
         )
@@ -268,5 +263,5 @@ fun SettingScreenPreview() {
 @Preview
 @Composable
 fun ThemeSettingPreview() {
-    ThemeSetting(LocalContext.current)
+    ThemeSetting(SettingViewModel(LocalContext.current))
 }
