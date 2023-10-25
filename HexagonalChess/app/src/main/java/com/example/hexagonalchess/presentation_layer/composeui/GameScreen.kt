@@ -11,12 +11,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -38,15 +40,19 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.chess_board_data.ChessboardData
+import com.example.hexagonalchess.data_layer.model.pieces.CapturedPiece
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.GameState
 import com.example.hexagonalchess.domain_layer.PieceColor
+import com.example.hexagonalchess.domain_layer.PieceType
 import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.TileUiManager
+import com.example.hexagonalchess.domain_layer.getCapturedPieceOffset
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 import com.example.hexagonalchess.domain_layer.getChessPieceImage
 import com.example.hexagonalchess.domain_layer.getPromotionKeyWordFromColor
@@ -473,6 +479,36 @@ fun PlayerUI(
     } else {
         chessBoardViewModel.whiteAdvantage.collectAsState()
     }
+    val capturedPawn = mutableListOf<ChessPiece>()
+
+    val capturedKnight = mutableListOf<ChessPiece>()
+
+    val capturedBishop = mutableListOf<ChessPiece>()
+
+    val capturedRook = mutableListOf<ChessPiece>()
+
+    val capturedQueen = mutableListOf<ChessPiece>()
+
+    for (piece in listOfCapturedPiece) {
+        when(piece.type) {
+            PieceType.KNIGHT -> {
+                capturedKnight.add(piece)
+            }
+            PieceType.PAWN -> {
+                capturedPawn.add(piece)
+            }
+            PieceType.BISHOP -> {
+                capturedBishop.add(piece)
+            }
+            PieceType.ROOK -> {
+                capturedRook.add(piece)
+            }
+            PieceType.QUEEN -> {
+                capturedQueen.add(piece)
+            }
+            PieceType.KING -> { }
+        }
+    }
 
     Surface(
         border = BorderStroke(borderWidth,color = Color.White),
@@ -492,15 +528,78 @@ fun PlayerUI(
                 Column {
                     Text(text = if (color == PieceColor.WHITE) "Player White" else "Player Black")
                     Row {
-                        LazyRow {
-                            items(listOfCapturedPiece) {
-                                Image(
-                                    painter = painterResource(id = getChessPieceImage(it)),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp)
-                                )
+                        Box {
+                            val totalPawnOffset = capturedPawn.size * 10 - 10
+                            val totalKnightOffset = (capturedKnight.size * 10) + totalPawnOffset
+                            val totalBishopOffset = (capturedBishop.size * 10) + totalKnightOffset
+                            val totalRookOffset = (capturedRook.size * 10) + totalBishopOffset
+
+                            LazyRow {
+                                items(capturedPawn.size) {
+                                    Image(
+                                        painter = painterResource(id = getChessPieceImage(capturedPawn[it])),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .offset(x = (it * (-15)).dp)
+                                    )
+                                }
+                            }
+
+                            LazyRow(
+                                modifier = Modifier.offset(x = totalPawnOffset.dp)
+                            ) {
+                                items(capturedKnight.size) {
+                                    Image(
+                                        painter = painterResource(id = getChessPieceImage(capturedKnight[it])),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .offset(x = (it * (-15)).dp)
+                                    )
+                                }
+                            }
+                            LazyRow(
+                                modifier = Modifier.offset(x = totalKnightOffset.dp)
+                            ) {
+                                items(capturedBishop.size) {
+                                    Image(
+                                        painter = painterResource(id = getChessPieceImage(capturedBishop[it])),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .offset(x = (it * (-15)).dp)
+                                    )
+                                }
+                            }
+                            LazyRow(
+                                modifier = Modifier.offset(x = totalBishopOffset.dp)
+                            ) {
+                                items(capturedRook.size) {
+                                    Image(
+                                        painter = painterResource(id = getChessPieceImage(capturedRook[it])),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .offset(x = (it * (-15)).dp)
+                                    )
+                                }
+                            }
+                            LazyRow(
+                                modifier = Modifier.offset(x = totalRookOffset.dp)
+                            ) {
+                                items(capturedQueen.size) {
+                                    Image(
+                                        painter = painterResource(id = getChessPieceImage(capturedQueen[it])),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .offset(x = (it * (-15)).dp)
+                                    )
+                                }
                             }
                         }
+
                         Text(text = if (currentAdvantage >= 1) "+$currentAdvantage" else "")
                     }
                 }
@@ -546,8 +645,16 @@ fun PlayerPreview() {
         listOfCapturedPiece = listOf(
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_KNIGHT),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_KNIGHT),
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_BISHOP),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_ROOK)
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_BISHOP),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_ROOK),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_ROOK),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_QUEEN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_QUEEN)
         )
     )
 }

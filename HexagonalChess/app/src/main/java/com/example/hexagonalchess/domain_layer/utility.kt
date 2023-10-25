@@ -107,3 +107,7 @@ fun generatePlayerIdFromName(input: String): Int {
     val hashCode = input.hashCode().absoluteValue
     return String.format("%06d", hashCode % 1000000).toInt()
 }
+
+fun getCapturedPieceOffset(number: Int): Int {
+    return number * 10
+}

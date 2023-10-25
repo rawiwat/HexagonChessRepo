@@ -81,7 +81,7 @@ fun MainMenu(
                     style = TextStyle(
                         color = Color.White,
                         drawStyle = Stroke(
-                            width = 1f,
+                            width = 1.5f,
                         )
                     ),
                     fontWeight = FontWeight.ExtraBold
