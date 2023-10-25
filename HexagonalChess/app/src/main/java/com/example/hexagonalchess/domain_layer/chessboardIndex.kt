@@ -1,6 +1,6 @@
 package com.example.hexagonalchess.domain_layer
 
-fun getTileIndexPovWhite(tileId: TileId): Int {
+fun getTileIndex(tileId: TileId): Int {
     return when(tileId) {
         TileId.A1 -> 7
         TileId.A2 -> 6
@@ -93,95 +93,3 @@ fun getTileIndexPovWhite(tileId: TileId): Int {
     }
 }
 
-fun getTileIndexPovBlack(tileId: TileId): Int {
-    return when(tileId) {
-        TileId.A1 -> 0
-        TileId.A2 -> 1
-        TileId.A3 -> 2
-        TileId.A4 -> 3
-        TileId.A5 -> 4
-        TileId.A6 -> 5
-        TileId.A7 -> 6
-        TileId.A8 -> 7
-        TileId.B1 -> 8
-        TileId.B2 -> 9
-        TileId.B3 -> 10
-        TileId.B4 -> 11
-        TileId.B5 -> 12
-        TileId.B6 -> 13
-        TileId.B7 -> 14
-        TileId.B8 -> 15
-        TileId.B9 -> 16
-        TileId.C1 -> 17
-        TileId.C2 -> 18
-        TileId.C3 -> 19
-        TileId.C4 -> 20
-        TileId.C5 -> 21
-        TileId.C6 -> 22
-        TileId.C7 -> 23
-        TileId.C8 -> 24
-        TileId.C9 -> 25
-        TileId.C10 -> 26
-        TileId.D1 -> 27
-        TileId.D2 -> 28
-        TileId.D3 -> 29
-        TileId.D4 -> 30
-        TileId.D5 -> 31
-        TileId.D6 -> 32
-        TileId.D7 -> 33
-        TileId.D8 -> 34
-        TileId.D9 -> 35
-        TileId.D10 -> 36
-        TileId.D11 -> 37
-        TileId.E1 -> 38
-        TileId.E2 -> 39
-        TileId.E3 -> 40
-        TileId.E4 -> 41
-        TileId.E5 -> 42
-        TileId.E6 -> 43
-        TileId.E7 -> 44
-        TileId.E8 -> 45
-        TileId.E9 -> 46
-        TileId.E10 -> 47
-        TileId.E11 -> 48
-        TileId.E12 -> 49
-        TileId.F1 -> 50
-        TileId.F2 -> 51
-        TileId.F3 -> 52
-        TileId.F4 -> 53
-        TileId.F5 -> 54
-        TileId.F6 -> 55
-        TileId.F7 -> 56
-        TileId.F8 -> 57
-        TileId.F9 -> 58
-        TileId.F10 -> 59
-        TileId.F11 -> 60
-        TileId.G1 -> 61
-        TileId.G2 -> 62
-        TileId.G3 -> 63
-        TileId.G4 -> 64
-        TileId.G5 -> 65
-        TileId.G6 -> 66
-        TileId.G7 -> 67
-        TileId.G8 -> 68
-        TileId.G9 -> 69
-        TileId.G10 -> 70
-        TileId.H1 -> 71
-        TileId.H2 -> 72
-        TileId.H3 -> 73
-        TileId.H4 -> 74
-        TileId.H5 -> 75
-        TileId.H6 -> 76
-        TileId.H7 -> 77
-        TileId.H8 -> 78
-        TileId.H9 -> 79
-        TileId.I1 -> 80
-        TileId.I2 -> 81
-        TileId.I3 -> 82
-        TileId.I4 -> 83
-        TileId.I5 -> 84
-        TileId.I6 -> 85
-        TileId.I7 -> 86
-        TileId.I8 -> 87
-    }
-}

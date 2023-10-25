@@ -148,6 +148,5 @@ class ColumnE {
         chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_KING)
     )
 
-    val columnEWhitePov = listOf(e12,e11,e10,e9,e8,e7,e6,e5,e4,e3,e2,e1)
-    val columnEBlackPov = listOf(e1,e2,e3,e4,e5,e6,e7,e8,e9,e10,e11,e12)
+    val columnE = listOf(e12,e11,e10,e9,e8,e7,e6,e5,e4,e3,e2,e1)
 }
