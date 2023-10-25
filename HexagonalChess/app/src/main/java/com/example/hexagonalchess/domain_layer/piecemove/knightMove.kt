@@ -3,7 +3,9 @@ package com.example.hexagonalchess.domain_layer.piecemove
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
+import com.example.hexagonalchess.domain_layer.filterSameColor
 import com.example.hexagonalchess.domain_layer.findTile
+import com.example.hexagonalchess.domain_layer.getTileIndex
 
 
 fun knightMove(selectedTile: Tile, board:List<Tile>):List<TileId?> {
@@ -68,6 +70,8 @@ fun knightMove(selectedTile: Tile, board:List<Tile>):List<TileId?> {
     move12?.let { move12 = findTile(it, TileDirections.UNDER_RIGHT, board) }
     move12?.let { move12 = findTile(it, TileDirections.UPPER_RIGHT, board) }
     result.add(move12)
+
+    filterSameColor(selectedTile, result, board)
 
     return result
 }

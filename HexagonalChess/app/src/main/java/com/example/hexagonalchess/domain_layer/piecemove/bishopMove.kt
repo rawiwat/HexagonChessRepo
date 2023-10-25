@@ -3,7 +3,9 @@ package com.example.hexagonalchess.domain_layer.piecemove
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
+import com.example.hexagonalchess.domain_layer.filterSameColor
 import com.example.hexagonalchess.domain_layer.getAllTileInMultiDirection
+import com.example.hexagonalchess.domain_layer.getTileIndex
 
 
 fun bishopMove(selectedTile: Tile, board: List<Tile>):List<TileId?> {
@@ -70,5 +72,8 @@ fun bishopMove(selectedTile: Tile, board: List<Tile>):List<TileId?> {
             board
         )
     )
+
+    filterSameColor(selectedTile, result, board)
+
     return result
 }

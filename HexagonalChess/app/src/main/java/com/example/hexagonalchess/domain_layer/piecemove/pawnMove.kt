@@ -6,6 +6,7 @@ import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.domain_layer.containPiece
 import com.example.hexagonalchess.domain_layer.filterIllegalMove
+import com.example.hexagonalchess.domain_layer.filterSameColor
 import com.example.hexagonalchess.domain_layer.findTile
 import com.example.hexagonalchess.domain_layer.getTileIndex
 
@@ -104,19 +105,9 @@ fun pawnMove(selectedTile: Tile, board:List<Tile>): List<TileId?> {
                 result.add(attack2)
             }
         }
-
-        /*for (tiles in _chessBoard.value) {
-            if (tiles.id == attack2 && tiles.chessPiece != null && tiles.chessPiece!!.color == PieceColor.BLACK) {
-                result.add(attack2)
-            }
-        }
-        for (tileId in result) {
-            val index = tileId?.let { getTileIndex(it) }
-            index?.let {
-                _chessBoard.value[it].isAPossibleMove = true
-            }
-        }*/
     }
+
+    filterSameColor(selectedTile, result, board)
 
     return result
 }

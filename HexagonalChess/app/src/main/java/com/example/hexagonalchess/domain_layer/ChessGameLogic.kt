@@ -180,3 +180,18 @@ fun filterIllegalMove(
 
     return result
 }
+
+fun filterSameColor(selectedTile: Tile,result: MutableList<TileId?>,board: List<Tile>) {
+    val sameColorTiles = mutableListOf<TileId>()
+    for (move in result) {
+        move?.let {
+            val moveToTile = board[getTileIndex(move)]
+            moveToTile.chessPiece?.let {
+                if (it.color == selectedTile.chessPiece!!.color) {
+                    sameColorTiles.add(move)
+                }
+            }
+        }
+    }
+    result.removeAll(sameColorTiles)
+}

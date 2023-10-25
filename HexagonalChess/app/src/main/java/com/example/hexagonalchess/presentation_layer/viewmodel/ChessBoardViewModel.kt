@@ -91,7 +91,7 @@ class ChessBoardViewModel(
                         KING -> kingMove(tile, _chessBoard.value)
                     }.toMutableList()
 
-                    val illegalMoves = filterIllegalMove(
+                    /*val illegalMoves = filterIllegalMove(
                         startingTile = tile.id,
                         kingColor = tile.chessPiece!!.color,
                         board = _chessBoard.value,
@@ -103,7 +103,7 @@ class ChessBoardViewModel(
                         if (result.contains(move)) {
                             result.remove(move)
                         }
-                    }
+                    }*/
 
                     resolveMoveResult(result, tile)
                     updateBoard()
@@ -146,7 +146,7 @@ class ChessBoardViewModel(
                 }
             }
             changeTurn()
-            checkForCheckmate(_chessBoard.value, _currentTurn.value)
+            //checkForCheckmate(_chessBoard.value, _currentTurn.value)
             updateBoard()
         }
     }
@@ -158,11 +158,9 @@ class ChessBoardViewModel(
                 if (_chessBoard.value[currentIndex].chessPiece == null) {
                     _chessBoard.value[currentIndex].isAPossibleMove = true
                 }
-                _chessBoard.value[currentIndex].chessPiece?.let { piece ->
+                _chessBoard.value[currentIndex].chessPiece?.let {
                     selectedTile.chessPiece?.let {
-                        if (piece.color != it.color) {
-                            _chessBoard.value[currentIndex].isAPossibleMove = true
-                        }
+                        _chessBoard.value[currentIndex].isAPossibleMove = true
                     }
                 }
             }
