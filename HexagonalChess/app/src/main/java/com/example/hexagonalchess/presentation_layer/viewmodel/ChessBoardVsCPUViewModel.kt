@@ -336,6 +336,7 @@ class ChessBoardVsCPUViewModel(
 
     fun cpuMove(board: List<Tile>) {
         val tileWithCpuPiece = mutableListOf<TileId>()
+        val tileWithMovablePiece = mutableListOf<TileId>()
         for (tile in board) {
             tile.chessPiece?.let { tileChessPiece ->
                 if (tileChessPiece.color == cpuColor) {
@@ -344,17 +345,80 @@ class ChessBoardVsCPUViewModel(
             }
         }
         for (cpuTile in tileWithCpuPiece) {
-            val viableMove = mutableListOf<TileId>()
+            val viableMove = mutableListOf<TileId?>()
             board[getTileIndex(cpuTile)].chessPiece?.let {
-                when(it.type) {
-                    PieceType.KNIGHT -> TODO()
-                    PieceType.PAWN -> TODO()
-                    PieceType.BISHOP -> TODO()
-                    PieceType.ROOK -> TODO()
-                    PieceType.QUEEN -> TODO()
-                    PieceType.KING -> TODO()
+                 viableMove.addAll(when(it.type) {
+                     PieceType.KNIGHT -> knightMove(board[getTileIndex(cpuTile)],board)
+                     PieceType.PAWN -> pawnMove(board[getTileIndex(cpuTile)],board)
+                     PieceType.BISHOP -> bishopMove(board[getTileIndex(cpuTile)],board)
+                     PieceType.ROOK -> rookMove(board[getTileIndex(cpuTile)],board)
+                     PieceType.QUEEN -> queenMove(board[getTileIndex(cpuTile)],board)
+                     PieceType.KING -> kingMove(board[getTileIndex(cpuTile)],board)
+                 }.toMutableList())
+            }
+            val iterator = viableMove.iterator()
+            while (iterator.hasNext()){
+                val currentMove = iterator.next()
+                if (currentMove == null) {
+                    iterator.remove()
                 }
             }
+            if (viableMove.isNotEmpty()) {
+                tileWithMovablePiece.add(cpuTile)
+                break
+            }
         }
+
+        val chosenTile = tileWithMovablePiece.random()
+        val movesInChosenTile = mutableListOf<TileId?>()
+        board[getTileIndex(chosenTile)].chessPiece?.let {
+            movesInChosenTile.addAll(
+                when(it.type) {
+                    PieceType.KNIGHT -> knightMove(board[getTileIndex(chosenTile)],board)
+                    PieceType.PAWN -> pawnMove(board[getTileIndex(chosenTile)],board)
+                    PieceType.BISHOP -> bishopMove(board[getTileIndex(chosenTile)],board)
+                    PieceType.ROOK -> rookMove(board[getTileIndex(chosenTile)],board)
+                    PieceType.QUEEN -> queenMove(board[getTileIndex(chosenTile)],board)
+                    PieceType.KING -> kingMove(board[getTileIndex(chosenTile)],board)
+                }
+            )
+        }
+        val chosenMove = movesInChosenTile.random()
+        val targetedTile = board[getTileIndex(chosenMove!!)]
+        val movingTile = board[getTileIndex(chosenTile)]
+        selectingTile = targetedTile
+        for (tile in _chessBoard.value) {
+            tile.isAPossibleMove = false
+        }
+        val targetedIndex = getTileIndex(targetedTile.id)
+        if (_chessBoard.value[targetedIndex].chessPiece != null ) {
+            capturePiece(_chessBoard.value[targetedIndex].chessPiece)
+        }
+        _chessBoard.value[targetedIndex].chessPiece = movingTile.chessPiece
+        val selectedTileIndex = getTileIndex(movingTile.id)
+        _chessBoard.value[selectedTileIndex].chessPiece = null
+        if (movingTile.chessPiece!!.type == PieceType.PAWN && listOfPromotionTile.contains(targetedTile.id)) {
+            _gameState.value = GameStateVsCpu.PROMOTE
+        }
+        val currentMovePath = TilePair(
+            startingPoint = movingTile.id,
+            endPoint = selectingTile!!.id
+        )
+        movingTile.chessPiece?.let {
+            if (it.type == PieceType.PAWN) {
+                enPassantEnable(currentMovePath,targetedTile)
+                checkAndPerformEnPassant(
+                    movingTileId = movingTile.id,
+                    targetedTileId = targetedTile.id,
+                    enPassantLeftEnable = it.enPassantLeftEnable,
+                    enPassantRightEnable = it.enPassantRightEnable,
+                    color = it.color,
+                    board = _chessBoard.value
+                )
+            }
+        }
+        changeTurn()
+        //checkForCheckmate(_chessBoard.value, _currentTurn.value)
+        updateBoard()
     }
 }
