@@ -5,7 +5,6 @@ import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.domain_layer.filterSameColor
 import com.example.hexagonalchess.domain_layer.getAllTileInMultiDirection
-import com.example.hexagonalchess.domain_layer.getTileIndex
 
 
 fun bishopMove(selectedTile: Tile, board: List<Tile>):List<TileId?> {

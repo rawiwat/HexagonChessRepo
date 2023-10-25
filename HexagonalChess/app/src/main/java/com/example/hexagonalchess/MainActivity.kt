@@ -11,9 +11,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.hexagonalchess.data_layer.chess_board_data.ChessboardData
-import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.presentation_layer.composeui.App
-import com.example.hexagonalchess.presentation_layer.composeui.GameScreen
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.SettingViewModel
 import com.example.hexagonalchess.ui.theme.HexagonalChessTheme
@@ -24,7 +22,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val allTiles = ChessboardData().allTiles
+        val allTiles = ChessboardData().allTilesWhitePov
         //val database = FirebaseRealtimeDatabase()
         val chessBoardViewModel = ChessBoardViewModel(
             allTiles,

@@ -5,7 +5,6 @@ import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.domain_layer.filterSameColor
 import com.example.hexagonalchess.domain_layer.findTile
-import com.example.hexagonalchess.domain_layer.getTileIndex
 
 fun kingMove(selectedTile: Tile, board: List<Tile>):List<TileId?> {
     val result = mutableListOf<TileId?>()

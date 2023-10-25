@@ -43,7 +43,7 @@ import com.example.hexagonalchess.data_layer.chess_board_data.ChessboardData
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
-import com.example.hexagonalchess.domain_layer.GameState
+import com.example.hexagonalchess.domain_layer.GameStateLocal
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.PieceType
 import com.example.hexagonalchess.domain_layer.TileTheme
@@ -65,7 +65,7 @@ fun GameScreen(
     val currentTurn by chessBoardViewModel.currentTurn.collectAsState()
     val blackCaptured by chessBoardViewModel.blackCaptured.collectAsState()
     val whiteCaptured by chessBoardViewModel.whiteCaptured.collectAsState()
-    val gameState by chessBoardViewModel.gameState.collectAsState()
+    val gameState by chessBoardViewModel.gameStateLocal.collectAsState()
     val gameOverMessage by chessBoardViewModel.gameOverMessage.collectAsState()
     val theme = ThemeSharedPrefs(context).getTheme()
 
@@ -129,7 +129,7 @@ fun GameScreen(
         val popUpBoxHeight by remember { mutableStateOf(130.dp) }
 
         AnimatedVisibility(
-            visible = (gameState == GameState.GAME_OVER),
+            visible = (gameState == GameStateLocal.GAME_OVER),
             enter = scaleIn(
                 animationSpec = tween(150, 150)
             )
@@ -154,7 +154,7 @@ fun GameScreen(
         }
 
         AnimatedVisibility(
-            visible = (gameState == GameState.PROMOTE),
+            visible = (gameState == GameStateLocal.PROMOTE),
         ) {
             val color by rememberSaveable {
                 mutableStateOf(if (currentTurn == PieceColor.BLACK) PieceColor.WHITE else PieceColor.BLACK)
@@ -627,7 +627,7 @@ fun PromotionIcon(
 @Preview
 @Composable
 fun GameScreenPreview() {
-    val allTiles = ChessboardData().allTiles
+    val allTiles = ChessboardData().allTilesWhiteGoesFirst
     val chessBoardViewModel = ChessBoardViewModel(
         allTiles,
         //FirebaseRealtimeDatabase()
@@ -641,7 +641,7 @@ fun PlayerPreview() {
     PlayerUI(
         currentTurn = PieceColor.BLACK,
         color = PieceColor.BLACK,
-        chessBoardViewModel = ChessBoardViewModel(ChessboardData().allTiles),
+        chessBoardViewModel = ChessBoardViewModel(ChessboardData().allTilesWhiteGoesFirst),
         listOfCapturedPiece = listOf(
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
@@ -673,7 +673,7 @@ fun PlayerPreview2() {
     PlayerUI(
         currentTurn = PieceColor.BLACK,
         color = PieceColor.WHITE,
-        chessBoardViewModel = ChessBoardViewModel(ChessboardData().allTiles),
+        chessBoardViewModel = ChessBoardViewModel(ChessboardData().allTilesWhiteGoesFirst),
         listOfCapturedPiece = listOf(
             getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_PAWN),
             getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_PAWN),

@@ -63,10 +63,17 @@ enum class GameEndMethod {
     CHECKMATE
 }
 
-enum class GameState {
+enum class GameStateLocal {
     OPEN,
     PROMOTE,
-    GAME_OVER
+    GAME_OVER,
+}
+
+enum class GameStateVsCpu {
+    PLAYER_TURN,
+    PROMOTE,
+    GAME_OVER,
+    CPU_TURN
 }
 
 enum class TileTheme {

@@ -132,5 +132,6 @@ class ColumnF {
         upperLeftTile = TileId.E12
     )
 
-    val columnF = listOf(f11,f10,f9,f8,f7,f6,f5,f4,f3,f2,f1)
+    val columnFWhitePov = listOf(f11,f10,f9,f8,f7,f6,f5,f4,f3,f2,f1)
+    val columnFBlackPov = listOf(f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11)
 }

@@ -122,5 +122,6 @@ class ColumnC {
         chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_KNIGHT)
     )
 
-    val columnC = listOf(c10,c9,c8,c7,c6,c5,c4,c3,c2,c1)
+    val columnCWhitePov = listOf(c10,c9,c8,c7,c6,c5,c4,c3,c2,c1)
+    val columnCBlackPov = listOf(c1,c2,c3,c4,c5,c6,c7,c8,c9,c10)
 }

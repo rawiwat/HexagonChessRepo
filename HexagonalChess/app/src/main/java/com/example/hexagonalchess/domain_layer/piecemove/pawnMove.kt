@@ -5,10 +5,9 @@ import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.domain_layer.containPiece
-import com.example.hexagonalchess.domain_layer.filterIllegalMove
 import com.example.hexagonalchess.domain_layer.filterSameColor
 import com.example.hexagonalchess.domain_layer.findTile
-import com.example.hexagonalchess.domain_layer.getTileIndex
+import com.example.hexagonalchess.domain_layer.getTileIndexPovWhite
 
 fun pawnMove(selectedTile: Tile, board:List<Tile>): List<TileId?> {
     val result = mutableListOf<TileId?>()
@@ -39,7 +38,7 @@ fun pawnMove(selectedTile: Tile, board:List<Tile>): List<TileId?> {
 
         val attack1 = findTile(selectedTile.id, TileDirections.UPPER_LEFT, board)
         val attack2 = findTile(selectedTile.id, TileDirections.UPPER_RIGHT, board)
-        val attack1Index = attack1?.let { getTileIndex(it) }
+        val attack1Index = attack1?.let { getTileIndexPovWhite(it) }
         attack1Index?.let {
             if (board[it].chessPiece != null && board[it].chessPiece!!.color == PieceColor.BLACK) {
                 result.add(attack1)
@@ -49,7 +48,7 @@ fun pawnMove(selectedTile: Tile, board:List<Tile>): List<TileId?> {
             }
         }
 
-        val attack2Index = attack2?.let { getTileIndex(it) }
+        val attack2Index = attack2?.let { getTileIndexPovWhite(it) }
         attack2Index?.let {
             if (board[it].chessPiece != null && board[it].chessPiece!!.color == PieceColor.BLACK) {
                 result.add(attack2)
@@ -86,7 +85,7 @@ fun pawnMove(selectedTile: Tile, board:List<Tile>): List<TileId?> {
 
         val attack1 = findTile(selectedTile.id, TileDirections.UNDER_LEFT, board)
         val attack2 = findTile(selectedTile.id, TileDirections.UNDER_RIGHT, board)
-        val attack1Index = attack1?.let { getTileIndex(it) }
+        val attack1Index = attack1?.let { getTileIndexPovWhite(it) }
         attack1Index?.let {
             if (board[it].chessPiece != null && board[it].chessPiece!!.color == PieceColor.WHITE) {
                 result.add(attack1)
@@ -96,7 +95,7 @@ fun pawnMove(selectedTile: Tile, board:List<Tile>): List<TileId?> {
             }
         }
 
-        val attack2Index = attack2?.let { getTileIndex(it) }
+        val attack2Index = attack2?.let { getTileIndexPovWhite(it) }
         attack2Index?.let {
             if (board[it].chessPiece != null && board[it].chessPiece!!.color == PieceColor.WHITE) {
                 result.add(attack2)

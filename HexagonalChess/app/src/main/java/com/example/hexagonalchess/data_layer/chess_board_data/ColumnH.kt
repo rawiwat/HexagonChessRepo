@@ -111,5 +111,6 @@ class ColumnH {
         chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_ROOK)
     )
 
-    val columnH = listOf(h9,h8,h7,h6,h5,h4,h3,h2,h1)
+    val columnHWhitePov = listOf(h9,h8,h7,h6,h5,h4,h3,h2,h1)
+    val columnHBlackPov = listOf(h1,h2,h3,h4,h5,h6,h7,h8,h9)
 }
