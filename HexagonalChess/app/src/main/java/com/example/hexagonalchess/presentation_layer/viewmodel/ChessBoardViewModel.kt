@@ -334,8 +334,8 @@ class ChessBoardViewModel(
         }
 
         val loserColorInMessage = when(winnerColor) {
-            PieceColor.BLACK -> "Black"
-            PieceColor.WHITE -> "White"
+            PieceColor.BLACK -> "White"
+            PieceColor.WHITE -> "Black"
         }
         val gameEndMessage = when(method){
             GameEndMethod.KING_WAS_CAPTURED -> "$winnerColorInMessage Wins\n$loserColorInMessage King was captured"
@@ -344,10 +344,6 @@ class ChessBoardViewModel(
             GameEndMethod.CHECKMATE -> "$winnerColorInMessage Wins\nCheckmate"
         }
         _gameOverMessage.value = gameEndMessage
-    }
-
-    private fun drawAccepted(color: PieceColor) {
-        gameOver(color, method = GameEndMethod.DRAW)
     }
 
     private fun checkForCheckmate(board: List<Tile>, kingColor: PieceColor) {

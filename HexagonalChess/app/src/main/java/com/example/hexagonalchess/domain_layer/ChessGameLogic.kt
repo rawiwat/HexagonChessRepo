@@ -29,11 +29,6 @@ fun containPiece(tileId: TileId?, board: List<Tile>): Boolean {
             return true
         }
     }
-    /*for (tile in _chessBoard.value) {
-        if (tileId == tile.id && tile.chessPiece != null) {
-            return true
-        }
-    }*/
     return false
 }
 
@@ -133,19 +128,17 @@ fun getAllTileInDirection(selectedTile: Tile, direction: TileDirections, board: 
 
 fun wasKingAttacked(board: List<Tile>,kingColor: PieceColor): Boolean {
     for (tile in board) {
-
         tile.chessPiece?.let { currentPiece ->
-
             if (currentPiece.color != kingColor) {
-
                 val possibleMove = when(currentPiece.type) {
                     PieceType.KNIGHT -> knightMove(tile, board)
-                    PieceType.PAWN -> pawnMove(tile, board)
+                    PieceType.PAWN -> checkPawnAttack(tile, board)
                     PieceType.BISHOP -> bishopMove(tile, board)
                     PieceType.ROOK -> rookMove(tile, board)
                     PieceType.QUEEN -> queenMove(tile, board)
                     PieceType.KING -> kingMove(tile, board)
                 }
+
                 for (move in possibleMove) {
                     move?.let { moveId ->
                         board[getTileIndex(moveId)].chessPiece?.let { targetablePiece ->

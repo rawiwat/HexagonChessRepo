@@ -11,14 +11,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -40,10 +38,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.chess_board_data.ChessboardData
-import com.example.hexagonalchess.data_layer.model.pieces.CapturedPiece
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
@@ -52,7 +48,6 @@ import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.PieceType
 import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.TileUiManager
-import com.example.hexagonalchess.domain_layer.getCapturedPieceOffset
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 import com.example.hexagonalchess.domain_layer.getChessPieceImage
 import com.example.hexagonalchess.domain_layer.getPromotionKeyWordFromColor
@@ -76,7 +71,6 @@ fun GameScreen(
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         PlayerUI(
-            alignment = Alignment.CenterStart,
             currentTurn = currentTurn,
             color = PieceColor.WHITE,
             chessBoardViewModel = chessBoardViewModel,
@@ -84,7 +78,6 @@ fun GameScreen(
         )
 
         PlayerUI(
-            alignment = Alignment.CenterEnd,
             currentTurn = currentTurn,
             color = PieceColor.BLACK,
             chessBoardViewModel = chessBoardViewModel,
@@ -219,13 +212,6 @@ fun TileUI(
                 )
 
         )
-
-        /*Text(
-            text = tile.id.toString(),
-            style = TextStyle(
-                color = Color.Red
-            )
-        )*/
 
         if(tile.chessPiece != null) {
             Image(
@@ -466,7 +452,6 @@ fun ChessBoardUI(
 
 @Composable
 fun PlayerUI(
-    alignment: Alignment,
     currentTurn: PieceColor,
     color: PieceColor,
     chessBoardViewModel: ChessBoardViewModel,
@@ -515,9 +500,12 @@ fun PlayerUI(
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)
+            .background(
+                color = Color.Gray
+            )
     ) {
         Box(
-            contentAlignment = alignment,
+            contentAlignment = Alignment.CenterStart,
             modifier = Modifier.padding(5.dp)
         ) {
             Row {
@@ -529,10 +517,23 @@ fun PlayerUI(
                     Text(text = if (color == PieceColor.WHITE) "Player White" else "Player Black")
                     Row {
                         Box {
-                            val totalPawnOffset = capturedPawn.size * 10 - 10
-                            val totalKnightOffset = (capturedKnight.size * 10) + totalPawnOffset
-                            val totalBishopOffset = (capturedBishop.size * 10) + totalKnightOffset
-                            val totalRookOffset = (capturedRook.size * 10) + totalBishopOffset
+                            var totalPawnOffset = capturedPawn.size * 10
+                            when (capturedPawn.size) {
+                                1 -> totalPawnOffset += 5
+                                else -> totalPawnOffset -= 5 * (capturedPawn.size - 2)
+                            }
+                            var totalKnightOffset = (capturedKnight.size * 10) + totalPawnOffset
+                            if (capturedKnight.isNotEmpty()) {
+                                totalKnightOffset += 5
+                            }
+                            var totalBishopOffset = (capturedBishop.size * 10) + totalKnightOffset
+                            if (capturedBishop.isNotEmpty()) {
+                                totalBishopOffset += 5
+                            }
+                            var totalRookOffset = (capturedRook.size * 10) + totalBishopOffset
+                            if (capturedRook.isNotEmpty()) {
+                                totalRookOffset += 5
+                            }
 
                             LazyRow {
                                 items(capturedPawn.size) {
@@ -638,11 +639,18 @@ fun GameScreenPreview() {
 @Composable
 fun PlayerPreview() {
     PlayerUI(
-        alignment = Alignment.CenterStart,
         currentTurn = PieceColor.BLACK,
         color = PieceColor.BLACK,
         chessBoardViewModel = ChessBoardViewModel(ChessboardData().allTiles),
         listOfCapturedPiece = listOf(
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
@@ -655,6 +663,28 @@ fun PlayerPreview() {
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_ROOK),
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_QUEEN),
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_QUEEN)
+        )
+    )
+}
+
+@Preview
+@Composable
+fun PlayerPreview2() {
+    PlayerUI(
+        currentTurn = PieceColor.BLACK,
+        color = PieceColor.WHITE,
+        chessBoardViewModel = ChessBoardViewModel(ChessboardData().allTiles),
+        listOfCapturedPiece = listOf(
+            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_KNIGHT),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_KNIGHT),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_BISHOP),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_BISHOP),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_ROOK),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_ROOK),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_QUEEN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_QUEEN)
         )
     )
 }
