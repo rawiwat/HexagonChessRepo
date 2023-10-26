@@ -43,7 +43,7 @@ import kotlin.math.roundToInt
 fun MainMenu(
     navController: NavController
 ) {
-    var titleSize by rememberSaveable { mutableDoubleStateOf(60.00) }
+    val titleSize by rememberSaveable { mutableDoubleStateOf(60.00) }
 
     Surface(
         modifier = Modifier.fillMaxSize()
@@ -98,6 +98,12 @@ fun MainMenu(
             MenuButton(
                 text = "Play\nLocal",
                 route = Route.local,
+                navController = navController
+            )
+
+            MenuButton(
+                text = "Play Cpu",
+                route = Route.vsCpu,
                 navController = navController
             )
 

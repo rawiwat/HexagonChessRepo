@@ -1,6 +1,7 @@
 package com.example.hexagonalchess.presentation_layer.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.hexagonalchess.data_layer.model.TilePair
 import com.example.hexagonalchess.data_layer.model.blackPawnForwardTwo
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
@@ -22,8 +23,11 @@ import com.example.hexagonalchess.domain_layer.piecemove.knightMove
 import com.example.hexagonalchess.domain_layer.piecemove.pawnMove
 import com.example.hexagonalchess.domain_layer.piecemove.queenMove
 import com.example.hexagonalchess.domain_layer.piecemove.rookMove
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class ChessBoardVsCPUViewModel(
     playerColor: PieceColor,
@@ -46,7 +50,6 @@ class ChessBoardVsCPUViewModel(
 
     private val _whiteAdvantage = MutableStateFlow(0)
     val whiteAdvantage:StateFlow<Int> = _whiteAdvantage
-
     private val _blackCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
     val blackCaptured:StateFlow<List<ChessPiece>> = _blackCaptured
 
@@ -73,12 +76,12 @@ class ChessBoardVsCPUViewModel(
     )
 
     fun onClickPieces(tile: Tile) {
-        if (_gameState.value == GameStateVsCpu.PLAYER_TURN) {
-            for (tiles in _chessBoard.value) {
-                tiles.isAPossibleMove = false
-            }
+        for (tiles in _chessBoard.value) {
+            tiles.isAPossibleMove = false
+        }
+        if (_gameState.value == GameStateVsCpu.PLAYER_TURN ) {
             tile.chessPiece?.let {
-                if (_currentTurn.value == playerTurn) {
+                if (_currentTurn.value == playerTurn && it.color == playerTurn) {
                     val result: MutableList<TileId?> = when(it.type) {
                         PieceType.PAWN -> pawnMove(tile, _chessBoard.value)
                         PieceType.KNIGHT -> knightMove(tile, _chessBoard.value)
@@ -129,7 +132,6 @@ class ChessBoardVsCPUViewModel(
                 }
             }
             changeTurn()
-            //checkForCheckmate(_chessBoard.value, _currentTurn.value)
             updateBoard()
             if (_gameState.value == GameStateVsCpu.CPU_TURN) {
                 cpuMove(_chessBoard.value)
@@ -190,7 +192,7 @@ class ChessBoardVsCPUViewModel(
         }
         if (_gameState.value == GameStateVsCpu.CPU_TURN) {
             _gameState.value = GameStateVsCpu.PLAYER_TURN
-        } else {
+        } else if (_gameState.value == GameStateVsCpu.PLAYER_TURN) {
             _gameState.value = GameStateVsCpu.CPU_TURN
         }
     }
@@ -294,20 +296,20 @@ class ChessBoardVsCPUViewModel(
             when(piece.color) {
                 PieceColor.BLACK -> {
                     _whiteCaptured.value.add(piece)
-                    _whiteCaptured.value.sortBy { it.materialValue }
                     whiteMaterial += piece.materialValue
-                    if (piece.type == PieceType.KING) gameOver(PieceColor.WHITE, method = GameEndMethod.KING_WAS_CAPTURED)
-                }
+                    }
                 PieceColor.WHITE -> {
                     _blackCaptured.value.add(piece)
                     blackMaterial += piece.materialValue
-                    _blackCaptured.value.sortBy { it.materialValue }
-                    if (piece.type == PieceType.KING) gameOver(PieceColor.BLACK, method = GameEndMethod.KING_WAS_CAPTURED)
-                }
+                    }
             }
+            if (piece.type == PieceType.KING) gameOver(piece.color, method = GameEndMethod.KING_WAS_CAPTURED)
             _whiteAdvantage.value = whiteMaterial - blackMaterial
             _blackAdvantage.value = blackMaterial - whiteMaterial
+            println("captured ${piece.type}")
+            println(_gameState.value)
         }
+
     }
 
     private fun gameOver(winnerColor: PieceColor, method: GameEndMethod) {
@@ -335,7 +337,11 @@ class ChessBoardVsCPUViewModel(
         _gameState.value = GameStateVsCpu.CPU_TURN
     }
 
-    fun cpuMove(board: List<Tile>) {
+    private fun cpuMove(board: List<Tile>) {
+        viewModelScope.launch {
+            delay(500)
+        }
+        val random = Random(System.currentTimeMillis())
         val tileWithCpuPiece = mutableListOf<TileId>()
         val tileWithMovablePiece = mutableListOf<TileId>()
         for (tile in board) {
@@ -345,6 +351,7 @@ class ChessBoardVsCPUViewModel(
                 }
             }
         }
+
         for (cpuTile in tileWithCpuPiece) {
             val viableMove = mutableListOf<TileId?>()
             board[getTileIndex(cpuTile)].chessPiece?.let {
@@ -366,11 +373,9 @@ class ChessBoardVsCPUViewModel(
             }
             if (viableMove.isNotEmpty()) {
                 tileWithMovablePiece.add(cpuTile)
-                break
             }
         }
-
-        val chosenTile = tileWithMovablePiece.random()
+        val chosenTile = tileWithMovablePiece[random.nextInt(tileWithMovablePiece.size)]
         val movesInChosenTile = mutableListOf<TileId?>()
         board[getTileIndex(chosenTile)].chessPiece?.let {
             movesInChosenTile.addAll(
@@ -384,7 +389,16 @@ class ChessBoardVsCPUViewModel(
                 }
             )
         }
-        val chosenMove = movesInChosenTile.random()
+
+        val iterator = movesInChosenTile.iterator()
+        while (iterator.hasNext()){
+            val currentMove = iterator.next()
+            if (currentMove == null) {
+                iterator.remove()
+            }
+        }
+        val chosenMove = movesInChosenTile[random.nextInt(movesInChosenTile.size)]
+
         val targetedTile = board[getTileIndex(chosenMove!!)]
         val movingTile = board[getTileIndex(chosenTile)]
         selectingTile = targetedTile
@@ -398,8 +412,10 @@ class ChessBoardVsCPUViewModel(
         _chessBoard.value[targetedIndex].chessPiece = movingTile.chessPiece
         val selectedTileIndex = getTileIndex(movingTile.id)
         _chessBoard.value[selectedTileIndex].chessPiece = null
-        if (movingTile.chessPiece!!.type == PieceType.PAWN && listOfPromotionTile.contains(targetedTile.id)) {
-            _gameState.value = GameStateVsCpu.PROMOTE
+        movingTile.chessPiece?.let {
+            if (it.type == PieceType.PAWN && listOfPromotionTile.contains(targetedTile.id)) {
+                _gameState.value = GameStateVsCpu.PROMOTE
+            }
         }
         val currentMovePath = TilePair(
             startingPoint = movingTile.id,
@@ -418,8 +434,20 @@ class ChessBoardVsCPUViewModel(
                 )
             }
         }
+        println("CpuTiles:$tileWithCpuPiece")
+        println("CpuTiles that can move:$tileWithMovablePiece")
+        println("Chosen CpuTiles:$chosenTile")
+        println("Chosen CpuTiles Moves:$movesInChosenTile")
+        println("Chosen Move:$chosenMove")
         changeTurn()
-        //checkForCheckmate(_chessBoard.value, _currentTurn.value)
         updateBoard()
+    }
+
+    init {
+        if (playerColor == PieceColor.BLACK) {
+            cpuMove(_chessBoard.value)
+            _gameState.value = GameStateVsCpu.PLAYER_TURN
+            _currentTurn.value = playerTurn
+        }
     }
 }
