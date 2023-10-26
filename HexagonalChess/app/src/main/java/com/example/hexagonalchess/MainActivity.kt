@@ -11,8 +11,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.hexagonalchess.data_layer.chess_board_data.ChessboardData
+import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.presentation_layer.composeui.App
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
+import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardVsCPUViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.SettingViewModel
 import com.example.hexagonalchess.ui.theme.HexagonalChessTheme
 
@@ -22,12 +24,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val allTiles = ChessboardData().allTilesWhitePov
+        val allTiles = ChessboardData().allTiles
         //val database = FirebaseRealtimeDatabase()
-        val chessBoardViewModel = ChessBoardViewModel(
-            allTiles,
-            //database
-        )
+        val chessBoardViewModel = ChessBoardViewModel(allTiles)
+        val viablePieceColor = listOf(PieceColor.WHITE,PieceColor.BLACK)
+        val playerColor = viablePieceColor.random()
+        val chessBoardVsCPUViewModel = ChessBoardVsCPUViewModel(playerColor, allTiles)
         val settingViewModel = SettingViewModel(this@MainActivity)
         setContent {
             HexagonalChessTheme {
@@ -40,6 +42,8 @@ class MainActivity : ComponentActivity() {
                         navController = navController as NavHostController,
                         chessBoardViewModel = chessBoardViewModel,
                         settingViewModel = settingViewModel,
+                        chessBoardVsCPUViewModel = chessBoardVsCPUViewModel,
+                        playerColor = playerColor,
                         context = this@MainActivity
                     )
                 }

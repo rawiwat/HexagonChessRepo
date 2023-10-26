@@ -91,5 +91,6 @@ class Route {
         const val main = "Main"
         const val local = "Local"
         const val setting = "Setting"
+        const val vsCpu = "Vs Cpu"
     }
 }

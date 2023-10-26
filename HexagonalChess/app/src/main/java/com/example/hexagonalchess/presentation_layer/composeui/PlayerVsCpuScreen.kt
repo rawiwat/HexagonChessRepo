@@ -32,7 +32,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,7 +42,7 @@ import com.example.hexagonalchess.data_layer.chess_board_data.ChessboardData
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
-import com.example.hexagonalchess.domain_layer.GameStateLocal
+import com.example.hexagonalchess.domain_layer.GameStateVsCpu
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.PieceType
 import com.example.hexagonalchess.domain_layer.TileTheme
@@ -53,72 +52,44 @@ import com.example.hexagonalchess.domain_layer.getChessPieceImage
 import com.example.hexagonalchess.domain_layer.getPromotionKeyWordFromColor
 import com.example.hexagonalchess.domain_layer.getTileImage
 import com.example.hexagonalchess.domain_layer.theme_setting.ThemeSharedPrefs
-import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
+import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardVsCPUViewModel
+
 
 @Composable
-fun GameScreen(
-    chessBoardViewModel: ChessBoardViewModel,
-    context: Context
+fun PlayerVsCpuScreen(
+    chessBoardVsCpuViewModel: ChessBoardVsCPUViewModel,
+    context: Context,
+    playerColor: PieceColor
 ) {
-    val chessBoard by chessBoardViewModel.chessBoard.collectAsState()
-    val currentTurn by chessBoardViewModel.currentTurn.collectAsState()
-    val blackCaptured by chessBoardViewModel.blackCaptured.collectAsState()
-    val whiteCaptured by chessBoardViewModel.whiteCaptured.collectAsState()
-    val gameState by chessBoardViewModel.gameStateLocal.collectAsState()
-    val gameOverMessage by chessBoardViewModel.gameOverMessage.collectAsState()
+    val chessBoard by chessBoardVsCpuViewModel.chessBoard.collectAsState()
+    val currentTurn by chessBoardVsCpuViewModel.currentTurn.collectAsState()
+    val blackCaptured by chessBoardVsCpuViewModel.blackCaptured.collectAsState()
+    val whiteCaptured by chessBoardVsCpuViewModel.whiteCaptured.collectAsState()
+    val gameState by chessBoardVsCpuViewModel.gameState.collectAsState()
+    val gameOverMessage by chessBoardVsCpuViewModel.gameOverMessage.collectAsState()
     val theme = ThemeSharedPrefs(context).getTheme()
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        PlayerUI(
+        PlayerVsCpuUI(
             currentTurn = currentTurn,
             color = PieceColor.WHITE,
-            chessBoardViewModel = chessBoardViewModel,
+            chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
             listOfCapturedPiece = whiteCaptured
         )
 
-        PlayerUI(
+        PlayerVsCpuUI(
             currentTurn = currentTurn,
             color = PieceColor.BLACK,
-            chessBoardViewModel = chessBoardViewModel,
+            chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
             listOfCapturedPiece = blackCaptured
         )
 
-        ChessBoardUI(
+        ChessBoardUIVsCPU(
             chessBoardData = chessBoard,
-            chessBoardViewModel = chessBoardViewModel,
-            theme = theme
+            chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
+            theme = theme,
+            playerColor = playerColor
         )
-
-        /*Button(
-            onClick = {
-                for (tile in chessBoard) {
-                    println("${tile.id} : ${ tile.isAPossibleMove }")
-                }
-            }
-        ) {
-            Text(text = "check board")
-        }
-
-        Button(
-            onClick = {
-                for (tile in chessBoard) {
-                    println("${tile.id} : ${tile.chessPiece?.keyWord}")
-                }
-            }
-        ) {
-            Text(text = "check board2")
-        }
-        Button(
-            onClick = {
-                for (piece in blackCaptured) {
-                    println("Black Captured : ${piece.keyWord}")
-                }
-                for (piece in whiteCaptured) {
-                    println("White Captured : ${piece.keyWord}")
-                }
-            }
-        ) {
-        }*/
     }
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -128,7 +99,7 @@ fun GameScreen(
         val popUpBoxHeight by remember { mutableStateOf(130.dp) }
 
         AnimatedVisibility(
-            visible = (gameState == GameStateLocal.GAME_OVER),
+            visible = (gameState == GameStateVsCpu.GAME_OVER),
             enter = scaleIn(
                 animationSpec = tween(150, 150)
             )
@@ -153,7 +124,7 @@ fun GameScreen(
         }
 
         AnimatedVisibility(
-            visible = (gameState == GameStateLocal.PROMOTE),
+            visible = (gameState == GameStateVsCpu.PROMOTE),
         ) {
             val color by rememberSaveable {
                 mutableStateOf(if (currentTurn == PieceColor.BLACK) PieceColor.WHITE else PieceColor.BLACK)
@@ -179,8 +150,8 @@ fun GameScreen(
 
                     LazyRow {
                         items(listOfPromotion) { promotionOption ->
-                            PromotionIcon(
-                                chessBoardViewModel = chessBoardViewModel,
+                            PromotionIconVsCpu(
+                                chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
                                 keyWord = promotionOption
                             )
                         }
@@ -191,11 +162,12 @@ fun GameScreen(
     }
 }
 
+
 @Composable
-fun TileUI(
+fun TileUIVsCpu(
     tile: Tile,
     tileUiManager: TileUiManager,
-    chessBoardViewModel: ChessBoardViewModel,
+    chessBoardVsCpuViewModel: ChessBoardVsCPUViewModel,
     theme: TileTheme
 ) {
     Box(
@@ -221,7 +193,7 @@ fun TileUI(
                         width = tileUiManager.tileWidth.dp,
                         height = tileUiManager.tileHeight.dp
                     )
-                    .clickable { chessBoardViewModel.onClickPieces(tile) }
+                    .clickable { chessBoardVsCpuViewModel.onClickPieces(tile) }
             )
         }
 
@@ -234,35 +206,48 @@ fun TileUI(
                         width = tileUiManager.tileWidth.dp,
                         height = tileUiManager.tileHeight.dp
                     )
-                    .clickable { chessBoardViewModel.onClickTargeted(tile) }
+                    .clickable { chessBoardVsCpuViewModel.onClickTargeted(tile) }
             )
         }
     }
 }
 
 @Composable
-fun ChessBoardUI(
+fun ChessBoardUIVsCPU(
     chessBoardData:List<Tile>,
-    chessBoardViewModel: ChessBoardViewModel,
-    theme: TileTheme
+    chessBoardVsCpuViewModel: ChessBoardVsCPUViewModel,
+    theme: TileTheme,
+    playerColor: PieceColor
 ) {
-    val columnA = chessBoardData.subList(0,8)
+    var columnA = chessBoardData.subList(0,8)
 
-    val columnB = chessBoardData.subList(8,17)
+    var columnB = chessBoardData.subList(8,17)
 
-    val columnC = chessBoardData.subList(17,27)
+    var columnC = chessBoardData.subList(17,27)
 
-    val columnD = chessBoardData.subList(27,38)
+    var columnD = chessBoardData.subList(27,38)
 
-    val columnE = chessBoardData.subList(38,50)
+    var columnE = chessBoardData.subList(38,50)
 
-    val columnF = chessBoardData.subList(50,61)
+    var columnF = chessBoardData.subList(50,61)
 
-    val columnG = chessBoardData.subList(61,71)
+    var columnG = chessBoardData.subList(61,71)
 
-    val columnH = chessBoardData.subList(71,80)
+    var columnH = chessBoardData.subList(71,80)
 
-    val columnI = chessBoardData.subList(80,88)
+    var columnI = chessBoardData.subList(80,88)
+
+    if (playerColor == PieceColor.BLACK) {
+        columnA = columnA.reversed()
+        columnB = columnB.reversed()
+        columnC = columnC.reversed()
+        columnD = columnD.reversed()
+        columnE = columnE.reversed()
+        columnF = columnF.reversed()
+        columnG = columnG.reversed()
+        columnH = columnH.reversed()
+        columnI = columnI.reversed()
+    }
 
     val tileUiManager = TileUiManager()
 
@@ -279,10 +264,10 @@ fun ChessBoardUI(
                 columnA,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIVsCpu(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel,
+                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
                     theme = theme
                 )
             }
@@ -299,10 +284,10 @@ fun ChessBoardUI(
                 columnB,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIVsCpu(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel,
+                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
                     theme = theme
                 )
             }
@@ -319,10 +304,10 @@ fun ChessBoardUI(
                 columnC,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIVsCpu(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel,
+                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
                     theme = theme
                 )
             }
@@ -339,10 +324,10 @@ fun ChessBoardUI(
                 columnD,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIVsCpu(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel,
+                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
                     theme = theme
                 )
             }
@@ -358,10 +343,10 @@ fun ChessBoardUI(
                 columnE,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIVsCpu(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel,
+                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
                     theme = theme
                 )
             }
@@ -378,10 +363,10 @@ fun ChessBoardUI(
                 columnF,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIVsCpu(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel,
+                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
                     theme = theme
                 )
             }
@@ -398,10 +383,10 @@ fun ChessBoardUI(
                 columnG,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIVsCpu(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel,
+                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
                     theme = theme
                 )
             }
@@ -418,10 +403,10 @@ fun ChessBoardUI(
                 columnH,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIVsCpu(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel,
+                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
                     theme = theme
                 )
             }
@@ -438,10 +423,10 @@ fun ChessBoardUI(
                 columnI,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIVsCpu(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel,
+                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
                     theme = theme
                 )
             }
@@ -450,18 +435,18 @@ fun ChessBoardUI(
 }
 
 @Composable
-fun PlayerUI(
+fun PlayerVsCpuUI(
     currentTurn: PieceColor,
     color: PieceColor,
-    chessBoardViewModel: ChessBoardViewModel,
+    chessBoardVsCpuViewModel: ChessBoardVsCPUViewModel,
     listOfCapturedPiece: List<ChessPiece>
 ) {
     val borderWidth = if (currentTurn == color) { 6.dp } else { 0.dp }
 
     val currentAdvantage by if (color == PieceColor.BLACK) {
-        chessBoardViewModel.blackAdvantage.collectAsState()
+        chessBoardVsCpuViewModel.blackAdvantage.collectAsState()
     } else {
-        chessBoardViewModel.whiteAdvantage.collectAsState()
+        chessBoardVsCpuViewModel.whiteAdvantage.collectAsState()
     }
     val capturedPawn = mutableListOf<ChessPiece>()
 
@@ -609,8 +594,8 @@ fun PlayerUI(
 }
 
 @Composable
-fun PromotionIcon(
-    chessBoardViewModel: ChessBoardViewModel,
+fun PromotionIconVsCpu(
+    chessBoardVsCpuViewModel: ChessBoardVsCPUViewModel,
     keyWord: ChessPieceKeyWord
 ) {
     Image(
@@ -618,7 +603,7 @@ fun PromotionIcon(
         contentDescription = null,
         modifier = Modifier
             .clickable {
-                chessBoardViewModel.promotePawn(keyWord)
+                chessBoardVsCpuViewModel.playerPromotePawn(keyWord)
             }
             .size(60.dp)
     )
@@ -626,65 +611,22 @@ fun PromotionIcon(
 
 @Preview
 @Composable
-fun GameScreenPreview() {
-    val allTiles = ChessboardData().allTiles
-    val chessBoardViewModel = ChessBoardViewModel(
-        allTiles,
-        //FirebaseRealtimeDatabase()
-    )
-    GameScreen(chessBoardViewModel, LocalContext.current)
+fun ChessBoardPreviewPovWhite() {
+    val board = ChessboardData().allTiles
+    ChessBoardUIVsCPU(
+        chessBoardData = board,
+        chessBoardVsCpuViewModel = ChessBoardVsCPUViewModel(PieceColor.WHITE,board),
+        theme = TileTheme.RED,
+        playerColor = PieceColor.WHITE)
 }
 
 @Preview
 @Composable
-fun PlayerPreview() {
-    PlayerUI(
-        currentTurn = PieceColor.BLACK,
-        color = PieceColor.BLACK,
-        chessBoardViewModel = ChessBoardViewModel(ChessboardData().allTiles),
-        listOfCapturedPiece = listOf(
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_KNIGHT),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_KNIGHT),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_BISHOP),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_BISHOP),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_ROOK),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_ROOK),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_QUEEN),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_QUEEN)
-        )
-    )
-}
-
-@Preview
-@Composable
-fun PlayerPreview2() {
-    PlayerUI(
-        currentTurn = PieceColor.BLACK,
-        color = PieceColor.WHITE,
-        chessBoardViewModel = ChessBoardViewModel(ChessboardData().allTiles),
-        listOfCapturedPiece = listOf(
-            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_PAWN),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_PAWN),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_KNIGHT),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_KNIGHT),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_BISHOP),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_BISHOP),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_ROOK),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_ROOK),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_QUEEN),
-            getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_QUEEN)
-        )
-    )
+fun ChessBoardPreviewPovBlack() {
+    val board = ChessboardData().allTiles
+    ChessBoardUIVsCPU(
+        chessBoardData = board,
+        chessBoardVsCpuViewModel = ChessBoardVsCPUViewModel(PieceColor.BLACK,board),
+        theme = TileTheme.BLUE,
+        playerColor = PieceColor.BLACK)
 }

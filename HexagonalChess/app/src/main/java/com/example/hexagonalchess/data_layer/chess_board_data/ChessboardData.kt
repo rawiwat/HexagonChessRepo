@@ -13,7 +13,7 @@ class ChessboardData {
     private val columnH = ColumnH().columnH
     private val columnI = ColumnI().columnI
 
-    val allTilesWhitePov: List<Tile> =
+    val allTiles: List<Tile> =
                 columnA + columnB + columnC +
                 columnD + columnE + columnF +
                 columnG + columnH + columnI

@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.StateFlow
 class ChessBoardVsCPUViewModel(
     playerColor: PieceColor,
     board: List<Tile>,
-
 ): ViewModel() {
     private val _chessBoard = MutableStateFlow(board)
     val chessBoard: StateFlow<List<Tile>> = _chessBoard
@@ -55,7 +54,6 @@ class ChessBoardVsCPUViewModel(
 
     private val _blackAdvantage = MutableStateFlow(0)
     val blackAdvantage:StateFlow<Int> = _blackAdvantage
-
 
     private val _gameState = MutableStateFlow(initGameState)
     val gameState:StateFlow<GameStateVsCpu> = _gameState
@@ -133,6 +131,9 @@ class ChessBoardVsCPUViewModel(
             changeTurn()
             //checkForCheckmate(_chessBoard.value, _currentTurn.value)
             updateBoard()
+            if (_gameState.value == GameStateVsCpu.CPU_TURN) {
+                cpuMove(_chessBoard.value)
+            }
         }
     }
 

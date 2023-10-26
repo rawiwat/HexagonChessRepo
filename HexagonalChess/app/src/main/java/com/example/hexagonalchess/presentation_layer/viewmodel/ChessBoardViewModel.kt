@@ -30,7 +30,7 @@ import com.example.hexagonalchess.domain_layer.piecemove.rookMove
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class ChessBoardViewModel(
+open class ChessBoardViewModel(
     allTiles: List<Tile>,
     //private val database: Database
 ) : ViewModel() {
