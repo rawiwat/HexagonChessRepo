@@ -339,7 +339,7 @@ class ChessBoardVsCPUViewModel(
 
     private fun cpuMove(board: List<Tile>) {
         viewModelScope.launch {
-            delay(500)
+            delay(1000)
         }
         val random = Random(System.currentTimeMillis())
         val tileWithCpuPiece = mutableListOf<TileId>()

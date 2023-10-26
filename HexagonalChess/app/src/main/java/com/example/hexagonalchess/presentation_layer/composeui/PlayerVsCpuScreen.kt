@@ -32,13 +32,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hexagonalchess.R
-import com.example.hexagonalchess.data_layer.chess_board_data.ChessboardData
+import com.example.hexagonalchess.data_layer.chess_board_data.base.ChessboardData
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
@@ -249,10 +250,13 @@ fun ChessBoardUIVsCPU(
         columnI = columnI.reversed()
     }
 
-    val tileUiManager = TileUiManager()
+    val screenWidth = LocalConfiguration.current.screenWidthDp
+    val tileUiManager = TileUiManager(screenWidth)
 
     Box(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = (screenWidth / 16).dp)
     ) {
         LazyColumn(
             modifier = Modifier

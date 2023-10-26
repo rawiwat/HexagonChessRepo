@@ -1,8 +1,8 @@
 package com.example.hexagonalchess.domain_layer
 
-class TileUiManager {
-    val tileHeight = 47.64
-    val tileWidth = 55
+class TileUiManager(screenWidth:Int) {
+    val tileHeight = screenWidth / 9
+    val tileWidth = tileHeight * 1.15449202351
     val columnAY = tileHeight * 2
     val columnBX = tileWidth * 3 / 4
     val columnBY = tileHeight * 3 / 2

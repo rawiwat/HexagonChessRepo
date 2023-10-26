@@ -32,6 +32,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -39,7 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hexagonalchess.R
-import com.example.hexagonalchess.data_layer.chess_board_data.ChessboardData
+import com.example.hexagonalchess.data_layer.chess_board_data.base.ChessboardData
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
@@ -83,11 +84,16 @@ fun GameScreen(
             listOfCapturedPiece = blackCaptured
         )
 
-        ChessBoardUI(
-            chessBoardData = chessBoard,
-            chessBoardViewModel = chessBoardViewModel,
-            theme = theme
-        )
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            //contentAlignment = Alignment.TopCenter
+        ) {
+            ChessBoardUI(
+                chessBoardData = chessBoard,
+                chessBoardViewModel = chessBoardViewModel,
+                theme = theme
+            )
+        }
 
         /*Button(
             onClick = {
@@ -122,7 +128,7 @@ fun GameScreen(
     }
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        //contentAlignment = Alignment.Center
     ) {
         val popUpBoxWidth by remember { mutableStateOf(250.dp) }
         val popUpBoxHeight by remember { mutableStateOf(130.dp) }
@@ -246,6 +252,8 @@ fun ChessBoardUI(
     chessBoardViewModel: ChessBoardViewModel,
     theme: TileTheme
 ) {
+    val screenWidth = LocalConfiguration.current.screenWidthDp
+
     val columnA = chessBoardData.subList(0,8)
 
     val columnB = chessBoardData.subList(8,17)
@@ -264,16 +272,16 @@ fun ChessBoardUI(
 
     val columnI = chessBoardData.subList(80,88)
 
-    val tileUiManager = TileUiManager()
+    val tileUiManager = TileUiManager(screenWidth)
 
     Box(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(start = (screenWidth / 15).dp)
     ) {
         LazyColumn(
             modifier = Modifier
-                .offset(
-                    y = tileUiManager.columnAY.dp
-                )
+                .offset(y = tileUiManager.columnAY.dp)
         ) {
             items(
                 columnA,
