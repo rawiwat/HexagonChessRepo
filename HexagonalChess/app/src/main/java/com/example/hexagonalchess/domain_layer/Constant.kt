@@ -94,3 +94,8 @@ class Route {
         const val vsCpu = "Vs Cpu"
     }
 }
+
+enum class BoardType {
+    DEFAULT,
+    SHURIKEN
+}

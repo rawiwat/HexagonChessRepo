@@ -59,7 +59,7 @@ import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewMod
 @Composable
 fun GameScreen(
     chessBoardViewModel: ChessBoardViewModel,
-    context: Context
+    context: Context,
 ) {
     val chessBoard by chessBoardViewModel.chessBoard.collectAsState()
     val currentTurn by chessBoardViewModel.currentTurn.collectAsState()
