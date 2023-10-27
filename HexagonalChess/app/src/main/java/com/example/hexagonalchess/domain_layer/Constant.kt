@@ -92,10 +92,17 @@ class Route {
         const val local = "Local"
         const val setting = "Setting"
         const val vsCpu = "Vs Cpu"
+        const val online = "Online"
     }
 }
 
-enum class BoardType {
-    DEFAULT,
-    SHURIKEN
+enum class BoardType(val nameInSelection: String) {
+    DEFAULT("Default"),
+    SHURIKEN("Shuriken")
+}
+
+enum class GameMode {
+    LOCAL,
+    ONLINE,
+    CPU
 }

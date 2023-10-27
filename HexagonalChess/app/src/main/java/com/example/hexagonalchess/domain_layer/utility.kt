@@ -108,3 +108,9 @@ fun generatePlayerIdFromName(input: String): Int {
     return String.format("%06d", hashCode % 1000000).toInt()
 }
 
+fun getImageIdFromBoardType(boardType: BoardType): Int {
+    return when(boardType) {
+        BoardType.DEFAULT -> R.drawable.board_preview_default
+        BoardType.SHURIKEN -> R.drawable.board_preview_shuriken
+    }
+}

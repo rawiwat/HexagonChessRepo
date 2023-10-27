@@ -472,7 +472,6 @@ fun ChessBoardUI(
     }
 }
 
-
 @Composable
 fun ShurikenBoardUI(
     chessBoardData:List<Tile>,

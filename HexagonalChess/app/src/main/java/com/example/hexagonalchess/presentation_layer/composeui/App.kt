@@ -33,7 +33,7 @@ fun App(
             MainMenu(navController = navController)
         }
         composable(
-            route = Route.local,
+            route = "${Route.local}/{boardType}",
             arguments = listOf(navArgument("boardType") { type = NavType.EnumType(BoardType::class.java) })
         ) {
             GameScreen(
@@ -50,11 +50,12 @@ fun App(
                 settingViewModel = settingViewModel
             )
         }
-        composable(route = Route.vsCpu) {
+        composable(route = "${Route.vsCpu}/{boardType}") {
             PlayerVsCpuScreen(
                 chessBoardVsCpuViewModel = chessBoardVsCPUViewModel,
                 context = context,
-                playerColor = playerColor
+                playerColor = playerColor,
+                boardType = it.arguments?.getSerializable("boardType") as BoardType
             )
         }
     }
