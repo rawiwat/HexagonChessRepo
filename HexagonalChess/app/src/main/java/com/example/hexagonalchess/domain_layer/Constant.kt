@@ -93,6 +93,7 @@ class Route {
         const val setting = "Setting"
         const val vsCpu = "Vs Cpu"
         const val online = "Online"
+        const val boardSelection = "Board Selection"
     }
 }
 

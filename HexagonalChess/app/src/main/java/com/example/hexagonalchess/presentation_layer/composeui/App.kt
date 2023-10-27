@@ -7,9 +7,13 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.hexagonalchess.data_layer.chess_board_data.base.ChessboardData
+import com.example.hexagonalchess.data_layer.chess_board_data.shuriken.ShurikenBoardData
 import com.example.hexagonalchess.domain_layer.BoardType
+import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.Route
+import com.example.hexagonalchess.presentation_layer.viewmodel.BoardSelectionViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardVsCPUViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.SettingViewModel
@@ -17,9 +21,7 @@ import com.example.hexagonalchess.presentation_layer.viewmodel.SettingViewModel
 @Composable
 fun App(
     navController: NavHostController,
-    chessBoardViewModel: ChessBoardViewModel,
     settingViewModel: SettingViewModel,
-    chessBoardVsCPUViewModel: ChessBoardVsCPUViewModel,
     playerColor: PieceColor,
     context: Context
 ) {
@@ -36,10 +38,16 @@ fun App(
             route = "${Route.local}/{boardType}",
             arguments = listOf(navArgument("boardType") { type = NavType.EnumType(BoardType::class.java) })
         ) {
+            val boardType = it.arguments?.getSerializable("boardType") as BoardType
             GameScreen(
-                chessBoardViewModel = chessBoardViewModel,
+                chessBoardViewModel = ChessBoardViewModel(
+                    allTiles = when(boardType) {
+                        BoardType.DEFAULT -> ChessboardData().allTiles
+                        BoardType.SHURIKEN -> ShurikenBoardData().allTiles
+                    }
+                ),
                 context = context,
-                boardType = it.arguments?.getSerializable("boardType") as BoardType
+                boardType = boardType
             )
         }
         composable(
@@ -50,12 +58,33 @@ fun App(
                 settingViewModel = settingViewModel
             )
         }
-        composable(route = "${Route.vsCpu}/{boardType}") {
+        composable(
+            route = "${Route.vsCpu}/{boardType}",
+            arguments = listOf(navArgument("boardType") { type = NavType.EnumType(BoardType::class.java) })
+        ) {
+            val boardType = it.arguments?.getSerializable("boardType") as BoardType
             PlayerVsCpuScreen(
-                chessBoardVsCpuViewModel = chessBoardVsCPUViewModel,
+                chessBoardVsCpuViewModel = ChessBoardVsCPUViewModel(
+                    playerColor,
+                    board = when(boardType){
+                        BoardType.DEFAULT -> ChessboardData().allTiles
+                        BoardType.SHURIKEN -> ShurikenBoardData().allTiles
+                    }
+                ),
                 context = context,
                 playerColor = playerColor,
-                boardType = it.arguments?.getSerializable("boardType") as BoardType
+                boardType = boardType
+            )
+        }
+
+        composable(
+            route = "${Route.boardSelection}/{gameMode}",
+            arguments = listOf(navArgument("gameMode") { type = NavType.EnumType(GameMode::class.java) })
+        ) {
+            BoardSelectionScreen(
+                boardSelectionViewModel = BoardSelectionViewModel(),
+                navController = navController,
+                gameMode = it.arguments?.getSerializable("gameMode") as GameMode
             )
         }
     }

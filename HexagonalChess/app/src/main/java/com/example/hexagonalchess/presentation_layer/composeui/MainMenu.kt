@@ -1,6 +1,5 @@
 package com.example.hexagonalchess.presentation_layer.composeui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,10 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,7 +32,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.hexagonalchess.MainActivity
 import com.example.hexagonalchess.R
+import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.Route
 import kotlin.math.roundToInt
 
@@ -91,32 +90,37 @@ fun MainMenu(
 
             MenuButton(
                 text = "Play\nOnline",
-                route = "",
-                navController = navController
+                onClick = {
+                    navController.navigate("${Route.boardSelection}/${GameMode.ONLINE}")
+                }
             )
 
             MenuButton(
                 text = "Play\nLocal",
-                route = Route.local,
-                navController = navController
+                onClick = {
+                    navController.navigate("${Route.boardSelection}/${GameMode.LOCAL}")
+                }
             )
 
             MenuButton(
                 text = "Play Cpu",
-                route = Route.vsCpu,
-                navController = navController
+                onClick = {
+                    navController.navigate("${Route.boardSelection}/${GameMode.CPU}")
+                }
             )
 
             MenuButton(
                 text = "Setting",
-                route = Route.setting,
-                navController = navController
+                onClick = {
+                    navController.navigate(Route.setting)
+                }
             )
 
             MenuButton(
                 text = "Quit",
-                route = Route.setting,
-                navController = navController
+                onClick = {
+                    MainActivity().finish()
+                }
             )
         }
     }
@@ -125,8 +129,7 @@ fun MainMenu(
 @Composable
 fun MenuButton(
     text: String,
-    route: String,
-    navController:NavController
+    onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -140,7 +143,7 @@ fun MenuButton(
             modifier = Modifier
                 .clickable {
                     try {
-                        navController.navigate(route)
+                        onClick()
                     } catch (e: Exception) {
                         println(e)
                     }

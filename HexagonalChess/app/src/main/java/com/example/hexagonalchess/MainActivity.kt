@@ -24,12 +24,11 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val allTiles = ChessboardData().allTiles
-        //val database = FirebaseRealtimeDatabase()
-        val chessBoardViewModel = ChessBoardViewModel(allTiles)
+        //val allTiles = ChessboardData().allTiles
+        //val chessBoardViewModel = ChessBoardViewModel(allTiles)
         val viablePieceColor = listOf(PieceColor.WHITE,PieceColor.BLACK)
         val playerColor = viablePieceColor.random()
-        val chessBoardVsCPUViewModel = ChessBoardVsCPUViewModel(playerColor, allTiles)
+        //val chessBoardVsCPUViewModel = ChessBoardVsCPUViewModel(playerColor, allTiles)
         val settingViewModel = SettingViewModel(this@MainActivity)
 
         setContent {
@@ -41,9 +40,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     App(
                         navController = navController as NavHostController,
-                        chessBoardViewModel = chessBoardViewModel,
                         settingViewModel = settingViewModel,
-                        chessBoardVsCPUViewModel = chessBoardVsCPUViewModel,
                         playerColor = playerColor,
                         context = this@MainActivity
                     )
