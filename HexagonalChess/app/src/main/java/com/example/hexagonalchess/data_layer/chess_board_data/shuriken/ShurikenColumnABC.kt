@@ -113,7 +113,7 @@ class ShurikenColumnABC {
     )
 
     private val c7 = Tile(
-        id = TileId.C6,
+        id = TileId.C7,
         color = TileColor.LIGHT,
         topTile = null,
         upperRightTile = null,
@@ -124,5 +124,5 @@ class ShurikenColumnABC {
         chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_KING)
     )
 
-    val columnABC = listOf(a1, b1, b2, c7, c6, c5, c4, c3, c2, c1)
+    val columnABC = listOf(a1, b2, b1, c7, c6, c5, c4, c3, c2, c1)
 }

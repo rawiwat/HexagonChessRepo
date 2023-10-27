@@ -17,5 +17,4 @@ class ChessboardData {
                 columnA + columnB + columnC +
                 columnD + columnE + columnF +
                 columnG + columnH + columnI
-
 }

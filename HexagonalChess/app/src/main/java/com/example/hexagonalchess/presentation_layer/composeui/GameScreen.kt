@@ -41,14 +41,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.chess_board_data.base.ChessboardData
+import com.example.hexagonalchess.data_layer.chess_board_data.shuriken.ShurikenBoardData
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
+import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.GameStateLocal
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.PieceType
 import com.example.hexagonalchess.domain_layer.TileTheme
-import com.example.hexagonalchess.domain_layer.TileUiManager
+import com.example.hexagonalchess.domain_layer.tile_ui_manager.TileUiManager
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 import com.example.hexagonalchess.domain_layer.getChessPieceImage
 import com.example.hexagonalchess.domain_layer.getPromotionKeyWordFromColor
@@ -60,6 +62,7 @@ import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewMod
 fun GameScreen(
     chessBoardViewModel: ChessBoardViewModel,
     context: Context,
+    boardType: BoardType
 ) {
     val chessBoard by chessBoardViewModel.chessBoard.collectAsState()
     val currentTurn by chessBoardViewModel.currentTurn.collectAsState()
@@ -88,11 +91,23 @@ fun GameScreen(
             modifier = Modifier.fillMaxWidth(),
             //contentAlignment = Alignment.TopCenter
         ) {
-            ChessBoardUI(
-                chessBoardData = chessBoard,
-                chessBoardViewModel = chessBoardViewModel,
-                theme = theme
-            )
+            when(boardType) {
+                BoardType.DEFAULT -> {
+                    ChessBoardUI(
+                        chessBoardData = chessBoard,
+                        chessBoardViewModel = chessBoardViewModel,
+                        theme = theme
+                    )
+                }
+                BoardType.SHURIKEN -> {
+                    ShurikenBoardUI(
+                        chessBoardData = chessBoard,
+                        chessBoardViewModel = chessBoardViewModel,
+                        theme = theme
+                    )
+                }
+            }
+
         }
 
         /*Button(
@@ -457,6 +472,217 @@ fun ChessBoardUI(
     }
 }
 
+
+@Composable
+fun ShurikenBoardUI(
+    chessBoardData:List<Tile>,
+    chessBoardViewModel: ChessBoardViewModel,
+    theme: TileTheme
+) {
+    val screenWidth = LocalConfiguration.current.screenWidthDp
+
+    val columnA = chessBoardData.subList(0,1)
+
+    val columnB = chessBoardData.subList(1,3)
+
+    val columnC = chessBoardData.subList(3,10)
+
+    val columnD = chessBoardData.subList(10,16)
+
+    val columnE = chessBoardData.subList(16,21)
+
+    val columnF = chessBoardData.subList(21,27)
+
+    val columnG = chessBoardData.subList(27,34)
+
+    val columnH = chessBoardData.subList(34,36)
+
+    val columnI = chessBoardData.subList(36,37)
+
+    val tileUiManager = TileUiManager(screenWidth)
+
+    Box(
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(start = (screenWidth / 15).dp)
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .offset(y = tileUiManager.columnAYShuriken.dp)
+        ) {
+            items(
+                columnA,
+                key = { it.id }
+            ) {
+                TileUI(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
+                )
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.columnBX.dp,
+                    y = tileUiManager.columnBYShuriken.dp
+                )
+        ) {
+            items(
+                columnB,
+                key = { it.id }
+            ) {
+                TileUI(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
+                )
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.columnCX.dp
+                )
+        ) {
+            items(
+                columnC,
+                key = { it.id }
+            ) {
+                TileUI(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
+                )
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.columnDX.dp,
+                    y = tileUiManager.columnDYShuriken.dp
+                )
+        ) {
+            items(
+                columnD,
+                key = { it.id }
+            ) {
+                TileUI(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
+                )
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.columnEX.dp,
+                    y = tileUiManager.columnEYShuriken.dp
+                )
+        ) {
+            items(
+                columnE,
+                key = { it.id }
+            ) {
+                TileUI(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
+                )
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.columnFX.dp,
+                    y = tileUiManager.columnFYShuriken.dp
+                )
+        ) {
+            items(
+                columnF,
+                key = { it.id }
+            ) {
+                TileUI(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
+                )
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.columnGX.dp
+                )
+        ) {
+            items(
+                columnG,
+                key = { it.id }
+            ) {
+                TileUI(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
+                )
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.columnHX.dp,
+                    y = tileUiManager.columnHYShuriken.dp
+                )
+        ) {
+            items(
+                columnH,
+                key = { it.id }
+            ) {
+                TileUI(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
+                )
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.columnIX.dp,
+                    y = tileUiManager.columnIYShuriken.dp
+                )
+        ) {
+            items(
+                columnI,
+                key = { it.id }
+            ) {
+                TileUI(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme
+                )
+            }
+        }
+    }
+}
+
 @Composable
 fun PlayerUI(
     currentTurn: PieceColor,
@@ -634,13 +860,24 @@ fun PromotionIcon(
 
 @Preview
 @Composable
-fun GameScreenPreview() {
+fun GameScreenDefaultPreview() {
     val allTiles = ChessboardData().allTiles
     val chessBoardViewModel = ChessBoardViewModel(
         allTiles,
         //FirebaseRealtimeDatabase()
     )
-    GameScreen(chessBoardViewModel, LocalContext.current)
+    GameScreen(chessBoardViewModel, LocalContext.current,BoardType.DEFAULT)
+}
+
+@Preview
+@Composable
+fun GameScreenShurikenPreview() {
+    val allTiles = ShurikenBoardData().allTiles
+    val chessBoardViewModel = ChessBoardViewModel(
+        allTiles,
+        //FirebaseRealtimeDatabase()
+    )
+    GameScreen(chessBoardViewModel, LocalContext.current,BoardType.SHURIKEN)
 }
 
 @Preview

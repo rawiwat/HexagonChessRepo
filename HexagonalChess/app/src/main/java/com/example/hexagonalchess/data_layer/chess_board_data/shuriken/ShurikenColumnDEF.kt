@@ -188,7 +188,7 @@ class ShurikenColumnDEF {
     )
 
     private val f5 = Tile(
-        id = TileId.F4,
+        id = TileId.F5,
         color = TileColor.LIGHT,
         topTile = TileId.F6,
         upperRightTile = TileId.G6,
@@ -211,5 +211,5 @@ class ShurikenColumnDEF {
         chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_BISHOP)
     )
 
-    val columnDEF = listOf(d6,d5,e4,d3,d2,d1,e5,e4,e3,e2,e1,f6,f5,f4,f3,f2,f1)
+    val columnDEF = listOf(d6,d5,d4,d3,d2,d1,e5,e4,e3,e2,e1,f6,f5,f4,f3,f2,f1)
 }

@@ -130,5 +130,5 @@ class ShurikenColumnGHI {
         chessPiece = null
     )
 
-    val columnGHI = listOf(g7,g6,g5,g4,g3,g2,g1,h2,h1)
+    val columnGHI = listOf(g7,g6,g5,g4,g3,g2,g1,h2,h1,i1)
 }

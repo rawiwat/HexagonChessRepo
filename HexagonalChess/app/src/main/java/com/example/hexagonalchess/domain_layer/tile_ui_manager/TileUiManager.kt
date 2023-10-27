@@ -1,4 +1,4 @@
-package com.example.hexagonalchess.domain_layer
+package com.example.hexagonalchess.domain_layer.tile_ui_manager
 
 class TileUiManager(screenWidth:Int) {
     val tileHeight = screenWidth / 9
@@ -19,4 +19,12 @@ class TileUiManager(screenWidth:Int) {
     val columnHY = tileHeight * 3 / 2
     val columnIX = tileWidth * 24 / 4
     val columnIY = tileHeight * 2
+
+    val columnAYShuriken = tileHeight * 3
+    val columnBYShuriken = tileHeight * 2.5
+    val columnDYShuriken = tileHeight * 0.5
+    val columnEYShuriken = tileHeight
+    val columnFYShuriken = tileHeight * 0.5
+    val columnHYShuriken = tileHeight * 2.5
+    val columnIYShuriken = tileHeight * 3
 }

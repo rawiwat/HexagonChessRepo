@@ -3,8 +3,11 @@ package com.example.hexagonalchess.presentation_layer.composeui
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.Route
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
@@ -30,11 +33,13 @@ fun App(
             MainMenu(navController = navController)
         }
         composable(
-            route = Route.local
+            route = Route.local,
+            arguments = listOf(navArgument("boardType") { type = NavType.EnumType(BoardType::class.java) })
         ) {
             GameScreen(
                 chessBoardViewModel = chessBoardViewModel,
-                context = context
+                context = context,
+                boardType = it.arguments?.getSerializable("boardType") as BoardType
             )
         }
         composable(
