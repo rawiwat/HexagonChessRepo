@@ -8,8 +8,9 @@ import com.example.hexagonalchess.domain_layer.piecemove.knightMove
 import com.example.hexagonalchess.domain_layer.piecemove.queenMove
 import com.example.hexagonalchess.domain_layer.piecemove.rookMove
 
-fun findTile(id: TileId, direction: TileDirections, board: List<Tile>): TileId? {
-    val targetIndex = getTileIndex(id)
+fun findTile(id: TileId, direction: TileDirections, board: List<Tile>, boardType: BoardType): TileId? {
+    val targetIndex = getTileIndex(id, boardType)
+
     val targetedTile = board[targetIndex]
     return when(direction) {
         TileDirections.TOP -> targetedTile.topTile
@@ -21,8 +22,8 @@ fun findTile(id: TileId, direction: TileDirections, board: List<Tile>): TileId? 
     }
 }
 
-fun containPiece(tileId: TileId?, board: List<Tile>): Boolean {
-    val targetIndex = tileId?.let { getTileIndex(it) }
+fun containPiece(tileId: TileId?, board: List<Tile>, boardType: BoardType): Boolean {
+    val targetIndex = tileId?.let { getTileIndex(it, boardType) }
     targetIndex?.let {
         if (board[targetIndex].chessPiece != null ) {
             return true
@@ -31,14 +32,19 @@ fun containPiece(tileId: TileId?, board: List<Tile>): Boolean {
     return false
 }
 
-fun getAllTileInMultiDirection(selectedTile: Tile, directions: List<TileDirections>, board: List<Tile>):List<TileId?> {
+fun getAllTileInMultiDirection(
+    selectedTile: Tile,
+    directions: List<TileDirections>,
+    board: List<Tile>,
+    boardType: BoardType
+): List<TileId?> {
     val result = mutableListOf<TileId?>()
     var firstTileId:TileId? = selectedTile.id
     for (direction in directions) {
-        firstTileId = firstTileId?.let { findTile(it, direction, board) }
+        firstTileId = firstTileId?.let { findTile(it, direction, board, boardType) }
     }
     firstTileId?.let {
-        var currentTile = board[getTileIndex(it)]
+        var currentTile = board[getTileIndex(it, boardType)]
         currentTile.chessPiece?.let { adjacentTileWithPiece ->
             if (adjacentTileWithPiece.color != selectedTile.chessPiece!!.color) {
                 result.add(currentTile.id)
@@ -49,10 +55,10 @@ fun getAllTileInMultiDirection(selectedTile: Tile, directions: List<TileDirectio
         for (i in 1 until 12) {
             var nextTile:TileId? = currentTile.id
             for (direction in directions) {
-                nextTile = nextTile?.let { nextTileId-> findTile(nextTileId, direction, board) }
+                nextTile = nextTile?.let { nextTileId-> findTile(nextTileId, direction, board, boardType) }
             }
             nextTile?.let { nextTileId ->
-                currentTile = board[getTileIndex(nextTileId)]
+                currentTile = board[getTileIndex(nextTileId, boardType)]
                 result.add(nextTile)
             }
             if (currentTile.chessPiece != null) {
@@ -63,7 +69,7 @@ fun getAllTileInMultiDirection(selectedTile: Tile, directions: List<TileDirectio
 
     return result
 }
-
+/*
 fun checkKingUnavailableMove(pieceColor: PieceColor, board: List<Tile>):List<TileId?> {
     val result = mutableListOf<TileId?>()
     for (tile in board) {
@@ -89,21 +95,21 @@ fun checkKingUnavailableMove(pieceColor: PieceColor, board: List<Tile>):List<Til
         }
     }
     return result
-}
+}*/
 
-private fun checkPawnAttack(tile: Tile, board:List<Tile>):List<TileId?> {
+private fun checkPawnAttack(tile: Tile, board:List<Tile>, boardType: BoardType):List<TileId?> {
     return if(tile.chessPiece!!.color == PieceColor.BLACK) {
-        listOf(findTile(tile.id,TileDirections.UNDER_LEFT, board),findTile(tile.id,TileDirections.UNDER_RIGHT, board))
+        listOf(findTile(tile.id,TileDirections.UNDER_LEFT, board, boardType),findTile(tile.id,TileDirections.UNDER_RIGHT, board, boardType))
     } else {
-        listOf(findTile(tile.id,TileDirections.UPPER_LEFT, board),findTile(tile.id,TileDirections.UPPER_RIGHT, board))
+        listOf(findTile(tile.id,TileDirections.UPPER_LEFT, board, boardType),findTile(tile.id,TileDirections.UPPER_RIGHT, board, boardType))
     }
 }
 
-fun getAllTileInDirection(selectedTile: Tile, direction: TileDirections, board: List<Tile>):List<TileId?> {
+fun getAllTileInDirection(selectedTile: Tile, direction: TileDirections, board: List<Tile>, boardType: BoardType):List<TileId?> {
     val result = mutableListOf<TileId?>()
-    val firstTileId = findTile(selectedTile.id,direction, board)
+    val firstTileId = findTile(selectedTile.id,direction, board, boardType)
     firstTileId?.let {
-        var currentTile = board[getTileIndex(it)]
+        var currentTile = board[getTileIndex(it, boardType)]
         currentTile.chessPiece?.let { adjacentTileWithPiece ->
             if (adjacentTileWithPiece.color != selectedTile.chessPiece!!.color) {
                 result.add(currentTile.id)
@@ -112,9 +118,9 @@ fun getAllTileInDirection(selectedTile: Tile, direction: TileDirections, board: 
         }
         result.add(currentTile.id)
         for (i in 1 until 12) {
-            val nextTile = findTile(currentTile.id,direction, board)
+            val nextTile = findTile(currentTile.id,direction, board, boardType)
             nextTile?.let { nextTileId ->
-                currentTile = board[getTileIndex(nextTileId)]
+                currentTile = board[getTileIndex(nextTileId, boardType)]
                 result.add(nextTile)
             }
             if (currentTile.chessPiece != null) {
@@ -124,14 +130,14 @@ fun getAllTileInDirection(selectedTile: Tile, direction: TileDirections, board: 
     }
     return result
 }
-
-fun wasKingAttacked(board: List<Tile>,kingColor: PieceColor): Boolean {
+/*
+fun wasKingAttacked(board: List<Tile>,kingColor: PieceColor, boardType: BoardType): Boolean {
     for (tile in board) {
         tile.chessPiece?.let { currentPiece ->
             if (currentPiece.color != kingColor) {
                 val possibleMove = when(currentPiece.type) {
                     PieceType.KNIGHT -> knightMove(tile, board)
-                    PieceType.PAWN -> checkPawnAttack(tile, board)
+                    PieceType.PAWN -> checkPawnAttack(tile, board, boardType)
                     PieceType.BISHOP -> bishopMove(tile, board)
                     PieceType.ROOK -> rookMove(tile, board)
                     PieceType.QUEEN -> queenMove(tile, board)
@@ -140,7 +146,7 @@ fun wasKingAttacked(board: List<Tile>,kingColor: PieceColor): Boolean {
 
                 for (move in possibleMove) {
                     move?.let { moveId ->
-                        board[getTileIndex(moveId)].chessPiece?.let { targetablePiece ->
+                        board[getTileIndex(moveId, boardType)].chessPiece?.let { targetablePiece ->
                             if (targetablePiece.type == PieceType.KING && targetablePiece.color == kingColor) {
                                 return true
                             }
@@ -178,13 +184,13 @@ fun filterIllegalMove(
     }
 
     return result
-}
+}*/
 
-fun filterSameColor(selectedTile: Tile,result: MutableList<TileId?>,board: List<Tile>) {
+fun filterSameColor(selectedTile: Tile,result: MutableList<TileId?>, board: List<Tile>, boardType: BoardType) {
     val sameColorTiles = mutableListOf<TileId>()
     for (move in result) {
         move?.let {
-            val moveToTile = board[getTileIndex(move)]
+            val moveToTile = board[getTileIndex(move, boardType)]
             moveToTile.chessPiece?.let {
                 if (it.color == selectedTile.chessPiece!!.color) {
                     sameColorTiles.add(move)

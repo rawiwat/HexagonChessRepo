@@ -72,7 +72,12 @@ fun GameScreen(
     val gameOverMessage by chessBoardViewModel.gameOverMessage.collectAsState()
     val theme = ThemeSharedPrefs(context).getTheme()
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .background(color = Color.DarkGray)
+            .fillMaxSize()
+    ) {
         PlayerUI(
             currentTurn = currentTurn,
             color = PieceColor.WHITE,
@@ -88,7 +93,8 @@ fun GameScreen(
         )
 
         Box(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             //contentAlignment = Alignment.TopCenter
         ) {
             when(boardType) {
@@ -864,6 +870,7 @@ fun GameScreenDefaultPreview() {
     val chessBoardViewModel = ChessBoardViewModel(
         allTiles,
         //FirebaseRealtimeDatabase()
+        BoardType.DEFAULT
     )
     GameScreen(chessBoardViewModel, LocalContext.current,BoardType.DEFAULT)
 }
@@ -875,6 +882,7 @@ fun GameScreenShurikenPreview() {
     val chessBoardViewModel = ChessBoardViewModel(
         allTiles,
         //FirebaseRealtimeDatabase()
+        BoardType.SHURIKEN
     )
     GameScreen(chessBoardViewModel, LocalContext.current,BoardType.SHURIKEN)
 }
@@ -885,7 +893,7 @@ fun PlayerPreview() {
     PlayerUI(
         currentTurn = PieceColor.BLACK,
         color = PieceColor.BLACK,
-        chessBoardViewModel = ChessBoardViewModel(ChessboardData().allTiles),
+        chessBoardViewModel = ChessBoardViewModel(ChessboardData().allTiles,BoardType.DEFAULT),
         listOfCapturedPiece = listOf(
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
@@ -917,7 +925,7 @@ fun PlayerPreview2() {
     PlayerUI(
         currentTurn = PieceColor.BLACK,
         color = PieceColor.WHITE,
-        chessBoardViewModel = ChessBoardViewModel(ChessboardData().allTiles),
+        chessBoardViewModel = ChessBoardViewModel(ChessboardData().allTiles, BoardType.DEFAULT),
         listOfCapturedPiece = listOf(
             getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_PAWN),
             getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_PAWN),

@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.chess_board_data.base.ChessboardData
+import com.example.hexagonalchess.data_layer.chess_board_data.shuriken.ShurikenBoardData
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.BoardType
@@ -73,7 +74,12 @@ fun PlayerVsCpuScreen(
     val gameOverMessage by chessBoardVsCpuViewModel.gameOverMessage.collectAsState()
     val theme = ThemeSharedPrefs(context).getTheme()
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .background(color = Color.DarkGray)
+            .fillMaxSize()
+    ) {
         PlayerVsCpuUI(
             currentTurn = currentTurn,
             color = PieceColor.WHITE,
@@ -106,8 +112,8 @@ fun PlayerVsCpuScreen(
                 )
             }
         }
-
     }
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -850,7 +856,7 @@ fun ChessBoardPreviewPovWhite() {
     val board = ChessboardData().allTiles
     ChessBoardUIVsCPU(
         chessBoardData = board,
-        chessBoardVsCpuViewModel = ChessBoardVsCPUViewModel(PieceColor.WHITE,board),
+        chessBoardVsCpuViewModel = ChessBoardVsCPUViewModel(PieceColor.WHITE,board, BoardType.DEFAULT),
         theme = TileTheme.RED,
         playerColor = PieceColor.WHITE)
 }
@@ -861,7 +867,31 @@ fun ChessBoardPreviewPovBlack() {
     val board = ChessboardData().allTiles
     ChessBoardUIVsCPU(
         chessBoardData = board,
-        chessBoardVsCpuViewModel = ChessBoardVsCPUViewModel(PieceColor.BLACK,board),
+        chessBoardVsCpuViewModel = ChessBoardVsCPUViewModel(PieceColor.BLACK,board, BoardType.DEFAULT),
         theme = TileTheme.BLUE,
         playerColor = PieceColor.BLACK)
+}
+
+@Preview
+@Composable
+fun ShurikenBoardPreviewPovWhite() {
+    val board = ShurikenBoardData().allTiles
+    ShurikenBoardVsCpuUI(
+        chessBoardData = board,
+        chessBoardVsCpuViewModel = ChessBoardVsCPUViewModel(PieceColor.WHITE,board, BoardType.SHURIKEN),
+        theme = TileTheme.YELLOW,
+        playerColor = PieceColor.WHITE
+    )
+}
+
+@Preview
+@Composable
+fun ShurikenBoardPreviewPovBlack() {
+    val board = ShurikenBoardData().allTiles
+    ShurikenBoardVsCpuUI(
+        chessBoardData = board,
+        chessBoardVsCpuViewModel = ChessBoardVsCPUViewModel(PieceColor.BLACK,board, BoardType.SHURIKEN),
+        theme = TileTheme.YELLOW,
+        playerColor = PieceColor.BLACK
+    )
 }

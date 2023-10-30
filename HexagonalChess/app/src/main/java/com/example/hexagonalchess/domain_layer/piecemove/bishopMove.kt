@@ -1,13 +1,14 @@
 package com.example.hexagonalchess.domain_layer.piecemove
 
 import com.example.hexagonalchess.data_layer.model.tile.Tile
+import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.domain_layer.filterSameColor
 import com.example.hexagonalchess.domain_layer.getAllTileInMultiDirection
 
 
-fun bishopMove(selectedTile: Tile, board: List<Tile>):List<TileId?> {
+fun bishopMove(selectedTile: Tile, board: List<Tile>, boardType: BoardType):List<TileId?> {
     val result = mutableListOf<TileId?>()
     result.addAll(
         getAllTileInMultiDirection(
@@ -16,7 +17,7 @@ fun bishopMove(selectedTile: Tile, board: List<Tile>):List<TileId?> {
                 TileDirections.TOP,
                 TileDirections.UPPER_RIGHT
             ),
-            board
+            board, boardType
         )
     )
     result.addAll(
@@ -26,7 +27,7 @@ fun bishopMove(selectedTile: Tile, board: List<Tile>):List<TileId?> {
                 TileDirections.TOP,
                 TileDirections.UPPER_LEFT
             ),
-            board
+            board, boardType
         )
     )
     result.addAll(
@@ -36,7 +37,7 @@ fun bishopMove(selectedTile: Tile, board: List<Tile>):List<TileId?> {
                 TileDirections.UPPER_RIGHT,
                 TileDirections.UNDER_RIGHT
             ),
-            board
+            board, boardType
         )
     )
 
@@ -47,7 +48,7 @@ fun bishopMove(selectedTile: Tile, board: List<Tile>):List<TileId?> {
                 TileDirections.BOTTOM,
                 TileDirections.UNDER_RIGHT
             ),
-            board
+            board, boardType
         )
     )
     result.addAll(
@@ -57,7 +58,7 @@ fun bishopMove(selectedTile: Tile, board: List<Tile>):List<TileId?> {
                 TileDirections.BOTTOM,
                 TileDirections.UNDER_LEFT
             ),
-            board
+            board, boardType
         )
     )
 
@@ -68,11 +69,11 @@ fun bishopMove(selectedTile: Tile, board: List<Tile>):List<TileId?> {
                 TileDirections.UNDER_LEFT,
                 TileDirections.UPPER_LEFT
             ),
-            board
+            board, boardType
         )
     )
 
-    filterSameColor(selectedTile, result, board)
+    filterSameColor(selectedTile, result, board, boardType)
 
     return result
 }

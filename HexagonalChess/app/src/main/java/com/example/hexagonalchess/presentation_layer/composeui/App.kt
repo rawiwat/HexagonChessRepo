@@ -44,7 +44,8 @@ fun App(
                     allTiles = when(boardType) {
                         BoardType.DEFAULT -> ChessboardData().allTiles
                         BoardType.SHURIKEN -> ShurikenBoardData().allTiles
-                    }
+                    },
+                    boardType
                 ),
                 context = context,
                 boardType = boardType
@@ -69,7 +70,8 @@ fun App(
                     board = when(boardType){
                         BoardType.DEFAULT -> ChessboardData().allTiles
                         BoardType.SHURIKEN -> ShurikenBoardData().allTiles
-                    }
+                    },
+                    boardType
                 ),
                 context = context,
                 playerColor = playerColor,

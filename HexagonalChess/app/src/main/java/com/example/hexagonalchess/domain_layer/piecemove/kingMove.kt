@@ -1,19 +1,20 @@
 package com.example.hexagonalchess.domain_layer.piecemove
 
 import com.example.hexagonalchess.data_layer.model.tile.Tile
+import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.domain_layer.filterSameColor
 import com.example.hexagonalchess.domain_layer.findTile
 
-fun kingMove(selectedTile: Tile, board: List<Tile>):List<TileId?> {
+fun kingMove(selectedTile: Tile, board: List<Tile>, boardType: BoardType):List<TileId?> {
     val result = mutableListOf<TileId?>()
-    val move1 = findTile(selectedTile.id, TileDirections.TOP, board)
-    val move2 = findTile(selectedTile.id, TileDirections.UPPER_RIGHT, board)
-    val move3 = findTile(selectedTile.id, TileDirections.UNDER_RIGHT, board)
-    val move4 = findTile(selectedTile.id, TileDirections.BOTTOM, board)
-    val move5 = findTile(selectedTile.id, TileDirections.UNDER_LEFT, board)
-    val move6 = findTile(selectedTile.id, TileDirections.UPPER_LEFT, board)
+    val move1 = findTile(selectedTile.id, TileDirections.TOP, board, boardType)
+    val move2 = findTile(selectedTile.id, TileDirections.UPPER_RIGHT, board, boardType)
+    val move3 = findTile(selectedTile.id, TileDirections.UNDER_RIGHT, board, boardType)
+    val move4 = findTile(selectedTile.id, TileDirections.BOTTOM, board, boardType)
+    val move5 = findTile(selectedTile.id, TileDirections.UNDER_LEFT, board, boardType)
+    val move6 = findTile(selectedTile.id, TileDirections.UPPER_LEFT, board, boardType)
 
     move1?.let { result.add(it) }
     move2?.let { result.add(it) }
@@ -32,7 +33,7 @@ fun kingMove(selectedTile: Tile, board: List<Tile>):List<TileId?> {
         }
     }*/
 
-    filterSameColor(selectedTile, result, board)
+    filterSameColor(selectedTile, result, board, boardType)
 
     return result
 }
