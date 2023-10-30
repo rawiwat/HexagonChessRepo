@@ -870,7 +870,7 @@ fun GameScreenDefaultPreview() {
     val chessBoardViewModel = ChessBoardViewModel(
         allTiles,
         //FirebaseRealtimeDatabase()
-        BoardType.DEFAULT
+        BoardType.DEFAULT,LocalContext.current
     )
     GameScreen(chessBoardViewModel, LocalContext.current,BoardType.DEFAULT)
 }
@@ -882,7 +882,7 @@ fun GameScreenShurikenPreview() {
     val chessBoardViewModel = ChessBoardViewModel(
         allTiles,
         //FirebaseRealtimeDatabase()
-        BoardType.SHURIKEN
+        BoardType.SHURIKEN,LocalContext.current
     )
     GameScreen(chessBoardViewModel, LocalContext.current,BoardType.SHURIKEN)
 }
@@ -893,7 +893,7 @@ fun PlayerPreview() {
     PlayerUI(
         currentTurn = PieceColor.BLACK,
         color = PieceColor.BLACK,
-        chessBoardViewModel = ChessBoardViewModel(ChessboardData().allTiles,BoardType.DEFAULT),
+        chessBoardViewModel = ChessBoardViewModel(ChessboardData().allTiles,BoardType.DEFAULT,LocalContext.current),
         listOfCapturedPiece = listOf(
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
@@ -925,7 +925,7 @@ fun PlayerPreview2() {
     PlayerUI(
         currentTurn = PieceColor.BLACK,
         color = PieceColor.WHITE,
-        chessBoardViewModel = ChessBoardViewModel(ChessboardData().allTiles, BoardType.DEFAULT),
+        chessBoardViewModel = ChessBoardViewModel(ChessboardData().allTiles, BoardType.DEFAULT,LocalContext.current),
         listOfCapturedPiece = listOf(
             getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_PAWN),
             getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_PAWN),

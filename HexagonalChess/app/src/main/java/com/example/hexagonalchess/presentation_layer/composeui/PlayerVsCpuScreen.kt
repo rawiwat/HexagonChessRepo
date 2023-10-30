@@ -864,7 +864,7 @@ fun ChessBoardPreviewPovWhite() {
     PlayerVsCpuScreen(
         chessBoardVsCpuViewModel = ChessBoardVsCPUViewModel(
             PieceColor.WHITE,
-            board,BoardType.DEFAULT
+            board,BoardType.DEFAULT,LocalContext.current
         ),
         context = LocalContext.current,
         playerColor = PieceColor.WHITE,
@@ -879,7 +879,7 @@ fun ChessBoardPreviewPovBlack() {
     PlayerVsCpuScreen(
         chessBoardVsCpuViewModel = ChessBoardVsCPUViewModel(
             PieceColor.BLACK,
-            board,BoardType.DEFAULT
+            board,BoardType.DEFAULT,LocalContext.current
         ),
         context = LocalContext.current,
         playerColor = PieceColor.BLACK,
@@ -894,7 +894,7 @@ fun ShurikenBoardPreviewPovWhite() {
     PlayerVsCpuScreen(
         chessBoardVsCpuViewModel = ChessBoardVsCPUViewModel(
             PieceColor.WHITE,
-            board,BoardType.SHURIKEN
+            board,BoardType.SHURIKEN,LocalContext.current
         ),
         context = LocalContext.current,
         playerColor = PieceColor.WHITE,
@@ -909,7 +909,7 @@ fun ShurikenBoardPreviewPovBlack() {
     PlayerVsCpuScreen(
         chessBoardVsCpuViewModel = ChessBoardVsCPUViewModel(
             PieceColor.BLACK,
-            board,BoardType.SHURIKEN
+            board,BoardType.SHURIKEN,LocalContext.current
             ),
         context = LocalContext.current,
         playerColor = PieceColor.BLACK,

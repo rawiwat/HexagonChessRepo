@@ -117,18 +117,29 @@ fun getImageIdFromBoardType(boardType: BoardType): Int {
     }
 }
 
-fun getListOfPromotionTile(boardType: BoardType): List<TileId> {
+fun getListOfPromotionTile(boardType: BoardType, pieceColor: PieceColor): List<TileId> {
     return when(boardType) {
-        BoardType.DEFAULT -> listOf(
-            TileId.A8, TileId.B9, TileId.C10, TileId.D11, TileId.E12,
-            TileId.F11, TileId.G10, TileId.H9, TileId.I1, TileId.A1,
-            TileId.B1, TileId.C1, TileId.D1, TileId.E1, TileId.F1,
-            TileId.G1, TileId.H1, TileId.I8
-        )
-        BoardType.SHURIKEN -> listOf(
-            TileId.C1, TileId.C7, TileId.D1, TileId.D6, TileId.E1,
-            TileId.E5, TileId.F1, TileId.F6, TileId.G1, TileId.G7
-        )
+        BoardType.DEFAULT ->
+            when(pieceColor) {
+                PieceColor.WHITE -> listOf(
+                    TileId.A8, TileId.B9, TileId.C10, TileId.D11, TileId.E12,
+                    TileId.F11, TileId.G10, TileId.H9, TileId.I8
+                )
+                PieceColor.BLACK -> listOf(
+                    TileId.I1, TileId.A1, TileId.B1, TileId.C1, TileId.D1,
+                    TileId.E1, TileId.F1, TileId.G1, TileId.H1,
+                )
+            }
+
+        BoardType.SHURIKEN ->
+            when(pieceColor) {
+                PieceColor.WHITE -> listOf(
+                    TileId.C7, TileId.D6, TileId.E5, TileId.F6, TileId.G7
+                )
+                PieceColor.BLACK -> listOf(
+                    TileId.C1, TileId.D1, TileId.E1, TileId.F1, TileId.G1
+                )
+            }
     }
 }
 
@@ -138,4 +149,11 @@ fun playSoundEffect(context: Context, soundEffectId: Int) {
         soundEffect.release()
     }
     soundEffect.start()
+}
+
+fun PieceColor.opposite():PieceColor {
+    return when(this){
+        PieceColor.WHITE -> PieceColor.BLACK
+        PieceColor.BLACK -> PieceColor.WHITE
+    }
 }

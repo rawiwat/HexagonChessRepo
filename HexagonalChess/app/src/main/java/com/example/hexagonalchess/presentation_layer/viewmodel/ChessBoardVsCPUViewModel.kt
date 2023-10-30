@@ -22,12 +22,14 @@ import com.example.hexagonalchess.domain_layer.findTile
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 import com.example.hexagonalchess.domain_layer.getListOfPromotionTile
 import com.example.hexagonalchess.domain_layer.getTileIndex
+import com.example.hexagonalchess.domain_layer.opposite
 import com.example.hexagonalchess.domain_layer.piecemove.bishopMove
 import com.example.hexagonalchess.domain_layer.piecemove.kingMove
 import com.example.hexagonalchess.domain_layer.piecemove.knightMove
 import com.example.hexagonalchess.domain_layer.piecemove.pawnMove
 import com.example.hexagonalchess.domain_layer.piecemove.queenMove
 import com.example.hexagonalchess.domain_layer.piecemove.rookMove
+import com.example.hexagonalchess.domain_layer.playSoundEffect
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -111,7 +113,7 @@ class ChessBoardVsCPUViewModel(
             _chessBoard.value[targetedIndex].chessPiece = movingTile.chessPiece
             val selectedTileIndex = getTileIndex(movingTile.id, boardType)
             _chessBoard.value[selectedTileIndex].chessPiece = null
-            if (movingTile.chessPiece!!.type == PieceType.PAWN && getListOfPromotionTile(boardType).contains(targetedTile.id)) {
+            if (movingTile.chessPiece!!.type == PieceType.PAWN && getListOfPromotionTile(boardType, movingTile.chessPiece!!.color).contains(targetedTile.id)) {
                 _gameState.value = GameStateVsCpu.PROMOTE
             }
             val currentMovePath = TilePair(
@@ -261,6 +263,7 @@ class ChessBoardVsCPUViewModel(
                     findTile(targetedTileId, TileDirections.TOP,board, boardType)?.let {
                         capturePiece(board[getTileIndex(it, boardType)].chessPiece)
                         board[getTileIndex(it, boardType)].chessPiece = null
+                        playSoundEffect(context,R.raw.capture)
                     }
                 }
                 val attackRight = findTile(movingTileId, TileDirections.UNDER_RIGHT,_chessBoard.value, boardType) == targetedTileId
@@ -268,6 +271,7 @@ class ChessBoardVsCPUViewModel(
                     findTile(targetedTileId, TileDirections.TOP,board, boardType)?.let {
                         capturePiece(board[getTileIndex(it, boardType)].chessPiece)
                         board[getTileIndex(it, boardType)].chessPiece = null
+                        playSoundEffect(context,R.raw.capture)
                     }
                 }
             }
@@ -278,6 +282,7 @@ class ChessBoardVsCPUViewModel(
                     findTile(targetedTileId, TileDirections.BOTTOM, board, boardType)?.let {
                         capturePiece(board[getTileIndex(it, boardType)].chessPiece)
                         board[getTileIndex(it, boardType)].chessPiece = null
+                        playSoundEffect(context,R.raw.capture)
                     }
                 }
                 val attackRight = findTile(movingTileId, TileDirections.UPPER_RIGHT,_chessBoard.value, boardType) == targetedTileId
@@ -285,6 +290,7 @@ class ChessBoardVsCPUViewModel(
                     findTile(targetedTileId, TileDirections.BOTTOM, board, boardType)?.let {
                         capturePiece(board[getTileIndex(it, boardType)].chessPiece)
                         board[getTileIndex(it, boardType)].chessPiece = null
+                        playSoundEffect(context,R.raw.capture)
                     }
                 }
             }
@@ -303,13 +309,15 @@ class ChessBoardVsCPUViewModel(
                     blackMaterial += piece.materialValue
                     }
             }
-            if (piece.type == PieceType.KING) gameOver(piece.color, method = GameEndMethod.KING_WAS_CAPTURED)
+            if (piece.type == PieceType.KING) {
+                gameOver(piece.color.opposite(), method = GameEndMethod.KING_WAS_CAPTURED)
+            }
             _whiteAdvantage.value = whiteMaterial - blackMaterial
             _blackAdvantage.value = blackMaterial - whiteMaterial
             println("captured ${piece.type}")
             println(_gameState.value)
         }
-
+        playSoundEffect(context,R.raw.capture)
     }
 
     private fun gameOver(winnerColor: PieceColor, method: GameEndMethod) {
@@ -335,14 +343,12 @@ class ChessBoardVsCPUViewModel(
     fun playerPromotePawn(chosenPromotion : ChessPieceKeyWord) {
         _chessBoard.value[getTileIndex(selectingTile!!.id, boardType)].chessPiece = getChessPieceFromKeyWord(chosenPromotion)
         _gameState.value = GameStateVsCpu.CPU_TURN
+        playSoundEffect(context,R.raw.promote)
     }
 
     private fun cpuMove(board: List<Tile>,context:Context) {
         val random = Random(System.currentTimeMillis())
-        val soundEffect = MediaPlayer.create(context, R.raw.move)
-        soundEffect.setOnCompletionListener {
-            soundEffect.release()
-        }
+        playSoundEffect(context, R.raw.move)
         val tileWithCpuPiece = mutableListOf<TileId>()
         val tileWithMovablePiece = mutableListOf<TileId>()
         for (tile in board) {
@@ -414,7 +420,8 @@ class ChessBoardVsCPUViewModel(
         val selectedTileIndex = getTileIndex(movingTile.id, boardType)
         _chessBoard.value[selectedTileIndex].chessPiece = null
         movingTile.chessPiece?.let {
-            if (it.type == PieceType.PAWN && getListOfPromotionTile(boardType).contains(targetedTile.id)) {
+            if (it.type == PieceType.PAWN && getListOfPromotionTile(boardType, it.color).contains(targetedTile.id)) {
+                playSoundEffect(context, R.raw.promote)
                 val possibleResult = when(it.color){
                     PieceColor.WHITE -> listOf(ChessPieceKeyWord.WHITE_KNIGHT,ChessPieceKeyWord.WHITE_BISHOP,ChessPieceKeyWord.WHITE_ROOK,ChessPieceKeyWord.WHITE_QUEEN)
                     PieceColor.BLACK -> listOf(ChessPieceKeyWord.BLACK_KNIGHT,ChessPieceKeyWord.BLACK_BISHOP,ChessPieceKeyWord.BLACK_ROOK,ChessPieceKeyWord.BLACK_QUEEN)

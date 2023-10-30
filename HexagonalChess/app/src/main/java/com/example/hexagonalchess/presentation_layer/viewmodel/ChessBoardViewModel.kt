@@ -97,6 +97,7 @@ open class ChessBoardViewModel(
     }
 
     fun onClickTargeted(targetedTile: Tile) {
+        playSoundEffect(context,R.raw.move)
         movingTile?.let { movingTile ->
             selectingTile = targetedTile
             for (tile in _chessBoard.value) {
@@ -109,7 +110,7 @@ open class ChessBoardViewModel(
             _chessBoard.value[targetedIndex].chessPiece = movingTile.chessPiece
             val selectedTileIndex = getTileIndex(movingTile.id, boardType)
             _chessBoard.value[selectedTileIndex].chessPiece = null
-            if (movingTile.chessPiece!!.type == PAWN && getListOfPromotionTile(boardType).contains(targetedTile.id)) {
+            if (movingTile.chessPiece!!.type == PAWN && getListOfPromotionTile(boardType, movingTile.chessPiece!!.color).contains(targetedTile.id)) {
                 _gameStateLocal.value = GameStateLocal.PROMOTE
             }
             val currentMovePath = TilePair(
@@ -129,6 +130,7 @@ open class ChessBoardViewModel(
                     )
                 }
             }
+
             changeTurn()
             //checkForCheckmate(_chessBoard.value, _currentTurn.value)
             updateBoard()
@@ -257,6 +259,7 @@ open class ChessBoardViewModel(
                     findTile(targetedTileId,TileDirections.TOP,board, boardType)?.let {
                         capturePiece(board[getTileIndex(it, boardType)].chessPiece)
                         board[getTileIndex(it, boardType)].chessPiece = null
+                        playSoundEffect(context,R.raw.capture)
                     }
                 }
                 val attackRight = findTile(movingTileId,TileDirections.UNDER_RIGHT,_chessBoard.value, boardType) == targetedTileId
@@ -264,6 +267,7 @@ open class ChessBoardViewModel(
                     findTile(targetedTileId,TileDirections.TOP,board, boardType)?.let {
                         capturePiece(board[getTileIndex(it, boardType)].chessPiece)
                         board[getTileIndex(it, boardType)].chessPiece = null
+                        playSoundEffect(context,R.raw.capture)
                     }
                 }
             }
@@ -274,6 +278,7 @@ open class ChessBoardViewModel(
                     findTile(targetedTileId,TileDirections.BOTTOM, board, boardType)?.let {
                         capturePiece(board[getTileIndex(it, boardType)].chessPiece)
                         board[getTileIndex(it, boardType)].chessPiece = null
+                        playSoundEffect(context,R.raw.capture)
                     }
                 }
                 val attackRight = findTile(movingTileId,TileDirections.UPPER_RIGHT,_chessBoard.value, boardType) == targetedTileId
@@ -281,6 +286,7 @@ open class ChessBoardViewModel(
                     findTile(targetedTileId,TileDirections.BOTTOM, board, boardType)?.let {
                         capturePiece(board[getTileIndex(it, boardType)].chessPiece)
                         board[getTileIndex(it, boardType)].chessPiece = null
+                        playSoundEffect(context,R.raw.capture)
                     }
                 }
             }
@@ -305,6 +311,7 @@ open class ChessBoardViewModel(
             }
             _whiteAdvantage.value = whiteMaterial - blackMaterial
             _blackAdvantage.value = blackMaterial - whiteMaterial
+            playSoundEffect(context,R.raw.capture)
         }
     }
 
