@@ -342,8 +342,9 @@ class ChessBoardVsCPUViewModel(
 
     fun playerPromotePawn(chosenPromotion : ChessPieceKeyWord) {
         _chessBoard.value[getTileIndex(selectingTile!!.id, boardType)].chessPiece = getChessPieceFromKeyWord(chosenPromotion)
+        playSoundEffect(context, R.raw.promote)
         _gameState.value = GameStateVsCpu.CPU_TURN
-        playSoundEffect(context,R.raw.promote)
+        cpuMove(_chessBoard.value, context)
     }
 
     private fun cpuMove(board: List<Tile>,context:Context) {
