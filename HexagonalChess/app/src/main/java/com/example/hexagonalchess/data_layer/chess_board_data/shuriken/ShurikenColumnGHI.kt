@@ -57,7 +57,7 @@ class ShurikenColumnGHI {
     )
 
     private val g5 = Tile(
-        id = TileId.F5,
+        id = TileId.G5,
         color = TileColor.MID,
         topTile = TileId.G6,
         upperRightTile = null,
