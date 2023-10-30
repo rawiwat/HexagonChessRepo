@@ -420,14 +420,9 @@ class ChessBoardVsCPUViewModel(
         _chessBoard.value[targetedIndex].chessPiece = movingTile.chessPiece
         val selectedTileIndex = getTileIndex(movingTile.id, boardType)
         _chessBoard.value[selectedTileIndex].chessPiece = null
-        movingTile.chessPiece?.let {
-            if (it.type == PieceType.PAWN && getListOfPromotionTile(boardType, it.color).contains(targetedTile.id)) {
-                playSoundEffect(context, R.raw.promote)
-                val possibleResult = when(it.color){
-                    PieceColor.WHITE -> listOf(ChessPieceKeyWord.WHITE_KNIGHT,ChessPieceKeyWord.WHITE_BISHOP,ChessPieceKeyWord.WHITE_ROOK,ChessPieceKeyWord.WHITE_QUEEN)
-                    PieceColor.BLACK -> listOf(ChessPieceKeyWord.BLACK_KNIGHT,ChessPieceKeyWord.BLACK_BISHOP,ChessPieceKeyWord.BLACK_ROOK,ChessPieceKeyWord.BLACK_QUEEN)
-                }
-                _chessBoard.value[targetedIndex].chessPiece = getChessPieceFromKeyWord(possibleResult.random())
+        targetedTile.chessPiece?.let {
+            if (it.type == PieceType.PAWN && getListOfPromotionTile(boardType, it.color).contains(chosenMove)) {
+                cpuPromote(it.color, targetedTile)
             }
         }
         val currentMovePath = TilePair(
@@ -455,6 +450,17 @@ class ChessBoardVsCPUViewModel(
         println("Chosen Move:$chosenMove")
         changeTurn()
         updateBoard()
+    }
+
+    private fun cpuPromote(color: PieceColor, targetedTile: Tile) {
+        playSoundEffect(context, R.raw.promote)
+        val possibleResult = when(color) {
+            PieceColor.WHITE -> listOf(ChessPieceKeyWord.WHITE_KNIGHT,ChessPieceKeyWord.WHITE_BISHOP,ChessPieceKeyWord.WHITE_ROOK,ChessPieceKeyWord.WHITE_QUEEN)
+            PieceColor.BLACK -> listOf(ChessPieceKeyWord.BLACK_KNIGHT,ChessPieceKeyWord.BLACK_BISHOP,ChessPieceKeyWord.BLACK_ROOK,ChessPieceKeyWord.BLACK_QUEEN)
+        }
+        val chosenPromotion = possibleResult.random()
+        targetedTile.chessPiece = getChessPieceFromKeyWord(chosenPromotion)
+        println("promote to $chosenPromotion")
     }
 
     init {
