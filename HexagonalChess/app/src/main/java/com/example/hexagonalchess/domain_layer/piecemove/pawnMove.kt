@@ -22,7 +22,7 @@ fun pawnMove(selectedTile: Tile, board:List<Tile>, boardType: BoardType): List<T
             result.add(forward1)
         }
 
-        if(!containPiece(forward1, board, boardType) && !containPiece(forward2, board, boardType)) {
+        if(!containPiece(forward1, board, boardType) && !containPiece(forward2, board, boardType) && boardType == BoardType.DEFAULT) {
             when(selectedTile.id) {
                 TileId.A1 -> result.add(forward2)
                 TileId.B2 -> result.add(forward2)
@@ -33,7 +33,7 @@ fun pawnMove(selectedTile: Tile, board:List<Tile>, boardType: BoardType): List<T
                 TileId.G3 -> result.add(forward2)
                 TileId.H2 -> result.add(forward2)
                 TileId.I1 -> result.add(forward2)
-                else -> { }
+                else -> {  }
             }
         }
 

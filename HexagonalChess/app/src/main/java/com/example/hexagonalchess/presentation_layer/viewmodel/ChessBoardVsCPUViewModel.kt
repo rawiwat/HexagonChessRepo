@@ -1,7 +1,10 @@
 package com.example.hexagonalchess.presentation_layer.viewmodel
 
+import android.content.Context
+import android.media.MediaPlayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.model.TilePair
 import com.example.hexagonalchess.data_layer.model.blackPawnForwardTwo
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
@@ -17,6 +20,7 @@ import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.domain_layer.findTile
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
+import com.example.hexagonalchess.domain_layer.getListOfPromotionTile
 import com.example.hexagonalchess.domain_layer.getTileIndex
 import com.example.hexagonalchess.domain_layer.piecemove.bishopMove
 import com.example.hexagonalchess.domain_layer.piecemove.kingMove
@@ -33,7 +37,8 @@ import kotlin.random.Random
 class ChessBoardVsCPUViewModel(
     playerColor: PieceColor,
     board: List<Tile>,
-    val boardType: BoardType
+    val boardType: BoardType,
+    val context: Context
 ): ViewModel() {
     private val _chessBoard = MutableStateFlow(board)
     val chessBoard: StateFlow<List<Tile>> = _chessBoard
@@ -69,13 +74,6 @@ class ChessBoardVsCPUViewModel(
     private var movingTile: Tile? = null
 
     private var selectingTile: Tile? = null
-
-    private val listOfPromotionTile = listOf(
-        TileId.A8, TileId.B9, TileId.C10, TileId.D11, TileId.E12,
-        TileId.F11, TileId.G10, TileId.H9, TileId.I1, TileId.A1,
-        TileId.B1, TileId.C1, TileId.D1, TileId.E1, TileId.F1,
-        TileId.G1, TileId.H1, TileId.I8
-    )
 
     fun onClickPieces(tile: Tile) {
         for (tiles in _chessBoard.value) {
@@ -113,7 +111,7 @@ class ChessBoardVsCPUViewModel(
             _chessBoard.value[targetedIndex].chessPiece = movingTile.chessPiece
             val selectedTileIndex = getTileIndex(movingTile.id, boardType)
             _chessBoard.value[selectedTileIndex].chessPiece = null
-            if (movingTile.chessPiece!!.type == PieceType.PAWN && listOfPromotionTile.contains(targetedTile.id)) {
+            if (movingTile.chessPiece!!.type == PieceType.PAWN && getListOfPromotionTile(boardType).contains(targetedTile.id)) {
                 _gameState.value = GameStateVsCpu.PROMOTE
             }
             val currentMovePath = TilePair(
@@ -136,7 +134,7 @@ class ChessBoardVsCPUViewModel(
             changeTurn()
             updateBoard()
             if (_gameState.value == GameStateVsCpu.CPU_TURN) {
-                cpuMove(_chessBoard.value)
+                cpuMove(_chessBoard.value,context)
             }
         }
     }
@@ -339,11 +337,12 @@ class ChessBoardVsCPUViewModel(
         _gameState.value = GameStateVsCpu.CPU_TURN
     }
 
-    private fun cpuMove(board: List<Tile>) {
-        viewModelScope.launch {
-            delay(1000)
-        }
+    private fun cpuMove(board: List<Tile>,context:Context) {
         val random = Random(System.currentTimeMillis())
+        val soundEffect = MediaPlayer.create(context, R.raw.move)
+        soundEffect.setOnCompletionListener {
+            soundEffect.release()
+        }
         val tileWithCpuPiece = mutableListOf<TileId>()
         val tileWithMovablePiece = mutableListOf<TileId>()
         for (tile in board) {
@@ -415,14 +414,19 @@ class ChessBoardVsCPUViewModel(
         val selectedTileIndex = getTileIndex(movingTile.id, boardType)
         _chessBoard.value[selectedTileIndex].chessPiece = null
         movingTile.chessPiece?.let {
-            if (it.type == PieceType.PAWN && listOfPromotionTile.contains(targetedTile.id)) {
-                _gameState.value = GameStateVsCpu.PROMOTE
+            if (it.type == PieceType.PAWN && getListOfPromotionTile(boardType).contains(targetedTile.id)) {
+                val possibleResult = when(it.color){
+                    PieceColor.WHITE -> listOf(ChessPieceKeyWord.WHITE_KNIGHT,ChessPieceKeyWord.WHITE_BISHOP,ChessPieceKeyWord.WHITE_ROOK,ChessPieceKeyWord.WHITE_QUEEN)
+                    PieceColor.BLACK -> listOf(ChessPieceKeyWord.BLACK_KNIGHT,ChessPieceKeyWord.BLACK_BISHOP,ChessPieceKeyWord.BLACK_ROOK,ChessPieceKeyWord.BLACK_QUEEN)
+                }
+                _chessBoard.value[targetedIndex].chessPiece = getChessPieceFromKeyWord(possibleResult.random())
             }
         }
         val currentMovePath = TilePair(
             startingPoint = movingTile.id,
             endPoint = selectingTile!!.id
         )
+
         movingTile.chessPiece?.let {
             if (it.type == PieceType.PAWN) {
                 enPassantEnable(currentMovePath,targetedTile)
@@ -447,7 +451,7 @@ class ChessBoardVsCPUViewModel(
 
     init {
         if (playerColor == PieceColor.BLACK) {
-            cpuMove(_chessBoard.value)
+            cpuMove(_chessBoard.value,context)
             _gameState.value = GameStateVsCpu.PLAYER_TURN
             _currentTurn.value = playerTurn
         }

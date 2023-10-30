@@ -1,6 +1,9 @@
 package com.example.hexagonalchess.presentation_layer.viewmodel
 
+import android.content.Context
+import android.media.MediaPlayer
 import androidx.lifecycle.ViewModel
+import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.model.TilePair
 import com.example.hexagonalchess.data_layer.model.blackPawnForwardTwo
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
@@ -21,6 +24,7 @@ import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.domain_layer.findTile
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
+import com.example.hexagonalchess.domain_layer.getListOfPromotionTile
 import com.example.hexagonalchess.domain_layer.getTileIndex
 import com.example.hexagonalchess.domain_layer.piecemove.bishopMove
 import com.example.hexagonalchess.domain_layer.piecemove.kingMove
@@ -28,12 +32,14 @@ import com.example.hexagonalchess.domain_layer.piecemove.knightMove
 import com.example.hexagonalchess.domain_layer.piecemove.pawnMove
 import com.example.hexagonalchess.domain_layer.piecemove.queenMove
 import com.example.hexagonalchess.domain_layer.piecemove.rookMove
+import com.example.hexagonalchess.domain_layer.playSoundEffect
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 open class ChessBoardViewModel(
     allTiles: List<Tile>,
-    val boardType: BoardType
+    val boardType: BoardType,
+    val context: Context
 ) : ViewModel() {
     private val _chessBoard = MutableStateFlow(allTiles)
     val chessBoard: StateFlow<List<Tile>> = _chessBoard
@@ -66,13 +72,6 @@ open class ChessBoardViewModel(
     private var movingTile:Tile? = null
 
     private var selectingTile:Tile? = null
-
-    private val listOfPromotionTile = listOf(
-        TileId.A8, TileId.B9, TileId.C10, TileId.D11, TileId.E12,
-        TileId.F11, TileId.G10, TileId.H9, TileId.I1, TileId.A1,
-        TileId.B1, TileId.C1, TileId.D1, TileId.E1, TileId.F1,
-        TileId.G1, TileId.H1, TileId.I8
-    )
 
     fun onClickPieces(tile: Tile) {
         if (_gameStateLocal.value == GameStateLocal.OPEN) {
@@ -110,7 +109,7 @@ open class ChessBoardViewModel(
             _chessBoard.value[targetedIndex].chessPiece = movingTile.chessPiece
             val selectedTileIndex = getTileIndex(movingTile.id, boardType)
             _chessBoard.value[selectedTileIndex].chessPiece = null
-            if (movingTile.chessPiece!!.type == PAWN && listOfPromotionTile.contains(targetedTile.id)) {
+            if (movingTile.chessPiece!!.type == PAWN && getListOfPromotionTile(boardType).contains(targetedTile.id)) {
                 _gameStateLocal.value = GameStateLocal.PROMOTE
             }
             val currentMovePath = TilePair(
@@ -369,6 +368,7 @@ open class ChessBoardViewModel(
 
     fun promotePawn(chosenPromotion : ChessPieceKeyWord) {
         _chessBoard.value[getTileIndex(selectingTile!!.id, boardType)].chessPiece = getChessPieceFromKeyWord(chosenPromotion)
+        playSoundEffect(context, R.raw.promote)
         _gameStateLocal.value = GameStateLocal.OPEN
     }
 }

@@ -1,5 +1,7 @@
 package com.example.hexagonalchess.domain_layer
 
+import android.content.Context
+import android.media.MediaPlayer
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import kotlin.math.absoluteValue
@@ -113,4 +115,27 @@ fun getImageIdFromBoardType(boardType: BoardType): Int {
         BoardType.DEFAULT -> R.drawable.board_preview_default
         BoardType.SHURIKEN -> R.drawable.board_preview_shuriken
     }
+}
+
+fun getListOfPromotionTile(boardType: BoardType): List<TileId> {
+    return when(boardType) {
+        BoardType.DEFAULT -> listOf(
+            TileId.A8, TileId.B9, TileId.C10, TileId.D11, TileId.E12,
+            TileId.F11, TileId.G10, TileId.H9, TileId.I1, TileId.A1,
+            TileId.B1, TileId.C1, TileId.D1, TileId.E1, TileId.F1,
+            TileId.G1, TileId.H1, TileId.I8
+        )
+        BoardType.SHURIKEN -> listOf(
+            TileId.C1, TileId.C7, TileId.D1, TileId.D6, TileId.E1,
+            TileId.E5, TileId.F1, TileId.F6, TileId.G1, TileId.G7
+        )
+    }
+}
+
+fun playSoundEffect(context: Context, soundEffectId: Int) {
+    val soundEffect = MediaPlayer.create(context, soundEffectId)
+    soundEffect.setOnCompletionListener {
+        soundEffect.release()
+    }
+    soundEffect.start()
 }

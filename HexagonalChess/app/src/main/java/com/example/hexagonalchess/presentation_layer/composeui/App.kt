@@ -45,7 +45,7 @@ fun App(
                         BoardType.DEFAULT -> ChessboardData().allTiles
                         BoardType.SHURIKEN -> ShurikenBoardData().allTiles
                     },
-                    boardType
+                    boardType, context
                 ),
                 context = context,
                 boardType = boardType
@@ -71,7 +71,7 @@ fun App(
                         BoardType.DEFAULT -> ChessboardData().allTiles
                         BoardType.SHURIKEN -> ShurikenBoardData().allTiles
                     },
-                    boardType
+                    boardType, context
                 ),
                 context = context,
                 playerColor = playerColor,

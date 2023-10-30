@@ -1,12 +1,6 @@
 package com.example.hexagonalchess.domain_layer
 
-import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
-import com.example.hexagonalchess.domain_layer.piecemove.bishopMove
-import com.example.hexagonalchess.domain_layer.piecemove.kingMove
-import com.example.hexagonalchess.domain_layer.piecemove.knightMove
-import com.example.hexagonalchess.domain_layer.piecemove.queenMove
-import com.example.hexagonalchess.domain_layer.piecemove.rookMove
 
 fun findTile(id: TileId, direction: TileDirections, board: List<Tile>, boardType: BoardType): TileId? {
     val targetIndex = getTileIndex(id, boardType)
