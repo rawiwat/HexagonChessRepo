@@ -99,7 +99,8 @@ class Route {
 
 enum class BoardType(val nameInSelection: String) {
     DEFAULT("Default"),
-    SHURIKEN("Shuriken")
+    STAR_CHESS("Starchess"),
+    SHAFRAN("Shafran"),
 }
 
 enum class GameMode {

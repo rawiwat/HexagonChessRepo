@@ -43,7 +43,7 @@ fun App(
                 chessBoardViewModel = ChessBoardViewModel(
                     allTiles = when(boardType) {
                         BoardType.DEFAULT -> ChessboardData().allTiles
-                        BoardType.SHURIKEN -> ShurikenBoardData().allTiles
+                        BoardType.STAR_CHESS -> ShurikenBoardData().allTiles
                     },
                     boardType, context
                 ),
@@ -69,7 +69,7 @@ fun App(
                     playerColor,
                     board = when(boardType){
                         BoardType.DEFAULT -> ChessboardData().allTiles
-                        BoardType.SHURIKEN -> ShurikenBoardData().allTiles
+                        BoardType.STAR_CHESS -> ShurikenBoardData().allTiles
                     },
                     boardType, context
                 ),

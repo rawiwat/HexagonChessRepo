@@ -113,7 +113,7 @@ fun generatePlayerIdFromName(input: String): Int {
 fun getImageIdFromBoardType(boardType: BoardType): Int {
     return when(boardType) {
         BoardType.DEFAULT -> R.drawable.board_preview_default
-        BoardType.SHURIKEN -> R.drawable.board_preview_shuriken
+        BoardType.STAR_CHESS -> R.drawable.board_preview_shuriken
     }
 }
 
@@ -131,7 +131,7 @@ fun getListOfPromotionTile(boardType: BoardType, pieceColor: PieceColor): List<T
                 )
             }
 
-        BoardType.SHURIKEN ->
+        BoardType.STAR_CHESS ->
             when(pieceColor) {
                 PieceColor.WHITE -> listOf(
                     TileId.C7, TileId.D6, TileId.E5, TileId.F6, TileId.G7

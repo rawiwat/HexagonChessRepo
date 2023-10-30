@@ -105,13 +105,15 @@ fun GameScreen(
                         theme = theme
                     )
                 }
-                BoardType.SHURIKEN -> {
+                BoardType.STAR_CHESS -> {
                     ShurikenBoardUI(
                         chessBoardData = chessBoard,
                         chessBoardViewModel = chessBoardViewModel,
                         theme = theme
                     )
                 }
+
+                BoardType.SHAFRAN -> TODO()
             }
 
         }
@@ -882,9 +884,9 @@ fun GameScreenShurikenPreview() {
     val chessBoardViewModel = ChessBoardViewModel(
         allTiles,
         //FirebaseRealtimeDatabase()
-        BoardType.SHURIKEN,LocalContext.current
+        BoardType.STAR_CHESS,LocalContext.current
     )
-    GameScreen(chessBoardViewModel, LocalContext.current,BoardType.SHURIKEN)
+    GameScreen(chessBoardViewModel, LocalContext.current,BoardType.STAR_CHESS)
 }
 
 @Preview

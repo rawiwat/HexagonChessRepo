@@ -56,7 +56,6 @@ import com.example.hexagonalchess.domain_layer.getChessPieceImage
 import com.example.hexagonalchess.domain_layer.getPromotionKeyWordFromColor
 import com.example.hexagonalchess.domain_layer.getTileImage
 import com.example.hexagonalchess.domain_layer.theme_setting.ThemeSharedPrefs
-import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardVsCPUViewModel
 
 
@@ -108,7 +107,7 @@ fun PlayerVsCpuScreen(
                         playerColor = playerColor
                     )
                 }
-                BoardType.SHURIKEN -> {
+                BoardType.STAR_CHESS -> {
                     ShurikenBoardVsCpuUI(
                         chessBoardData = chessBoard,
                         chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
@@ -116,6 +115,8 @@ fun PlayerVsCpuScreen(
                         playerColor = playerColor
                     )
                 }
+
+                BoardType.SHAFRAN -> TODO()
             }
         }
 
@@ -894,11 +895,11 @@ fun ShurikenBoardPreviewPovWhite() {
     PlayerVsCpuScreen(
         chessBoardVsCpuViewModel = ChessBoardVsCPUViewModel(
             PieceColor.WHITE,
-            board,BoardType.SHURIKEN,LocalContext.current
+            board,BoardType.STAR_CHESS,LocalContext.current
         ),
         context = LocalContext.current,
         playerColor = PieceColor.WHITE,
-        boardType = BoardType.SHURIKEN
+        boardType = BoardType.STAR_CHESS
     )
 }
 
@@ -909,10 +910,10 @@ fun ShurikenBoardPreviewPovBlack() {
     PlayerVsCpuScreen(
         chessBoardVsCpuViewModel = ChessBoardVsCPUViewModel(
             PieceColor.BLACK,
-            board,BoardType.SHURIKEN,LocalContext.current
+            board,BoardType.STAR_CHESS,LocalContext.current
             ),
         context = LocalContext.current,
         playerColor = PieceColor.BLACK,
-        boardType = BoardType.SHURIKEN
+        boardType = BoardType.STAR_CHESS
     )
 }
