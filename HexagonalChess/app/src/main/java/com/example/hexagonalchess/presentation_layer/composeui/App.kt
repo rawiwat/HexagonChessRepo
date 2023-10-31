@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.hexagonalchess.data_layer.chess_board_data.base.ChessboardData
+import com.example.hexagonalchess.data_layer.chess_board_data.shafran.ShafranChessBoardData
 import com.example.hexagonalchess.data_layer.chess_board_data.starchess.ShurikenBoardData
 import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.GameMode
@@ -44,7 +45,7 @@ fun App(
                     allTiles = when(boardType) {
                         BoardType.DEFAULT -> ChessboardData().allTiles
                         BoardType.STAR_CHESS -> ShurikenBoardData().allTiles
-                        BoardType.SHAFRAN -> ShurikenBoardData().allTiles
+                        BoardType.SHAFRAN -> ShafranChessBoardData().allTiles
                     },
                     boardType, context
                 ),
@@ -71,7 +72,7 @@ fun App(
                     board = when(boardType){
                         BoardType.DEFAULT -> ChessboardData().allTiles
                         BoardType.STAR_CHESS -> ShurikenBoardData().allTiles
-                        BoardType.SHAFRAN -> ShurikenBoardData().allTiles
+                        BoardType.SHAFRAN -> ShafranChessBoardData().allTiles
                     },
                     boardType, context
                 ),

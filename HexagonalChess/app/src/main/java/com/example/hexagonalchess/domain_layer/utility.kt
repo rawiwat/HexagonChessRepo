@@ -171,3 +171,34 @@ fun PieceColor.opposite():PieceColor {
         PieceColor.BLACK -> PieceColor.WHITE
     }
 }
+
+fun getPawnStartingPoint(boardType: BoardType, color: PieceColor): List<TileId> {
+    val result = when(boardType) {
+        BoardType.DEFAULT -> when(color) {
+            PieceColor.WHITE -> listOf(
+                TileId.A1, TileId.B2, TileId.C3, TileId.D4, TileId.E5,
+                TileId.F4, TileId.G3, TileId.H2, TileId.I1
+            )
+
+            PieceColor.BLACK -> listOf(
+                TileId.A8, TileId.B8, TileId.C8, TileId.D8, TileId.E8,
+                TileId.F8, TileId.G8, TileId.H8, TileId.I8
+            )
+        }
+
+        BoardType.STAR_CHESS -> listOf()
+        BoardType.SHAFRAN -> when(color) {
+            PieceColor.WHITE -> listOf(
+                TileId.A2, TileId.B2, TileId.C2, TileId.D2, TileId.E2,
+                TileId.F2, TileId.G2, TileId.H2, TileId.I2
+            )
+
+            PieceColor.BLACK -> listOf(
+                TileId.A5, TileId.B6, TileId.C7, TileId.D8, TileId.E9,
+                TileId.F8, TileId.G7, TileId.H6, TileId.I5
+            )
+        }
+    }
+    println(result)
+    return result
+}

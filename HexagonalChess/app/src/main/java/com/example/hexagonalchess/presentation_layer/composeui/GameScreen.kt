@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -72,6 +73,9 @@ fun GameScreen(
     val gameState by chessBoardViewModel.gameStateLocal.collectAsState()
     val gameOverMessage by chessBoardViewModel.gameOverMessage.collectAsState()
     val theme by remember { mutableStateOf(ThemeSharedPrefs(context).getTheme()) }
+    val localConfiguration = LocalConfiguration.current
+    val screenWidth by remember { mutableIntStateOf(localConfiguration.screenWidthDp) }
+    val tileUiManager by remember { mutableStateOf(TileUiManager(screenWidth)) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -103,14 +107,18 @@ fun GameScreen(
                     ChessBoardUI(
                         chessBoardData = chessBoard,
                         chessBoardViewModel = chessBoardViewModel,
-                        theme = theme
+                        theme = theme,
+                        screenWidth = screenWidth,
+                        tileUiManager = tileUiManager
                     )
                 }
                 BoardType.STAR_CHESS -> {
-                    ShurikenBoardUI(
+                    StarBoardUI(
                         chessBoardData = chessBoard,
                         chessBoardViewModel = chessBoardViewModel,
-                        theme = theme
+                        theme = theme,
+                        screenWidth = screenWidth,
+                        tileUiManager = tileUiManager
                     )
                 }
 
@@ -118,7 +126,9 @@ fun GameScreen(
                     ShafranChessBoardUI(
                         chessBoardData = chessBoard,
                         chessBoardViewModel = chessBoardViewModel,
-                        theme = theme
+                        theme = theme,
+                        screenWidth = screenWidth,
+                        tileUiManager = tileUiManager
                     )
                 }
             }
@@ -279,10 +289,10 @@ fun TileUI(
 fun ChessBoardUI(
     chessBoardData:List<Tile>,
     chessBoardViewModel: ChessBoardViewModel,
-    theme: TileTheme
+    theme: TileTheme,
+    screenWidth: Int,
+    tileUiManager: TileUiManager
 ) {
-    val screenWidth = LocalConfiguration.current.screenWidthDp
-
     val columnA = chessBoardData.subList(0,8)
 
     val columnB = chessBoardData.subList(8,17)
@@ -300,8 +310,6 @@ fun ChessBoardUI(
     val columnH = chessBoardData.subList(71,80)
 
     val columnI = chessBoardData.subList(80,88)
-
-    val tileUiManager = TileUiManager(screenWidth)
 
     Box(
         modifier = Modifier
@@ -487,13 +495,13 @@ fun ChessBoardUI(
 }
 
 @Composable
-fun ShurikenBoardUI(
+fun StarBoardUI(
     chessBoardData:List<Tile>,
     chessBoardViewModel: ChessBoardViewModel,
-    theme: TileTheme
+    theme: TileTheme,
+    tileUiManager: TileUiManager,
+    screenWidth: Int
 ) {
-    val screenWidth = LocalConfiguration.current.screenWidthDp
-
     val columnA = chessBoardData.subList(0,1)
 
     val columnB = chessBoardData.subList(1,3)
@@ -511,8 +519,6 @@ fun ShurikenBoardUI(
     val columnH = chessBoardData.subList(34,36)
 
     val columnI = chessBoardData.subList(36,37)
-
-    val tileUiManager = TileUiManager(screenWidth)
 
     Box(
         modifier = Modifier
@@ -871,15 +877,14 @@ fun PromotionIcon(
     )
 }
 
-
 @Composable
 fun ShafranChessBoardUI(
     chessBoardData:List<Tile>,
     chessBoardViewModel: ChessBoardViewModel,
-    theme: TileTheme
+    theme: TileTheme,
+    tileUiManager: TileUiManager,
+    screenWidth: Int
 ) {
-    val screenWidth = LocalConfiguration.current.screenWidthDp
-
     val columnA = chessBoardData.subList(0,6)
 
     val columnB = chessBoardData.subList(6,13)
@@ -897,8 +902,6 @@ fun ShafranChessBoardUI(
     val columnH = chessBoardData.subList(57,64)
 
     val columnI = chessBoardData.subList(64,70)
-
-    val tileUiManager = TileUiManager(screenWidth)
 
     Box(
         modifier = Modifier
@@ -1101,7 +1104,6 @@ fun GameScreenShurikenPreview() {
     val allTiles = ShurikenBoardData().allTiles
     val chessBoardViewModel = ChessBoardViewModel(
         allTiles,
-        //FirebaseRealtimeDatabase()
         BoardType.STAR_CHESS,LocalContext.current
     )
     GameScreen(chessBoardViewModel, LocalContext.current,BoardType.STAR_CHESS)

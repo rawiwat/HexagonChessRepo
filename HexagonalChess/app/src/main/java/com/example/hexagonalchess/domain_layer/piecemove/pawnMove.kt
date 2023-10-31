@@ -8,6 +8,7 @@ import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.domain_layer.containPiece
 import com.example.hexagonalchess.domain_layer.filterSameColor
 import com.example.hexagonalchess.domain_layer.findTile
+import com.example.hexagonalchess.domain_layer.getPawnStartingPoint
 import com.example.hexagonalchess.domain_layer.getTileIndex
 
 fun pawnMove(selectedTile: Tile, board:List<Tile>, boardType: BoardType): List<TileId?> {
@@ -22,17 +23,18 @@ fun pawnMove(selectedTile: Tile, board:List<Tile>, boardType: BoardType): List<T
             result.add(forward1)
         }
 
-        if(!containPiece(forward1, board, boardType) && !containPiece(forward2, board, boardType) && boardType == BoardType.DEFAULT) {
+        val startingTiles = getPawnStartingPoint(boardType, PieceColor.WHITE)
+        if(!containPiece(forward1, board, boardType) && !containPiece(forward2, board, boardType)) {
             when(selectedTile.id) {
-                TileId.A1 -> result.add(forward2)
-                TileId.B2 -> result.add(forward2)
-                TileId.C3 -> result.add(forward2)
-                TileId.D4 -> result.add(forward2)
-                TileId.E5 -> result.add(forward2)
-                TileId.F4 -> result.add(forward2)
-                TileId.G3 -> result.add(forward2)
-                TileId.H2 -> result.add(forward2)
-                TileId.I1 -> result.add(forward2)
+                startingTiles[0] -> result.add(forward2)
+                startingTiles[1] -> result.add(forward2)
+                startingTiles[2] -> result.add(forward2)
+                startingTiles[3] -> result.add(forward2)
+                startingTiles[4] -> result.add(forward2)
+                startingTiles[5] -> result.add(forward2)
+                startingTiles[6] -> result.add(forward2)
+                startingTiles[7] -> result.add(forward2)
+                startingTiles[8] -> result.add(forward2)
                 else -> {  }
             }
         }
@@ -69,17 +71,18 @@ fun pawnMove(selectedTile: Tile, board:List<Tile>, boardType: BoardType): List<T
             result.add(forward1)
         }
 
-        if(!containPiece(forward1, board, boardType) && !containPiece(forward2, board, boardType) && boardType == BoardType.DEFAULT) {
+        val startingTiles = getPawnStartingPoint(boardType, PieceColor.BLACK)
+        if(!containPiece(forward1, board, boardType) && !containPiece(forward2, board, boardType)) {
             when(selectedTile.id) {
-                TileId.A8 -> result.add(forward2)
-                TileId.B8 -> result.add(forward2)
-                TileId.C8 -> result.add(forward2)
-                TileId.D8 -> result.add(forward2)
-                TileId.E8 -> result.add(forward2)
-                TileId.F8 -> result.add(forward2)
-                TileId.G8 -> result.add(forward2)
-                TileId.H8 -> result.add(forward2)
-                TileId.I8 -> result.add(forward2)
+                startingTiles[0] -> result.add(forward2)
+                startingTiles[1] -> result.add(forward2)
+                startingTiles[2] -> result.add(forward2)
+                startingTiles[3] -> result.add(forward2)
+                startingTiles[4] -> result.add(forward2)
+                startingTiles[5] -> result.add(forward2)
+                startingTiles[6] -> result.add(forward2)
+                startingTiles[7] -> result.add(forward2)
+                startingTiles[8] -> result.add(forward2)
                 else -> { }
             }
         }

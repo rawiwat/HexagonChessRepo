@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -56,6 +57,7 @@ import com.example.hexagonalchess.domain_layer.getChessPieceImage
 import com.example.hexagonalchess.domain_layer.getPromotionKeyWordFromColor
 import com.example.hexagonalchess.domain_layer.getTileImage
 import com.example.hexagonalchess.domain_layer.theme_setting.ThemeSharedPrefs
+import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardVsCPUViewModel
 
 
@@ -72,7 +74,10 @@ fun PlayerVsCpuScreen(
     val whiteCaptured by chessBoardVsCpuViewModel.whiteCaptured.collectAsState()
     val gameState by chessBoardVsCpuViewModel.gameState.collectAsState()
     val gameOverMessage by chessBoardVsCpuViewModel.gameOverMessage.collectAsState()
-    val theme = ThemeSharedPrefs(context).getTheme()
+    val theme by remember { mutableStateOf(ThemeSharedPrefs(context).getTheme()) }
+    val localConfiguration = LocalConfiguration.current
+    val screenWidth by remember { mutableIntStateOf(localConfiguration.screenWidthDp) }
+    val tileUiManager by remember { mutableStateOf(TileUiManager(screenWidth)) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -104,7 +109,9 @@ fun PlayerVsCpuScreen(
                         chessBoardData = chessBoard,
                         chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
                         theme = theme,
-                        playerColor = playerColor
+                        playerColor = playerColor,
+                        tileUiManager = tileUiManager,
+                        screenWidth = screenWidth
                     )
                 }
                 BoardType.STAR_CHESS -> {
@@ -112,11 +119,23 @@ fun PlayerVsCpuScreen(
                         chessBoardData = chessBoard,
                         chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
                         theme = theme,
-                        playerColor = playerColor
+                        playerColor = playerColor,
+                        tileUiManager = tileUiManager,
+                        screenWidth = screenWidth
+
                     )
                 }
 
-                BoardType.SHAFRAN -> TODO()
+                BoardType.SHAFRAN -> {
+                    ShafranChessBoardVsCpuUI(
+                        chessBoardData = chessBoard,
+                        chessBoardViewModel = chessBoardVsCpuViewModel,
+                        theme = theme,
+                        playerColor = playerColor,
+                        tileUiManager = tileUiManager,
+                        screenWidth = screenWidth
+                    )
+                }
             }
         }
 
@@ -248,7 +267,9 @@ fun ChessBoardUIVsCPU(
     chessBoardData:List<Tile>,
     chessBoardVsCpuViewModel: ChessBoardVsCPUViewModel,
     theme: TileTheme,
-    playerColor: PieceColor
+    playerColor: PieceColor,
+    screenWidth: Int,
+    tileUiManager: TileUiManager
 ) {
     var columnA = chessBoardData.subList(0,8)
 
@@ -279,9 +300,6 @@ fun ChessBoardUIVsCPU(
         columnH = columnH.reversed()
         columnI = columnI.reversed()
     }
-
-    val screenWidth = LocalConfiguration.current.screenWidthDp
-    val tileUiManager = TileUiManager(screenWidth)
 
     Box(
         modifier = Modifier
@@ -473,10 +491,10 @@ fun StarBoardVsCpuUI(
     chessBoardData:List<Tile>,
     chessBoardVsCpuViewModel: ChessBoardVsCPUViewModel,
     theme: TileTheme,
-    playerColor: PieceColor
+    playerColor: PieceColor,
+    screenWidth: Int,
+    tileUiManager: TileUiManager
 ) {
-    val screenWidth = LocalConfiguration.current.screenWidthDp
-
     var columnA = chessBoardData.subList(0,1)
     var columnB = chessBoardData.subList(1,3)
     var columnC = chessBoardData.subList(3,10)
@@ -498,8 +516,6 @@ fun StarBoardVsCpuUI(
         columnH = columnH.reversed()
         columnI = columnI.reversed()
     }
-
-    val tileUiManager = TileUiManager(screenWidth)
 
     Box(
         modifier = Modifier
@@ -837,6 +853,226 @@ fun PlayerVsCpuUI(
                         Text(text = if (currentAdvantage >= 1) "+$currentAdvantage" else "")
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun ShafranChessBoardVsCpuUI(
+    chessBoardData:List<Tile>,
+    chessBoardViewModel: ChessBoardVsCPUViewModel,
+    theme: TileTheme,
+    playerColor: PieceColor,
+    tileUiManager: TileUiManager,
+    screenWidth: Int
+) {
+    var columnA = chessBoardData.subList(0,6)
+
+    var columnB = chessBoardData.subList(6,13)
+
+    var columnC = chessBoardData.subList(13,21)
+
+    var columnD = chessBoardData.subList(21,30)
+
+    var columnE = chessBoardData.subList(30,40)
+
+    var columnF = chessBoardData.subList(40,49)
+
+    var columnG = chessBoardData.subList(49,57)
+
+    var columnH = chessBoardData.subList(57,64)
+
+    var columnI = chessBoardData.subList(64,70)
+    if (playerColor == PieceColor.BLACK) {
+        columnA = columnA.reversed()
+        columnB = columnB.reversed()
+        columnC = columnC.reversed()
+        columnD = columnD.reversed()
+        columnE = columnE.reversed()
+        columnF = columnF.reversed()
+        columnG = columnG.reversed()
+        columnH = columnH.reversed()
+        columnI = columnI.reversed()
+    }
+    Box(
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(start = (screenWidth / 15).dp)
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .offset(y = tileUiManager.columnAY.dp)
+        ) {
+            items(
+                columnA,
+                key = { it.id }
+            ) {
+                TileUIVsCpu(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    theme = theme
+                )
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.columnBX.dp,
+                    y = tileUiManager.columnBY.dp
+                )
+        ) {
+            items(
+                columnB,
+                key = { it.id }
+            ) {
+                TileUIVsCpu(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    theme = theme
+                )
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.columnCX.dp,
+                    y = tileUiManager.columnCY.dp
+                )
+        ) {
+            items(
+                columnC,
+                key = { it.id }
+            ) {
+                TileUIVsCpu(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    theme = theme
+                )
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.columnDX.dp,
+                    y = tileUiManager.columnDY.dp
+                )
+        ) {
+            items(
+                columnD,
+                key = { it.id }
+            ) {
+                TileUIVsCpu(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    theme = theme
+                )
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.columnEX.dp
+                )
+        ) {
+            items(
+                columnE,
+                key = { it.id }
+            ) {
+                TileUIVsCpu(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    theme = theme
+                )
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.columnFX.dp,
+                    y = tileUiManager.columnFY.dp
+                )
+        ) {
+            items(
+                columnF,
+                key = { it.id }
+            ) {
+                TileUIVsCpu(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    theme = theme
+                )
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.columnGX.dp,
+                    y = tileUiManager.columnGY.dp
+                )
+        ) {
+            items(
+                columnG,
+                key = { it.id }
+            ) {
+                TileUIVsCpu(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    theme = theme
+                )
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.columnHX.dp,
+                    y = tileUiManager.columnHY.dp
+                )
+        ) {
+            items(
+                columnH,
+                key = { it.id }
+            ) {
+                TileUIVsCpu(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    theme = theme
+                )
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.columnIX.dp,
+                    y = tileUiManager.columnIY.dp
+                )
+        ) {
+            items(
+                columnI,
+                key = { it.id }
+            ) {
+                TileUIVsCpu(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    theme = theme
+                )
             }
         }
     }

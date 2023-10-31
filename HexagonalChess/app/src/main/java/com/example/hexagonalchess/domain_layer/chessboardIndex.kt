@@ -140,8 +140,6 @@ fun getTileIndex(tileId: TileId, boardType: BoardType): Int {
             TileId.A4 -> 2
             TileId.A5 -> 1
             TileId.A6 -> 0
-            TileId.A7 -> -1
-            TileId.A8 -> -1
             TileId.B1 -> 12
             TileId.B2 -> 11
             TileId.B3 -> 10
@@ -149,8 +147,6 @@ fun getTileIndex(tileId: TileId, boardType: BoardType): Int {
             TileId.B5 -> 8
             TileId.B6 -> 7
             TileId.B7 -> 6
-            TileId.B8 -> -1
-            TileId.B9 -> -1
             TileId.C1 -> 20
             TileId.C2 -> 19
             TileId.C3 -> 18
@@ -159,8 +155,6 @@ fun getTileIndex(tileId: TileId, boardType: BoardType): Int {
             TileId.C6 -> 15
             TileId.C7 -> 14
             TileId.C8 -> 13
-            TileId.C9 -> -1
-            TileId.C10 -> -1
             TileId.D1 -> 29
             TileId.D2 -> 28
             TileId.D3 -> 27
@@ -170,8 +164,6 @@ fun getTileIndex(tileId: TileId, boardType: BoardType): Int {
             TileId.D7 -> 23
             TileId.D8 -> 22
             TileId.D9 -> 21
-            TileId.D10 -> -1
-            TileId.D11 -> -1
             TileId.E1 -> 39
             TileId.E2 -> 38
             TileId.E3 -> 37
@@ -182,8 +174,6 @@ fun getTileIndex(tileId: TileId, boardType: BoardType): Int {
             TileId.E8 -> 32
             TileId.E9 -> 31
             TileId.E10 -> 30
-            TileId.E11 -> -1
-            TileId.E12 -> -1
             TileId.F1 -> 48
             TileId.F2 -> 47
             TileId.F3 -> 46
@@ -193,8 +183,6 @@ fun getTileIndex(tileId: TileId, boardType: BoardType): Int {
             TileId.F7 -> 42
             TileId.F8 -> 41
             TileId.F9 -> 40
-            TileId.F10 -> -1
-            TileId.F11 -> -1
             TileId.G1 -> 56
             TileId.G2 -> 55
             TileId.G3 -> 54
@@ -203,8 +191,6 @@ fun getTileIndex(tileId: TileId, boardType: BoardType): Int {
             TileId.G6 -> 51
             TileId.G7 -> 50
             TileId.G8 -> 49
-            TileId.G9 -> -1
-            TileId.G10 -> -1
             TileId.H1 -> 63
             TileId.H2 -> 62
             TileId.H3 -> 61
@@ -220,8 +206,7 @@ fun getTileIndex(tileId: TileId, boardType: BoardType): Int {
             TileId.I4 -> 66
             TileId.I5 -> 65
             TileId.I6 -> 64
-            TileId.I7 -> -1
-            TileId.I8 -> -1
+            else -> -1
         }
     }
 }

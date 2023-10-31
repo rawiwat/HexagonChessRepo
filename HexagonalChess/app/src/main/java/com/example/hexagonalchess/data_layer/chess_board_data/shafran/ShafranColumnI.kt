@@ -68,7 +68,7 @@ class ShafranColumnI {
     private val i6 = Tile(
         id = TileId.I6,
         color = TileColor.MID,
-        topTile = TileId.I7,
+        topTile = null,
         upperRightTile = null,
         underRightTile = null,
         bottomTile = TileId.I5,

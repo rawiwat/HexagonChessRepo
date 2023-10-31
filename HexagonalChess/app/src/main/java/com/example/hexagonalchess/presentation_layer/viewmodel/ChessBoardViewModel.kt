@@ -74,6 +74,7 @@ open class ChessBoardViewModel(
     private var selectingTile:Tile? = null
 
     fun onClickPieces(tile: Tile) {
+        println(tile.id)
         if (_gameStateLocal.value == GameStateLocal.OPEN) {
             for (tiles in _chessBoard.value) {
                 tiles.isAPossibleMove = false
