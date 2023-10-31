@@ -91,6 +91,7 @@ fun getTileIndex(tileId: TileId, boardType: BoardType): Int {
             TileId.I6 -> 82
             TileId.I7 -> 81
             TileId.I8 -> 80
+            else -> -1
         }
         BoardType.STAR_CHESS -> when(tileId) {
             TileId.A1 -> 0

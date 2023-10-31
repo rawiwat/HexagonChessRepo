@@ -1,4 +1,4 @@
-package com.example.hexagonalchess.data_layer.chess_board_data.shafran
+package com.example.hexagonalchess.data_layer.chess_board_data.big
 
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
@@ -6,17 +6,17 @@ import com.example.hexagonalchess.domain_layer.TileColor
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 
-class ShafranColumnC {
+class BigColumnC {
     private val c1 = Tile(
         id = TileId.C1,
-        color = TileColor.MID,
+        color = TileColor.LIGHT,
         topTile = TileId.C2,
         upperRightTile = TileId.D2,
         underRightTile = TileId.D1,
         bottomTile = null,
         underLeftTile = null,
         upperLeftTile = TileId.B1,
-        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_KNIGHT)
+        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_ROOK)
     )
 
     private val c2 = Tile(
@@ -33,7 +33,7 @@ class ShafranColumnC {
 
     private val c3 = Tile(
         id = TileId.C3,
-        color = TileColor.LIGHT,
+        color = TileColor.MID,
         topTile = TileId.C4,
         upperRightTile = TileId.D4,
         underRightTile = TileId.D3,
@@ -44,7 +44,7 @@ class ShafranColumnC {
 
     private val c4 = Tile(
         id = TileId.C4,
-        color = TileColor.MID,
+        color = TileColor.LIGHT,
         topTile = TileId.C5,
         upperRightTile = TileId.D5,
         underRightTile = TileId.D4,
@@ -66,7 +66,7 @@ class ShafranColumnC {
 
     private val c6 = Tile(
         id = TileId.C6,
-        color = TileColor.LIGHT,
+        color = TileColor.MID,
         topTile = TileId.C7,
         upperRightTile = TileId.D7,
         underRightTile = TileId.D6,
@@ -77,7 +77,7 @@ class ShafranColumnC {
 
     private val c7 = Tile(
         id = TileId.C7,
-        color = TileColor.MID,
+        color = TileColor.LIGHT,
         topTile = TileId.C8,
         upperRightTile = TileId.D8,
         underRightTile = TileId.D7,
@@ -96,7 +96,7 @@ class ShafranColumnC {
         bottomTile = TileId.C7,
         underLeftTile = TileId.B7,
         upperLeftTile = null,
-        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_KNIGHT)
+        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_ROOK)
     )
 
     val columnC = listOf(c8,c7,c6,c5,c4,c3,c2,c1)
