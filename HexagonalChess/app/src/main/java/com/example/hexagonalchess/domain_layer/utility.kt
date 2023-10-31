@@ -115,6 +115,7 @@ fun getImageIdFromBoardType(boardType: BoardType): Int {
         BoardType.DEFAULT -> R.drawable.board_preview_default
         BoardType.STAR_CHESS -> R.drawable.board_preview_shuriken
         BoardType.SHAFRAN -> R.drawable.board_preview_shafran
+        BoardType.BIG -> R.drawable.board_preview_equilateral
     }
 }
 
@@ -152,6 +153,19 @@ fun getListOfPromotionTile(boardType: BoardType, pieceColor: PieceColor): List<T
                 PieceColor.BLACK -> listOf(
                     TileId.A1, TileId.B1, TileId.C1, TileId.D1, TileId.E1,
                     TileId.F1, TileId.G1, TileId.H1, TileId.I1,
+                )
+            }
+
+        BoardType.BIG ->
+            when(pieceColor) {
+                PieceColor.WHITE -> listOf(
+                    TileId.B7,TileId.C8,TileId.D9,TileId.E10,
+                    TileId.F11,TileId.G10,TileId.H9,TileId.I8,TileId.J7
+                )
+
+                PieceColor.BLACK -> listOf(
+                    TileId.B1,TileId.C1,TileId.D1,TileId.E1,
+                    TileId.F1,TileId.G1,TileId.H1,TileId.I1,TileId.J1
                 )
             }
     }
@@ -196,6 +210,17 @@ fun getPawnStartingPoint(boardType: BoardType, color: PieceColor): List<TileId> 
             PieceColor.BLACK -> listOf(
                 TileId.A5, TileId.B6, TileId.C7, TileId.D8, TileId.E9,
                 TileId.F8, TileId.G7, TileId.H6, TileId.I5
+            )
+        }
+
+        BoardType.BIG -> when(color) {
+            PieceColor.WHITE -> listOf(
+                TileId.B1,TileId.C2,TileId.D3,TileId.E4,TileId.F5,
+                TileId.G4,TileId.H3,TileId.I2,TileId.J1
+            )
+            PieceColor.BLACK -> listOf(
+                TileId.B7, TileId.C7, TileId.D7, TileId.E7, TileId.F7,
+                TileId.G7, TileId.H7, TileId.I7, TileId.J7
             )
         }
     }

@@ -8,12 +8,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.hexagonalchess.data_layer.chess_board_data.base.ChessboardData
+import com.example.hexagonalchess.data_layer.chess_board_data.big.BigChessBoardData
 import com.example.hexagonalchess.data_layer.chess_board_data.shafran.ShafranChessBoardData
 import com.example.hexagonalchess.data_layer.chess_board_data.starchess.ShurikenBoardData
 import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.Route
+import com.example.hexagonalchess.presentation_layer.composeui.play_cpu.PlayerVsCpuScreen
+import com.example.hexagonalchess.presentation_layer.composeui.play_local.GameScreen
 import com.example.hexagonalchess.presentation_layer.viewmodel.BoardSelectionViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardVsCPUViewModel
@@ -46,6 +49,7 @@ fun App(
                         BoardType.DEFAULT -> ChessboardData().allTiles
                         BoardType.STAR_CHESS -> ShurikenBoardData().allTiles
                         BoardType.SHAFRAN -> ShafranChessBoardData().allTiles
+                        BoardType.BIG -> BigChessBoardData().allTiles
                     },
                     boardType, context
                 ),
@@ -73,6 +77,7 @@ fun App(
                         BoardType.DEFAULT -> ChessboardData().allTiles
                         BoardType.STAR_CHESS -> ShurikenBoardData().allTiles
                         BoardType.SHAFRAN -> ShafranChessBoardData().allTiles
+                        BoardType.BIG -> BigChessBoardData().allTiles
                     },
                     boardType, context
                 ),

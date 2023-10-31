@@ -103,6 +103,7 @@ enum class BoardType(val nameInSelection: String) {
     DEFAULT("Default"),
     STAR_CHESS("Starchess"),
     SHAFRAN("Shafran"),
+    BIG("Big")
 }
 
 enum class GameMode {
