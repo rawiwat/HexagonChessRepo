@@ -108,7 +108,7 @@ fun PlayerVsCpuScreen(
                     )
                 }
                 BoardType.STAR_CHESS -> {
-                    ShurikenBoardVsCpuUI(
+                    StarBoardVsCpuUI(
                         chessBoardData = chessBoard,
                         chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
                         theme = theme,
@@ -469,7 +469,7 @@ fun ChessBoardUIVsCPU(
 }
 
 @Composable
-fun ShurikenBoardVsCpuUI(
+fun StarBoardVsCpuUI(
     chessBoardData:List<Tile>,
     chessBoardVsCpuViewModel: ChessBoardVsCPUViewModel,
     theme: TileTheme,

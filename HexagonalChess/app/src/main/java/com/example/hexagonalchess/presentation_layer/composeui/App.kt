@@ -44,6 +44,7 @@ fun App(
                     allTiles = when(boardType) {
                         BoardType.DEFAULT -> ChessboardData().allTiles
                         BoardType.STAR_CHESS -> ShurikenBoardData().allTiles
+                        BoardType.SHAFRAN -> ShurikenBoardData().allTiles
                     },
                     boardType, context
                 ),
@@ -70,6 +71,7 @@ fun App(
                     board = when(boardType){
                         BoardType.DEFAULT -> ChessboardData().allTiles
                         BoardType.STAR_CHESS -> ShurikenBoardData().allTiles
+                        BoardType.SHAFRAN -> ShurikenBoardData().allTiles
                     },
                     boardType, context
                 ),

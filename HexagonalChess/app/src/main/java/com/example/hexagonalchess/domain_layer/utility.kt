@@ -114,6 +114,7 @@ fun getImageIdFromBoardType(boardType: BoardType): Int {
     return when(boardType) {
         BoardType.DEFAULT -> R.drawable.board_preview_default
         BoardType.STAR_CHESS -> R.drawable.board_preview_shuriken
+        BoardType.SHAFRAN -> R.drawable.board_preview_shafran
     }
 }
 
@@ -126,8 +127,8 @@ fun getListOfPromotionTile(boardType: BoardType, pieceColor: PieceColor): List<T
                     TileId.F11, TileId.G10, TileId.H9, TileId.I8
                 )
                 PieceColor.BLACK -> listOf(
-                    TileId.I1, TileId.A1, TileId.B1, TileId.C1, TileId.D1,
-                    TileId.E1, TileId.F1, TileId.G1, TileId.H1,
+                    TileId.A1, TileId.B1, TileId.C1, TileId.D1, TileId.E1,
+                    TileId.F1, TileId.G1, TileId.H1, TileId.I1,
                 )
             }
 
@@ -138,6 +139,19 @@ fun getListOfPromotionTile(boardType: BoardType, pieceColor: PieceColor): List<T
                 )
                 PieceColor.BLACK -> listOf(
                     TileId.C1, TileId.D1, TileId.E1, TileId.F1, TileId.G1
+                )
+            }
+
+        BoardType.SHAFRAN ->
+            when(pieceColor) {
+                PieceColor.WHITE -> listOf(
+                    TileId.A6,TileId.B7,TileId.C8,TileId.D9,TileId.E10,
+                    TileId.F9,TileId.G8,TileId.H7,TileId.I6
+                )
+
+                PieceColor.BLACK -> listOf(
+                    TileId.A1, TileId.B1, TileId.C1, TileId.D1, TileId.E1,
+                    TileId.F1, TileId.G1, TileId.H1, TileId.I1,
                 )
             }
     }
