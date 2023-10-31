@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.chess_board_data.base.ChessboardData
-import com.example.hexagonalchess.data_layer.chess_board_data.shuriken.ShurikenBoardData
+import com.example.hexagonalchess.data_layer.chess_board_data.starchess.ShurikenBoardData
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.BoardType

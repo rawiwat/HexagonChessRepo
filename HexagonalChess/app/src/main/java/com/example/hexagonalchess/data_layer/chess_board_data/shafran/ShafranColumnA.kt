@@ -62,18 +62,21 @@ class ShafranColumnA {
         underRightTile = TileId.B5,
         bottomTile = TileId.A4,
         underLeftTile = null,
-        upperLeftTile = null
+        upperLeftTile = null,
+        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_PAWN)
     )
 
     private val a6 = Tile(
         id = TileId.A6,
         color = TileColor.MID,
-        topTile = TileId.A7,
+        topTile = null,
         upperRightTile = TileId.B7,
         underRightTile = TileId.B6,
         bottomTile = TileId.A5,
         underLeftTile = null,
-        upperLeftTile = null
+        upperLeftTile = null,
+        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_ROOK)
     )
 
+    val columnA = listOf(a6,a5,a4,a3,a2,a1)
 }

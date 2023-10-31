@@ -1,4 +1,4 @@
-package com.example.hexagonalchess.data_layer.chess_board_data.shuriken
+package com.example.hexagonalchess.data_layer.chess_board_data.starchess
 
 class ShurikenBoardData {
     private val columnABC = ShurikenColumnABC().columnABC

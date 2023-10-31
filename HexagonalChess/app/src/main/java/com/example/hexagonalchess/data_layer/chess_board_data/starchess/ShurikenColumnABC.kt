@@ -1,4 +1,4 @@
-package com.example.hexagonalchess.data_layer.chess_board_data.shuriken
+package com.example.hexagonalchess.data_layer.chess_board_data.starchess
 
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord

@@ -8,7 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.hexagonalchess.data_layer.chess_board_data.base.ChessboardData
-import com.example.hexagonalchess.data_layer.chess_board_data.shuriken.ShurikenBoardData
+import com.example.hexagonalchess.data_layer.chess_board_data.starchess.ShurikenBoardData
 import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.PieceColor
