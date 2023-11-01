@@ -29,19 +29,11 @@ suspend fun pawnMove(selectedTile: Tile, board:List<Tile>, boardType: BoardType)
         }
 
         val startingTiles = getPawnStartingPoint(boardType, PieceColor.WHITE)
-        if(!containPiece(forward1, board, boardType) && !containPiece(forward2, board, boardType)) {
-            when(selectedTile.id) {
-                startingTiles[0] -> result.add(forward2)
-                startingTiles[1] -> result.add(forward2)
-                startingTiles[2] -> result.add(forward2)
-                startingTiles[3] -> result.add(forward2)
-                startingTiles[4] -> result.add(forward2)
-                startingTiles[5] -> result.add(forward2)
-                startingTiles[6] -> result.add(forward2)
-                startingTiles[7] -> result.add(forward2)
-                startingTiles[8] -> result.add(forward2)
-                else -> {  }
-            }
+        val forward1NotContainPiece = !containPiece(forward1, board, boardType)
+        val forward2NotContainPiece = !containPiece(forward2, board, boardType)
+        val selectedTileIsInStartPosition = startingTiles.contains(selectedTile.id)
+        if( forward1NotContainPiece && forward2NotContainPiece && selectedTileIsInStartPosition) {
+            result.add(forward2)
         }
 
         val attack1 = findTile(selectedTile.id, TileDirections.UPPER_LEFT, board, boardType)

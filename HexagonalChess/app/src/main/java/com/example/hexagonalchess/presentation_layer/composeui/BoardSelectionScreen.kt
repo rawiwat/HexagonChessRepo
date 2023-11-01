@@ -1,6 +1,7 @@
 package com.example.hexagonalchess.presentation_layer.composeui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,17 +10,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,6 +48,7 @@ import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.Route
 import com.example.hexagonalchess.domain_layer.getImageIdFromBoardType
 import com.example.hexagonalchess.presentation_layer.viewmodel.BoardSelectionViewModel
+import java.net.URLEncoder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,10 +63,11 @@ fun BoardSelectionScreen(
         GameMode.ONLINE -> Route.online
         GameMode.CPU -> Route.vsCpu
     }
+
     val listOfBoardType = BoardType.values().toList()
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val previewHeight = screenWidth * 4 / 3
-
+    val encodedRoute = URLEncoder.encode("$route/$currentBoard","UTF-8")
     Scaffold(
         bottomBar = {
             Box(
@@ -74,7 +83,7 @@ fun BoardSelectionScreen(
                     modifier = Modifier
                         .clickable {
                             try {
-                                navController.navigate("$route/$currentBoard")
+                                navController.navigate("${Route.loading}/$encodedRoute")
                             } catch (e: Exception) {
                                 println(e)
                             }
@@ -94,7 +103,7 @@ fun BoardSelectionScreen(
                     )
                 )
             }
-    }
+        }
     ) {
         Box(modifier = Modifier
             .padding(top = it.calculateTopPadding())
@@ -129,7 +138,7 @@ fun BoardSelectionScreen(
                         BoardInSelection(
                             boardType = boardType,
                             boardName = boardType.nameInSelection,
-                            boardSelectionViewModel = boardSelectionViewModel
+                            boardSelectionViewModel = boardSelectionViewModel,
                         )
                     }
                 }
@@ -152,23 +161,35 @@ fun BoardInSelection(
             },
         contentAlignment = Alignment.Center
     ) {
-        val fontSize by remember { mutableIntStateOf(22) }
+        var fontSize by rememberSaveable { mutableDoubleStateOf(22.0) }
         Image(
             painter = painterResource(id = R.drawable.menu_button),
             contentDescription = null,
+            modifier = Modifier
+                .size(width = 205.dp, height = 55.dp)
         )
 
-        Text(
-            text = boardName,
-            fontFamily = FontFamily(Font(R.font.menu_text)),
-            fontSize = fontSize.sp,
+        Box(
             modifier = Modifier
-                .padding(start = 5.dp, end = 5.dp),
-            textAlign = TextAlign.Center,
-            style = TextStyle(
-                color = Color.Black
+                .size(width = 160.dp, height = 50.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = boardName,
+                fontFamily = FontFamily(Font(R.font.menu_text)),
+                fontSize = fontSize.sp,
+                textAlign = TextAlign.Center,
+                style = TextStyle(
+                    color = Color.Black
+                ),
+                onTextLayout = { result ->
+                    if(result.didOverflowWidth) {
+                        fontSize *= 0.9
+                    }
+                },
+                maxLines = 1
             )
-        )
+        }
     }
 }
 

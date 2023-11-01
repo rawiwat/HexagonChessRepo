@@ -89,13 +89,33 @@ fun App(
 
         composable(
             route = "${Route.boardSelection}/{gameMode}",
-            arguments = listOf(navArgument("gameMode") { type = NavType.EnumType(GameMode::class.java) })
+            arguments = listOf(
+                navArgument("gameMode") {
+                    type = NavType.EnumType(GameMode::class.java)
+                }
+            )
         ) {
             BoardSelectionScreen(
                 boardSelectionViewModel = BoardSelectionViewModel(),
                 navController = navController,
                 gameMode = it.arguments?.getSerializable("gameMode") as GameMode
             )
+        }
+
+        composable(
+            route = "${Route.loading}/{encodedRoute}",
+            arguments = listOf(
+                navArgument("encodedRoute") {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            it.arguments?.let { loadingArguments ->
+                LoadingScreen(
+                    navController = navController,
+                    encodedRoute = loadingArguments.getString("encodedRoute").toString()
+                )
+            }
         }
     }
 }
