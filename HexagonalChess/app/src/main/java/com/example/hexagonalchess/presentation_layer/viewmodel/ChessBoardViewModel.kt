@@ -3,6 +3,7 @@ package com.example.hexagonalchess.presentation_layer.viewmodel
 import android.content.Context
 import android.media.MediaPlayer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.model.TilePair
 import com.example.hexagonalchess.data_layer.model.blackPawnForwardTwo
@@ -35,8 +36,9 @@ import com.example.hexagonalchess.domain_layer.piecemove.rookMove
 import com.example.hexagonalchess.domain_layer.playSoundEffect
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
-open class ChessBoardViewModel(
+class ChessBoardViewModel(
     allTiles: List<Tile>,
     val boardType: BoardType,
     val context: Context
@@ -75,25 +77,28 @@ open class ChessBoardViewModel(
 
     fun onClickPieces(tile: Tile) {
         println(tile.id)
+        var result = listOf<TileId?>()
         if (_gameStateLocal.value == GameStateLocal.OPEN) {
-            for (tiles in _chessBoard.value) {
-                tiles.isAPossibleMove = false
-            }
-            tile.chessPiece?.let {
-                if (checkTurn(tile)) {
-                    val result: List<TileId?> = when(it.type) {
-                        PAWN -> pawnMove(tile, _chessBoard.value, boardType)
-                        KNIGHT -> knightMove(tile, _chessBoard.value, boardType)
-                        BISHOP -> bishopMove(tile, _chessBoard.value, boardType)
-                        ROOK -> rookMove(tile, _chessBoard.value, boardType)
-                        QUEEN -> queenMove(tile, _chessBoard.value, boardType)
-                        KING -> kingMove(tile, _chessBoard.value, boardType)
-                    }
+            viewModelScope.launch {
+                for (tiles in _chessBoard.value) {
+                    tiles.isAPossibleMove = false
+                }
 
-                    resolveMoveResult(result, tile)
-                    updateBoard()
+                tile.chessPiece?.let {
+                    if (checkTurn(tile)) {
+                        result = when(it.type) {
+                            PAWN -> pawnMove(tile, _chessBoard.value, boardType)
+                            KNIGHT -> knightMove(tile, _chessBoard.value, boardType)
+                            BISHOP -> bishopMove(tile, _chessBoard.value, boardType)
+                            ROOK -> rookMove(tile, _chessBoard.value, boardType)
+                            QUEEN -> queenMove(tile, _chessBoard.value, boardType)
+                            KING -> kingMove(tile, _chessBoard.value, boardType)
+                        }
+                    }
                 }
             }
+            resolveMoveResult(result, tile)
+            updateBoard()
         }
     }
 

@@ -10,9 +10,14 @@ import com.example.hexagonalchess.domain_layer.filterSameColor
 import com.example.hexagonalchess.domain_layer.findTile
 import com.example.hexagonalchess.domain_layer.getPawnStartingPoint
 import com.example.hexagonalchess.domain_layer.getTileIndex
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-fun pawnMove(selectedTile: Tile, board:List<Tile>, boardType: BoardType): List<TileId?> {
+suspend fun pawnMove(selectedTile: Tile, board:List<Tile>, boardType: BoardType): List<TileId?> {
     val result = mutableListOf<TileId?>()
+
     if (selectedTile.chessPiece!!.color == PieceColor.WHITE) {
         val forward1 = findTile(selectedTile.id, TileDirections.TOP, board, boardType)
         var forward2 = forward1
@@ -72,13 +77,11 @@ fun pawnMove(selectedTile: Tile, board:List<Tile>, boardType: BoardType): List<T
         }
 
         val startingTiles = getPawnStartingPoint(boardType, PieceColor.BLACK)
-        if(!containPiece(forward1, board, boardType) && !containPiece(forward2, board, boardType)) {
-            for (tileId in startingTiles) {
-                if (tileId == selectedTile.id) {
-                    result.add(forward2)
-                    break
-                }
-            }
+        val forward1NotContainPiece = !containPiece(forward1, board, boardType)
+        val forward2NotContainPiece = !containPiece(forward2, board, boardType)
+        val selectedTileIsInStartPosition = startingTiles.contains(selectedTile.id)
+        if( forward1NotContainPiece && forward2NotContainPiece && selectedTileIsInStartPosition) {
+            result.add(forward2)
         }
 
         val attack1 = findTile(selectedTile.id, TileDirections.UNDER_LEFT, board, boardType)

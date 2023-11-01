@@ -82,21 +82,23 @@ class ChessBoardVsCPUViewModel(
             tiles.isAPossibleMove = false
         }
         if (_gameState.value == GameStateVsCpu.PLAYER_TURN ) {
-            tile.chessPiece?.let {
-                if (_currentTurn.value == playerTurn && it.color == playerTurn) {
-                    val result: MutableList<TileId?> = when(it.type) {
-                        PieceType.PAWN -> pawnMove(tile, _chessBoard.value, boardType)
-                        PieceType.KNIGHT -> knightMove(tile, _chessBoard.value, boardType)
-                        PieceType.BISHOP -> bishopMove(tile, _chessBoard.value, boardType)
-                        PieceType.ROOK -> rookMove(tile, _chessBoard.value, boardType)
-                        PieceType.QUEEN -> queenMove(tile, _chessBoard.value, boardType)
-                        PieceType.KING -> kingMove(tile, _chessBoard.value, boardType)
-                    }.toMutableList()
-
-                    resolveMoveResult(result, tile)
-                    updateBoard()
+            var result = mutableListOf<TileId?>()
+            viewModelScope.launch {
+                tile.chessPiece?.let {
+                    if (_currentTurn.value == playerTurn && it.color == playerTurn) {
+                        result = when(it.type) {
+                            PieceType.PAWN -> pawnMove(tile, _chessBoard.value, boardType)
+                            PieceType.KNIGHT -> knightMove(tile, _chessBoard.value, boardType)
+                            PieceType.BISHOP -> bishopMove(tile, _chessBoard.value, boardType)
+                            PieceType.ROOK -> rookMove(tile, _chessBoard.value, boardType)
+                            PieceType.QUEEN -> queenMove(tile, _chessBoard.value, boardType)
+                            PieceType.KING -> kingMove(tile, _chessBoard.value, boardType)
+                        }.toMutableList()
+                    }
                 }
             }
+            resolveMoveResult(result, tile)
+            updateBoard()
         }
     }
 
@@ -362,16 +364,19 @@ class ChessBoardVsCPUViewModel(
 
         for (cpuTile in tileWithCpuPiece) {
             val viableMove = mutableListOf<TileId?>()
-            board[getTileIndex(cpuTile, boardType)].chessPiece?.let {
-                 viableMove.addAll(when(it.type) {
-                     PieceType.KNIGHT -> knightMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
-                     PieceType.PAWN -> pawnMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
-                     PieceType.BISHOP -> bishopMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
-                     PieceType.ROOK -> rookMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
-                     PieceType.QUEEN -> queenMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
-                     PieceType.KING -> kingMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
-                 }.toMutableList())
+            viewModelScope.launch {
+                board[getTileIndex(cpuTile, boardType)].chessPiece?.let {
+                    viableMove.addAll(when(it.type) {
+                        PieceType.KNIGHT -> knightMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
+                        PieceType.PAWN -> pawnMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
+                        PieceType.BISHOP -> bishopMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
+                        PieceType.ROOK -> rookMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
+                        PieceType.QUEEN -> queenMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
+                        PieceType.KING -> kingMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
+                    }.toMutableList())
+                }
             }
+
             val iterator = viableMove.iterator()
             while (iterator.hasNext()){
                 val currentMove = iterator.next()
@@ -385,17 +390,19 @@ class ChessBoardVsCPUViewModel(
         }
         val chosenTile = tileWithMovablePiece[random.nextInt(tileWithMovablePiece.size)]
         val movesInChosenTile = mutableListOf<TileId?>()
-        board[getTileIndex(chosenTile, boardType)].chessPiece?.let {
-            movesInChosenTile.addAll(
-                when(it.type) {
-                    PieceType.KNIGHT -> knightMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
-                    PieceType.PAWN -> pawnMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
-                    PieceType.BISHOP -> bishopMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
-                    PieceType.ROOK -> rookMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
-                    PieceType.QUEEN -> queenMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
-                    PieceType.KING -> kingMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
-                }
-            )
+        viewModelScope.launch {
+            board[getTileIndex(chosenTile, boardType)].chessPiece?.let {
+                movesInChosenTile.addAll(
+                    when(it.type) {
+                        PieceType.KNIGHT -> knightMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
+                        PieceType.PAWN -> pawnMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
+                        PieceType.BISHOP -> bishopMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
+                        PieceType.ROOK -> rookMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
+                        PieceType.QUEEN -> queenMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
+                        PieceType.KING -> kingMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
+                    }
+                )
+            }
         }
 
         val iterator = movesInChosenTile.iterator()
