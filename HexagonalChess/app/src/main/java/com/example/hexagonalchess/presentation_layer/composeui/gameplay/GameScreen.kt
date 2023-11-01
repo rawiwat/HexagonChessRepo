@@ -1,4 +1,4 @@
-package com.example.hexagonalchess.presentation_layer.composeui.play_local
+package com.example.hexagonalchess.presentation_layer.composeui.gameplay
 
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Surface
@@ -35,22 +34,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hexagonalchess.R
-import com.example.hexagonalchess.data_layer.chess_board_data.base.ChessboardData
-import com.example.hexagonalchess.data_layer.chess_board_data.big.BigChessBoardData
-import com.example.hexagonalchess.data_layer.chess_board_data.shafran.ShafranChessBoardData
-import com.example.hexagonalchess.data_layer.chess_board_data.starchess.ShurikenBoardData
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
-import com.example.hexagonalchess.domain_layer.GameStateLocal
+import com.example.hexagonalchess.domain_layer.ChessGameState
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.PieceType
 import com.example.hexagonalchess.domain_layer.TileTheme
@@ -72,12 +65,14 @@ fun GameScreen(
     val currentTurn by chessBoardViewModel.currentTurn.collectAsState()
     val blackCaptured by chessBoardViewModel.blackCaptured.collectAsState()
     val whiteCaptured by chessBoardViewModel.whiteCaptured.collectAsState()
-    val gameState by chessBoardViewModel.gameStateLocal.collectAsState()
+    val gameState by chessBoardViewModel.gameState.collectAsState()
     val gameOverMessage by chessBoardViewModel.gameOverMessage.collectAsState()
     val theme by remember { mutableStateOf(ThemeSharedPrefs(context).getTheme()) }
     val localConfiguration = LocalConfiguration.current
     val screenWidth by remember { mutableIntStateOf(localConfiguration.screenWidthDp) }
     val tileUiManager by remember { mutableStateOf(TileUiManager(screenWidth)) }
+    val playerColor by remember { mutableStateOf(chessBoardViewModel.playerColor) }
+    //val gameMode by remember { mutableStateOf(chessBoardViewModel.gameMode) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -112,7 +107,8 @@ fun GameScreen(
                         theme = theme,
                         screenWidth = screenWidth,
                         tileUiManager = tileUiManager,
-                        boardType = boardType
+                        boardType = boardType,
+                        playerColor = playerColor
                     )
                 }
                 BoardType.STAR_CHESS -> {
@@ -122,7 +118,8 @@ fun GameScreen(
                         theme = theme,
                         screenWidth = screenWidth,
                         tileUiManager = tileUiManager,
-                        boardType = boardType
+                        boardType = boardType,
+                        playerColor = playerColor
                     )
                 }
 
@@ -133,7 +130,8 @@ fun GameScreen(
                         theme = theme,
                         screenWidth = screenWidth,
                         tileUiManager = tileUiManager,
-                        boardType = boardType
+                        boardType = boardType,
+                        playerColor = playerColor
                     )
                 }
 
@@ -144,7 +142,8 @@ fun GameScreen(
                         theme = theme,
                         screenWidth = screenWidth,
                         tileUiManager = tileUiManager,
-                        boardType = boardType
+                        boardType = boardType,
+                        playerColor = playerColor
                     )
                 }
             }
@@ -189,7 +188,7 @@ fun GameScreen(
         val popUpBoxHeight by remember { mutableStateOf(130.dp) }
 
         AnimatedVisibility(
-            visible = (gameState == GameStateLocal.GAME_OVER),
+            visible = (gameState == ChessGameState.GAME_OVER),
             enter = scaleIn(
                 animationSpec = tween(150, 150)
             )
@@ -214,7 +213,10 @@ fun GameScreen(
         }
 
         AnimatedVisibility(
-            visible = (gameState == GameStateLocal.PROMOTE),
+            visible = (
+                    gameState == ChessGameState.PLAYER1_PROMOTE ||
+                    gameState == ChessGameState.PLAYER2_PROMOTE
+                    ),
         ) {
             val color by rememberSaveable {
                 mutableStateOf(if (currentTurn == PieceColor.BLACK) PieceColor.WHITE else PieceColor.BLACK)

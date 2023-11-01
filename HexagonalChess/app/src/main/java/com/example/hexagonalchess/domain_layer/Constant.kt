@@ -65,10 +65,13 @@ enum class GameEndMethod {
     CHECKMATE
 }
 
-enum class GameStateLocal {
-    OPEN,
-    PROMOTE,
+enum class ChessGameState {
+    PLAYER1_TURN,
+    PLAYER2_TURN,
+    PLAYER1_PROMOTE,
+    PLAYER2_PROMOTE,
     GAME_OVER,
+    CPU_TURN
 }
 
 enum class GameStateVsCpu {

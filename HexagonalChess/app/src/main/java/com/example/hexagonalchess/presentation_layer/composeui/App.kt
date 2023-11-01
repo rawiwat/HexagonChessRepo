@@ -15,11 +15,9 @@ import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.Route
-import com.example.hexagonalchess.presentation_layer.composeui.play_cpu.PlayerVsCpuScreen
-import com.example.hexagonalchess.presentation_layer.composeui.play_local.GameScreen
+import com.example.hexagonalchess.presentation_layer.composeui.gameplay.GameScreen
 import com.example.hexagonalchess.presentation_layer.viewmodel.BoardSelectionViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
-import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardVsCPUViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.SettingViewModel
 
 @Composable

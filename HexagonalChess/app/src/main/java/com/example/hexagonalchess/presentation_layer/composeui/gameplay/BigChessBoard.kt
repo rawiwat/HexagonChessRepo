@@ -1,4 +1,4 @@
-package com.example.hexagonalchess.presentation_layer.composeui.play_cpu
+package com.example.hexagonalchess.presentation_layer.composeui.gameplay
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
@@ -14,36 +14,30 @@ import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.tile_ui_manager.TileUiManager
-import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardVsCPUViewModel
-
+import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 
 @Composable
-fun ShafranChessBoardVsCpuUI(
+fun BigBoardUI(
     chessBoardData:List<Tile>,
-    chessBoardViewModel: ChessBoardVsCPUViewModel,
+    chessBoardViewModel: ChessBoardViewModel,
     theme: TileTheme,
-    playerColor: PieceColor,
-    tileUiManager: TileUiManager,
     screenWidth: Int,
-    boardType: BoardType
+    tileUiManager: TileUiManager,
+    boardType: BoardType,
+    playerColor: PieceColor
 ) {
     var columnA = chessBoardData.subList(0,6)
-
     var columnB = chessBoardData.subList(6,13)
-
     var columnC = chessBoardData.subList(13,21)
-
     var columnD = chessBoardData.subList(21,30)
-
     var columnE = chessBoardData.subList(30,40)
+    var columnF = chessBoardData.subList(40,51)
+    var columnG = chessBoardData.subList(51,61)
+    var columnH = chessBoardData.subList(61,70)
+    var columnI = chessBoardData.subList(70,78)
+    var columnJ = chessBoardData.subList(78,85)
+    var columnK = chessBoardData.subList(85,91)
 
-    var columnF = chessBoardData.subList(40,49)
-
-    var columnG = chessBoardData.subList(49,57)
-
-    var columnH = chessBoardData.subList(57,64)
-
-    var columnI = chessBoardData.subList(64,70)
     if (playerColor == PieceColor.BLACK) {
         columnA = columnA.reversed()
         columnB = columnB.reversed()
@@ -54,24 +48,26 @@ fun ShafranChessBoardVsCpuUI(
         columnG = columnG.reversed()
         columnH = columnH.reversed()
         columnI = columnI.reversed()
+        columnJ = columnJ.reversed()
+        columnK = columnK.reversed()
     }
     Box(
         modifier = Modifier
             .wrapContentSize()
-            .padding(start = (screenWidth / 15).dp)
+            .padding(start = (screenWidth / 60).dp)
     ) {
         LazyColumn(
             modifier = Modifier
-                .offset(y = tileUiManager.columnAY.dp)
+                .offset(y = tileUiManager.bigColumnAY.dp)
         ) {
             items(
                 columnA,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )
@@ -81,18 +77,18 @@ fun ShafranChessBoardVsCpuUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.columnBX.dp,
-                    y = tileUiManager.columnBY.dp
+                    x = tileUiManager.bigColumnBX.dp,
+                    y = tileUiManager.bigColumnBY.dp
                 )
         ) {
             items(
                 columnB,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )
@@ -102,18 +98,18 @@ fun ShafranChessBoardVsCpuUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.columnCX.dp,
-                    y = tileUiManager.columnCY.dp
+                    x = tileUiManager.bigColumnCX.dp,
+                    y = tileUiManager.bigColumnCY.dp
                 )
         ) {
             items(
                 columnC,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )
@@ -123,18 +119,18 @@ fun ShafranChessBoardVsCpuUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.columnDX.dp,
-                    y = tileUiManager.columnDY.dp
+                    x = tileUiManager.bigColumnDX.dp,
+                    y = tileUiManager.bigColumnDY.dp
                 )
         ) {
             items(
                 columnD,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )
@@ -144,17 +140,18 @@ fun ShafranChessBoardVsCpuUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.columnEX.dp
+                    x = tileUiManager.bigColumnEX.dp,
+                    y = tileUiManager.bigColumnEY.dp
                 )
         ) {
             items(
                 columnE,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )
@@ -164,18 +161,17 @@ fun ShafranChessBoardVsCpuUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.columnFX.dp,
-                    y = tileUiManager.columnFY.dp
+                    x = tileUiManager.bigColumnFX.dp
                 )
         ) {
             items(
                 columnF,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )
@@ -185,18 +181,18 @@ fun ShafranChessBoardVsCpuUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.columnGX.dp,
-                    y = tileUiManager.columnGY.dp
+                    x = tileUiManager.bigColumnGX.dp,
+                    y = tileUiManager.bigColumnGY.dp
                 )
         ) {
             items(
                 columnG,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )
@@ -206,18 +202,18 @@ fun ShafranChessBoardVsCpuUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.columnHX.dp,
-                    y = tileUiManager.columnHY.dp
+                    x = tileUiManager.bigColumnHX.dp,
+                    y = tileUiManager.bigColumnHY.dp
                 )
         ) {
             items(
                 columnH,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )
@@ -227,18 +223,58 @@ fun ShafranChessBoardVsCpuUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.columnIX.dp,
-                    y = tileUiManager.columnIY.dp
+                    x = tileUiManager.bigColumnIX.dp,
+                    y = tileUiManager.bigColumnIY.dp
                 )
         ) {
             items(
                 columnI,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme,
+                    boardType = boardType
+                )
+            }
+        }
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.bigColumnJX.dp,
+                    y = tileUiManager.bigColumnJY.dp
+                )
+        ) {
+            items(
+                columnJ,
+                key = { it.id }
+            ) {
+                TileUI(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel,
+                    theme = theme,
+                    boardType = boardType
+                )
+            }
+        }
+        LazyColumn(
+            modifier = Modifier
+                .offset(
+                    x = tileUiManager.bigColumnKX.dp,
+                    y = tileUiManager.bigColumnKY.dp
+                )
+        ) {
+            items(
+                columnK,
+                key = { it.id }
+            ) {
+                TileUI(
+                    tile = it,
+                    tileUiManager = tileUiManager,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )

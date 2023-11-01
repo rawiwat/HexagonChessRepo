@@ -1,9 +1,9 @@
-package com.example.hexagonalchess.presentation_layer.composeui.play_cpu
+package com.example.hexagonalchess.presentation_layer.composeui.gameplay
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -14,36 +14,28 @@ import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.tile_ui_manager.TileUiManager
-import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardVsCPUViewModel
+import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 
 
 @Composable
-fun ChessBoardUIVsCPU(
+fun ShafranChessBoardUI(
     chessBoardData:List<Tile>,
-    chessBoardVsCpuViewModel: ChessBoardVsCPUViewModel,
+    chessBoardViewModel: ChessBoardViewModel,
     theme: TileTheme,
-    playerColor: PieceColor,
-    screenWidth: Int,
     tileUiManager: TileUiManager,
-    boardType: BoardType
+    screenWidth: Int,
+    boardType: BoardType,
+    playerColor: PieceColor
 ) {
-    var columnA = chessBoardData.subList(0,8)
-
-    var columnB = chessBoardData.subList(8,17)
-
-    var columnC = chessBoardData.subList(17,27)
-
-    var columnD = chessBoardData.subList(27,38)
-
-    var columnE = chessBoardData.subList(38,50)
-
-    var columnF = chessBoardData.subList(50,61)
-
-    var columnG = chessBoardData.subList(61,71)
-
-    var columnH = chessBoardData.subList(71,80)
-
-    var columnI = chessBoardData.subList(80,88)
+    var columnA = chessBoardData.subList(0,6)
+    var columnB = chessBoardData.subList(6,13)
+    var columnC = chessBoardData.subList(13,21)
+    var columnD = chessBoardData.subList(21,30)
+    var columnE = chessBoardData.subList(30,40)
+    var columnF = chessBoardData.subList(40,49)
+    var columnG = chessBoardData.subList(49,57)
+    var columnH = chessBoardData.subList(57,64)
+    var columnI = chessBoardData.subList(64,70)
 
     if (playerColor == PieceColor.BLACK) {
         columnA = columnA.reversed()
@@ -56,26 +48,23 @@ fun ChessBoardUIVsCPU(
         columnH = columnH.reversed()
         columnI = columnI.reversed()
     }
-
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = (screenWidth / 16).dp)
+            .wrapContentSize()
+            .padding(start = (screenWidth / 15).dp)
     ) {
         LazyColumn(
             modifier = Modifier
-                .offset(
-                    y = tileUiManager.columnAY.dp
-                )
+                .offset(y = tileUiManager.columnAY.dp)
         ) {
             items(
                 columnA,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )
@@ -93,10 +82,10 @@ fun ChessBoardUIVsCPU(
                 columnB,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )
@@ -114,10 +103,10 @@ fun ChessBoardUIVsCPU(
                 columnC,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )
@@ -135,10 +124,10 @@ fun ChessBoardUIVsCPU(
                 columnD,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )
@@ -155,10 +144,10 @@ fun ChessBoardUIVsCPU(
                 columnE,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )
@@ -176,10 +165,10 @@ fun ChessBoardUIVsCPU(
                 columnF,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )
@@ -197,10 +186,10 @@ fun ChessBoardUIVsCPU(
                 columnG,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )
@@ -218,10 +207,10 @@ fun ChessBoardUIVsCPU(
                 columnH,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )
@@ -239,10 +228,10 @@ fun ChessBoardUIVsCPU(
                 columnI,
                 key = { it.id }
             ) {
-                TileUIVsCpu(
+                TileUI(
                     tile = it,
                     tileUiManager = tileUiManager,
-                    chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
+                    chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
                     boardType = boardType
                 )

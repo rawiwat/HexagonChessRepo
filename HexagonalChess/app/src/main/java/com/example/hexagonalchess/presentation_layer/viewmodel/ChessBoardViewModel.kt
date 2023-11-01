@@ -1,7 +1,7 @@
 package com.example.hexagonalchess.presentation_layer.viewmodel
 
+import android.app.GameState
 import android.content.Context
-import android.media.MediaPlayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hexagonalchess.R
@@ -11,12 +11,11 @@ import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.data_layer.model.whitePawnForwardTwo
 import com.example.hexagonalchess.domain_layer.BoardType
+import com.example.hexagonalchess.domain_layer.ChessGameState
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.GameEndMethod
 import com.example.hexagonalchess.domain_layer.GameMode
-import com.example.hexagonalchess.domain_layer.GameStateLocal
 import com.example.hexagonalchess.domain_layer.PieceColor
-import com.example.hexagonalchess.domain_layer.PieceType
 import com.example.hexagonalchess.domain_layer.PieceType.BISHOP
 import com.example.hexagonalchess.domain_layer.PieceType.KING
 import com.example.hexagonalchess.domain_layer.PieceType.KNIGHT
@@ -37,9 +36,14 @@ import com.example.hexagonalchess.domain_layer.piecemove.pawnMove
 import com.example.hexagonalchess.domain_layer.piecemove.queenMove
 import com.example.hexagonalchess.domain_layer.piecemove.rookMove
 import com.example.hexagonalchess.domain_layer.playSoundEffect
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
 
 class ChessBoardViewModel(
@@ -71,8 +75,18 @@ class ChessBoardViewModel(
     private val _currentTurn = MutableStateFlow(PieceColor.WHITE)
     val currentTurn:StateFlow<PieceColor> = _currentTurn
 
-    private val _gameStateLocal = MutableStateFlow(GameStateLocal.OPEN)
-    val gameStateLocal:StateFlow<GameStateLocal> = _gameStateLocal
+    private val _gameState = MutableStateFlow(
+            when(gameMode) {
+                GameMode.LOCAL -> ChessGameState.PLAYER1_TURN
+                GameMode.ONLINE -> ChessGameState.PLAYER1_TURN
+                GameMode.CPU -> when(playerColor){
+                    PieceColor.WHITE -> ChessGameState.PLAYER1_TURN
+                    PieceColor.BLACK -> ChessGameState.CPU_TURN
+            }
+        }
+    )
+
+    val gameState:StateFlow<ChessGameState> = _gameState
 
     private val _gameOverMessage = MutableStateFlow("Game Over man Game Over")
     val gameOverMessage:StateFlow<String> = _gameOverMessage
@@ -85,12 +99,11 @@ class ChessBoardViewModel(
 
     fun onClickPieces(tile: Tile) {
         var result = listOf<TileId?>()
-        if (_gameStateLocal.value == GameStateLocal.OPEN) {
+        if (_gameState.value == ChessGameState.PLAYER1_TURN || _gameState.value == ChessGameState.PLAYER1_TURN) {
             viewModelScope.launch {
                 for (tiles in _chessBoard.value) {
                     tiles.isAPossibleMove = false
                 }
-
                 tile.chessPiece?.let {
                     if (checkTurn(tile)) {
                         result = when(it.type) {
@@ -124,8 +137,13 @@ class ChessBoardViewModel(
             val selectedTileIndex = getTileIndex(movingTile.id, boardType)
             _chessBoard.value[selectedTileIndex].chessPiece = null
             if (movingTile.chessPiece!!.type == PAWN && getListOfPromotionTile(boardType, movingTile.chessPiece!!.color).contains(targetedTile.id)) {
-                _gameStateLocal.value = GameStateLocal.PROMOTE
+                if (_gameState.value == ChessGameState.PLAYER1_TURN) {
+                    _gameState.value = ChessGameState.PLAYER1_PROMOTE
+                } else if (_gameState.value == ChessGameState.PLAYER2_TURN) {
+                    _gameState.value = ChessGameState.PLAYER2_PROMOTE
+                }
             }
+
             val currentMovePath = TilePair(
                 startingPoint = movingTile.id,
                 endPoint = selectingTile!!.id
@@ -149,21 +167,32 @@ class ChessBoardViewModel(
             updateBoard()
         }
     }
-
-    private fun resolveMoveResult(result:List<TileId?>,selectedTile: Tile) {
-        for (tileId in result) {
-            val index = tileId?.let { getTileIndex(it, boardType) }
-            index?.let { currentIndex ->
-                if (_chessBoard.value[currentIndex].chessPiece == null) {
-                    _chessBoard.value[currentIndex].isAPossibleMove = true
-                }
-                _chessBoard.value[currentIndex].chessPiece?.let {
-                    selectedTile.chessPiece?.let {
-                        _chessBoard.value[currentIndex].isAPossibleMove = true
-                    }
+    private fun processTileAsync(tileId: TileId?, boardType: BoardType, chessBoard: MutableStateFlow<List<Tile>>, selectedTile: Tile) {
+        tileId?.let {
+            val index = getTileIndex(it, boardType)
+            if (chessBoard.value[index].chessPiece == null) {
+                chessBoard.value[index].isAPossibleMove = true
+            }
+            chessBoard.value[index].chessPiece?.let {
+                selectedTile.chessPiece?.let {
+                    chessBoard.value[index].isAPossibleMove = true
                 }
             }
         }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun resolveMoveResult(result:List<TileId?>, selectedTile: Tile) {
+        val deferredResults = result.map { tileId ->
+            GlobalScope.async {
+                processTileAsync(tileId, boardType, _chessBoard, selectedTile)
+            }
+        }
+
+        runBlocking {
+            deferredResults.awaitAll()
+        }
+
         movingTile = selectedTile
     }
 
@@ -175,6 +204,24 @@ class ChessBoardViewModel(
     }
 
     private fun changeTurn() {
+        when(gameMode) {
+            GameMode.CPU -> {
+                if (_gameState.value == ChessGameState.CPU_TURN) {
+                    _gameState.value = ChessGameState.PLAYER1_TURN
+                } else if (_gameState.value == ChessGameState.PLAYER1_TURN) {
+                    _gameState.value = ChessGameState.CPU_TURN
+                    cpuMove(_chessBoard.value, context)
+                }
+            }
+            else -> {
+                if (_gameState.value == ChessGameState.PLAYER2_TURN) {
+                    _gameState.value = ChessGameState.PLAYER1_TURN
+                } else if (_gameState.value == ChessGameState.PLAYER1_TURN) {
+                    _gameState.value = ChessGameState.PLAYER2_TURN
+                    cpuMove(_chessBoard.value, context)
+                }
+            }
+        }
         when(_currentTurn.value) {
             PieceColor.BLACK -> {
                 _currentTurn.value = PieceColor.WHITE
@@ -329,7 +376,7 @@ class ChessBoardViewModel(
     }
 
     private fun gameOver(winnerColor: PieceColor, method:GameEndMethod) {
-        _gameStateLocal.value = GameStateLocal.GAME_OVER
+        _gameState.value = ChessGameState.GAME_OVER
         val winnerColorInMessage = when(winnerColor) {
             PieceColor.BLACK -> "Black"
             PieceColor.WHITE -> "White"
@@ -389,9 +436,12 @@ class ChessBoardViewModel(
     fun promotePawn(chosenPromotion : ChessPieceKeyWord) {
         _chessBoard.value[getTileIndex(selectingTile!!.id, boardType)].chessPiece = getChessPieceFromKeyWord(chosenPromotion)
         playSoundEffect(context, R.raw.promote)
-        _gameStateLocal.value = GameStateLocal.OPEN
+        if (_gameState.value == ChessGameState.PLAYER1_PROMOTE) {
+            _gameState.value = ChessGameState.PLAYER2_TURN
+        } else if (_gameState.value == ChessGameState.PLAYER2_PROMOTE) {
+            _gameState.value = ChessGameState.PLAYER1_TURN
+        }
     }
-
 
     private fun cpuMove(board: List<Tile>,context:Context) {
         val random = Random(System.currentTimeMillis())
@@ -512,6 +562,12 @@ class ChessBoardViewModel(
         val chosenPromotion = possibleResult.random()
         targetedTile.chessPiece = getChessPieceFromKeyWord(chosenPromotion)
         println("promote to $chosenPromotion")
+    }
+
+    init {
+        if (_gameState.value == ChessGameState.CPU_TURN) {
+            cpuMove(_chessBoard.value, context)
+        }
     }
 }
 
