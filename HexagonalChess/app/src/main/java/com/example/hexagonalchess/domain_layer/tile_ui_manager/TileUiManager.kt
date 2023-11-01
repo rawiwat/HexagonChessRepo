@@ -28,12 +28,12 @@ class TileUiManager(screenWidth:Int) {
     val columnHYShuriken = tileHeight * 2.5
     val columnIYShuriken = tileHeight * 3
 
-    val bigTileWidth = screenWidth / 10
-    val bigTileHeight = bigTileWidth / 1.15449202351
+    val bigTileHeight = screenWidth / 10
+    val bigTileWidth = bigTileHeight * 1.15449202351
     val bigColumnAY = bigTileHeight * 2.5
     val bigColumnBX = bigTileWidth * 3 / 4
     val bigColumnBY = bigTileHeight * 2
-    val bigColumnCX = bigTileWidth * 3 / 4
+    val bigColumnCX = bigTileWidth * 6 / 4
     val bigColumnCY = bigTileHeight * 1.5
     val bigColumnDX = bigTileWidth * 9 / 4
     val bigColumnDY = bigTileHeight

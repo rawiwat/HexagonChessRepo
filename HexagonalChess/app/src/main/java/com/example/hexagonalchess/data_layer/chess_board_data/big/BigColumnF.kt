@@ -9,7 +9,7 @@ import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 class BigColumnF {
     private val f1 = Tile(
         id = TileId.F1,
-        color = TileColor.DARK,
+        color = TileColor.LIGHT,
         topTile = TileId.F2,
         upperRightTile = TileId.G1,
         underRightTile = null,
@@ -21,7 +21,7 @@ class BigColumnF {
 
     private val f2 = Tile(
         id = TileId.F2,
-        color = TileColor.LIGHT,
+        color = TileColor.DARK,
         topTile = TileId.F3,
         upperRightTile = TileId.G2,
         underRightTile = TileId.G1,
@@ -45,7 +45,7 @@ class BigColumnF {
 
     private val f4 = Tile(
         id = TileId.F4,
-        color = TileColor.DARK,
+        color = TileColor.LIGHT,
         topTile = TileId.F5,
         upperRightTile = TileId.G4,
         underRightTile = TileId.G3,
@@ -56,7 +56,7 @@ class BigColumnF {
 
     private val f5 = Tile(
         id = TileId.F5,
-        color = TileColor.LIGHT,
+        color = TileColor.DARK,
         topTile = TileId.F6,
         upperRightTile = TileId.G5,
         underRightTile = TileId.G4,
@@ -79,7 +79,7 @@ class BigColumnF {
 
     private val f7 = Tile(
         id = TileId.F7,
-        color = TileColor.DARK,
+        color = TileColor.LIGHT,
         topTile = TileId.F8,
         upperRightTile = TileId.G7,
         underRightTile = TileId.G6,
@@ -91,7 +91,7 @@ class BigColumnF {
 
     private val f8 = Tile(
         id = TileId.F8,
-        color = TileColor.LIGHT,
+        color = TileColor.DARK,
         topTile = TileId.F9,
         upperRightTile = TileId.G8,
         underRightTile = TileId.G7,
@@ -114,7 +114,7 @@ class BigColumnF {
 
     private val f10 = Tile(
         id = TileId.F10,
-        color = TileColor.DARK,
+        color = TileColor.LIGHT,
         topTile = TileId.F11,
         upperRightTile = TileId.G10,
         underRightTile = TileId.G9,
@@ -126,7 +126,7 @@ class BigColumnF {
 
     private val f11 = Tile(
         id = TileId.F11,
-        color = TileColor.LIGHT,
+        color = TileColor.DARK,
         topTile = null,
         upperRightTile = null,
         underRightTile = TileId.G10,

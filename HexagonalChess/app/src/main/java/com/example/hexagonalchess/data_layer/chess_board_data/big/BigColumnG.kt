@@ -38,8 +38,7 @@ class BigColumnG {
         underRightTile = TileId.H2,
         bottomTile = TileId.G2,
         underLeftTile = TileId.F3,
-        upperLeftTile = TileId.F4,
-        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN)
+        upperLeftTile = TileId.F4
     )
 
     private val g4 = Tile(
@@ -50,7 +49,8 @@ class BigColumnG {
         underRightTile = TileId.H3,
         bottomTile = TileId.G3,
         underLeftTile = TileId.F4,
-        upperLeftTile = TileId.F5
+        upperLeftTile = TileId.F5,
+        chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN)
     )
 
     private val g5 = Tile(

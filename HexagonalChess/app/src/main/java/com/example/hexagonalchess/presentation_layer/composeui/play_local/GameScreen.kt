@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -110,7 +111,8 @@ fun GameScreen(
                         chessBoardViewModel = chessBoardViewModel,
                         theme = theme,
                         screenWidth = screenWidth,
-                        tileUiManager = tileUiManager
+                        tileUiManager = tileUiManager,
+                        boardType = boardType
                     )
                 }
                 BoardType.STAR_CHESS -> {
@@ -119,7 +121,8 @@ fun GameScreen(
                         chessBoardViewModel = chessBoardViewModel,
                         theme = theme,
                         screenWidth = screenWidth,
-                        tileUiManager = tileUiManager
+                        tileUiManager = tileUiManager,
+                        boardType = boardType
                     )
                 }
 
@@ -129,7 +132,8 @@ fun GameScreen(
                         chessBoardViewModel = chessBoardViewModel,
                         theme = theme,
                         screenWidth = screenWidth,
-                        tileUiManager = tileUiManager
+                        tileUiManager = tileUiManager,
+                        boardType = boardType
                     )
                 }
 
@@ -139,7 +143,8 @@ fun GameScreen(
                         chessBoardViewModel = chessBoardViewModel,
                         theme = theme,
                         screenWidth = screenWidth,
-                        tileUiManager = tileUiManager
+                        tileUiManager = tileUiManager,
+                        boardType = boardType
                     )
                 }
             }
@@ -252,18 +257,40 @@ fun TileUI(
     tile: Tile,
     tileUiManager: TileUiManager,
     chessBoardViewModel: ChessBoardViewModel,
-    theme: TileTheme
+    theme: TileTheme,
+    boardType: BoardType
 ) {
+    val width by remember {
+        mutableDoubleStateOf(
+            when (boardType) {
+                BoardType.BIG -> tileUiManager.bigTileWidth
+                else -> tileUiManager.tileWidth
+            }
+        )
+    }
+
+    val height by remember {
+        mutableIntStateOf(
+            when (boardType) {
+                BoardType.BIG -> tileUiManager.bigTileHeight
+                else -> tileUiManager.tileHeight
+            }
+        )
+    }
+
+    val imageId by remember {
+        mutableIntStateOf(getTileImage(tile.color, theme))
+    }
     Box(
         modifier = Modifier.wrapContentSize(),
     ) {
         Image(
-            painter =  painterResource(id = getTileImage(tile.color, theme)),
+            painter =  painterResource(id = imageId),
             contentDescription = null,
             modifier = Modifier
                 .size(
-                    width = tileUiManager.tileWidth.dp,
-                    height = tileUiManager.tileHeight.dp
+                    width = width.dp,
+                    height = height.toDouble().dp
                 )
 
         )
@@ -274,8 +301,8 @@ fun TileUI(
                 contentDescription = null,
                 modifier = Modifier
                     .size(
-                        width = tileUiManager.tileWidth.dp,
-                        height = tileUiManager.tileHeight.dp
+                        width = width.dp,
+                        height = height.toDouble().dp
                     )
                     .clickable { chessBoardViewModel.onClickPieces(tile) }
             )
@@ -287,8 +314,8 @@ fun TileUI(
                 contentDescription = null,
                 modifier = Modifier
                     .size(
-                        width = tileUiManager.tileWidth.dp,
-                        height = tileUiManager.tileHeight.dp
+                        width = width.dp,
+                        height = height.toDouble().dp
                     )
                     .clickable { chessBoardViewModel.onClickTargeted(tile) }
             )
@@ -504,19 +531,6 @@ fun GameScreenShafranPreview() {
     )
     GameScreen(chessBoardViewModel, LocalContext.current,BoardType.SHAFRAN)
 }
-
-@Preview
-@Composable
-fun GameScreenBigPreview() {
-    val allTiles = BigChessBoardData().allTiles
-    val chessBoardViewModel = ChessBoardViewModel(
-        allTiles,
-        BoardType.BIG,LocalContext.current
-    )
-    GameScreen(chessBoardViewModel, LocalContext.current,BoardType.BIG)
-}
-
-
 
 @Preview
 @Composable

@@ -21,7 +21,7 @@ class BigColumnI {
 
     private val i2 = Tile(
         id = TileId.I2,
-        color = TileColor.LIGHT,
+        color = TileColor.DARK,
         topTile = TileId.I3,
         upperRightTile = TileId.J2,
         underRightTile = TileId.J1,
@@ -44,7 +44,7 @@ class BigColumnI {
 
     private val i4 = Tile(
         id = TileId.I4,
-        color = TileColor.DARK,
+        color = TileColor.LIGHT,
         topTile = TileId.I5,
         upperRightTile = TileId.J4,
         underRightTile = TileId.J3,
@@ -55,7 +55,7 @@ class BigColumnI {
 
     private val i5 = Tile(
         id = TileId.I5,
-        color = TileColor.LIGHT,
+        color = TileColor.DARK,
         topTile = TileId.I6,
         upperRightTile = TileId.J5,
         underRightTile = TileId.J4,
@@ -77,7 +77,7 @@ class BigColumnI {
 
     private val i7 = Tile(
         id = TileId.I7,
-        color = TileColor.DARK,
+        color = TileColor.LIGHT,
         topTile = TileId.I8,
         upperRightTile = TileId.J7,
         underRightTile = TileId.J6,
@@ -89,7 +89,7 @@ class BigColumnI {
 
     private val i8 = Tile(
         id = TileId.I8,
-        color = TileColor.LIGHT,
+        color = TileColor.DARK,
         topTile = null,
         upperRightTile = null,
         underRightTile = TileId.J7,

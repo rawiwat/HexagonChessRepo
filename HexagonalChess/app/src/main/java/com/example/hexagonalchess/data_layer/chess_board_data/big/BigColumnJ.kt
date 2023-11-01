@@ -86,5 +86,5 @@ class BigColumnJ {
         chessPiece = getChessPieceFromKeyWord(ChessPieceKeyWord.BLACK_PAWN)
     )
 
-    val columnJ = listOf(j1,j2,j3,j4,j5,j6,j7)
+    val columnJ = listOf(j7,j6,j5,j4,j3,j2,j1)
 }

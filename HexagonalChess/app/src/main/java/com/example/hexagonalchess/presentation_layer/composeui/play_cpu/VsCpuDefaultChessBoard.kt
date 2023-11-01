@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.hexagonalchess.data_layer.model.tile.Tile
+import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.tile_ui_manager.TileUiManager
@@ -23,7 +24,8 @@ fun ChessBoardUIVsCPU(
     theme: TileTheme,
     playerColor: PieceColor,
     screenWidth: Int,
-    tileUiManager: TileUiManager
+    tileUiManager: TileUiManager,
+    boardType: BoardType
 ) {
     var columnA = chessBoardData.subList(0,8)
 
@@ -74,7 +76,8 @@ fun ChessBoardUIVsCPU(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -94,7 +97,8 @@ fun ChessBoardUIVsCPU(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -114,7 +118,8 @@ fun ChessBoardUIVsCPU(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -134,7 +139,8 @@ fun ChessBoardUIVsCPU(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -153,7 +159,8 @@ fun ChessBoardUIVsCPU(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -173,7 +180,8 @@ fun ChessBoardUIVsCPU(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -193,7 +201,8 @@ fun ChessBoardUIVsCPU(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -213,7 +222,8 @@ fun ChessBoardUIVsCPU(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -233,7 +243,8 @@ fun ChessBoardUIVsCPU(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardVsCpuViewModel = chessBoardVsCpuViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }

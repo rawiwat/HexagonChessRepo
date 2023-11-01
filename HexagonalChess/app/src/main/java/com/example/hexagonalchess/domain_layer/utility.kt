@@ -159,13 +159,13 @@ fun getListOfPromotionTile(boardType: BoardType, pieceColor: PieceColor): List<T
         BoardType.BIG ->
             when(pieceColor) {
                 PieceColor.WHITE -> listOf(
-                    TileId.B7,TileId.C8,TileId.D9,TileId.E10,
-                    TileId.F11,TileId.G10,TileId.H9,TileId.I8,TileId.J7
+                    TileId.A6,TileId.B7,TileId.C8,TileId.D9,TileId.E10,
+                    TileId.F11,TileId.G10,TileId.H9,TileId.I8,TileId.J7,TileId.K6
                 )
 
                 PieceColor.BLACK -> listOf(
-                    TileId.B1,TileId.C1,TileId.D1,TileId.E1,
-                    TileId.F1,TileId.G1,TileId.H1,TileId.I1,TileId.J1
+                    TileId.A1,TileId.B1,TileId.C1,TileId.D1,TileId.E1,
+                    TileId.F1,TileId.G1,TileId.H1,TileId.I1,TileId.J1,TileId.K1
                 )
             }
     }

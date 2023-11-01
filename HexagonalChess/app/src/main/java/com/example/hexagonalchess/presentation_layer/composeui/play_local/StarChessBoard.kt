@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.hexagonalchess.data_layer.model.tile.Tile
+import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.tile_ui_manager.TileUiManager
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
@@ -21,7 +22,8 @@ fun StarBoardUI(
     chessBoardViewModel: ChessBoardViewModel,
     theme: TileTheme,
     tileUiManager: TileUiManager,
-    screenWidth: Int
+    screenWidth: Int,
+    boardType: BoardType
 ) {
     val columnA = chessBoardData.subList(0,1)
 
@@ -58,7 +60,8 @@ fun StarBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -78,7 +81,8 @@ fun StarBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -97,7 +101,8 @@ fun StarBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -117,7 +122,8 @@ fun StarBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -137,7 +143,8 @@ fun StarBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -157,7 +164,8 @@ fun StarBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -176,7 +184,8 @@ fun StarBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -196,7 +205,8 @@ fun StarBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -216,7 +226,8 @@ fun StarBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }

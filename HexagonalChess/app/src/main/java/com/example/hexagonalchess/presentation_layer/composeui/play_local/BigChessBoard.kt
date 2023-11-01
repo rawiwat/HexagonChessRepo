@@ -8,8 +8,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.hexagonalchess.data_layer.chess_board_data.big.BigChessBoardData
 import com.example.hexagonalchess.data_layer.model.tile.Tile
+import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.tile_ui_manager.TileUiManager
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
@@ -20,7 +24,8 @@ fun BigBoardUI(
     chessBoardViewModel: ChessBoardViewModel,
     theme: TileTheme,
     screenWidth: Int,
-    tileUiManager: TileUiManager
+    tileUiManager: TileUiManager,
+    boardType: BoardType
 ) {
     val columnA = chessBoardData.subList(0,6)
 
@@ -47,6 +52,7 @@ fun BigBoardUI(
     Box(
         modifier = Modifier
             .wrapContentSize()
+            .padding(start = (screenWidth / 60).dp)
     ) {
         LazyColumn(
             modifier = Modifier
@@ -60,7 +66,8 @@ fun BigBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -80,7 +87,8 @@ fun BigBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -100,7 +108,8 @@ fun BigBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -120,7 +129,8 @@ fun BigBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -140,7 +150,8 @@ fun BigBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -159,7 +170,8 @@ fun BigBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -179,7 +191,8 @@ fun BigBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -199,7 +212,8 @@ fun BigBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -219,7 +233,8 @@ fun BigBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -238,7 +253,8 @@ fun BigBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
@@ -257,9 +273,22 @@ fun BigBoardUI(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
-                    theme = theme
+                    theme = theme,
+                    boardType = boardType
                 )
             }
         }
     }
+}
+
+
+@Preview
+@Composable
+fun GameScreenBigPreview() {
+    val allTiles = BigChessBoardData().allTiles
+    val chessBoardViewModel = ChessBoardViewModel(
+        allTiles,
+        BoardType.BIG, LocalContext.current
+    )
+    GameScreen(chessBoardViewModel, LocalContext.current,BoardType.BIG)
 }
