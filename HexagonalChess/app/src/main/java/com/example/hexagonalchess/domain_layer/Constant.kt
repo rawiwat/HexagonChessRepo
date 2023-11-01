@@ -91,7 +91,7 @@ enum class TileTheme {
 class Route {
     companion object {
         const val main = "Main"
-        const val local = "Local"
+        const val game = "gameplay"
         const val setting = "Setting"
         const val vsCpu = "Vs Cpu"
         const val online = "Online"

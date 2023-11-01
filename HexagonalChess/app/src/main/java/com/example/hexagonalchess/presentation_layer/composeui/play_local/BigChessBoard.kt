@@ -280,15 +280,3 @@ fun BigBoardUI(
         }
     }
 }
-
-
-@Preview
-@Composable
-fun GameScreenBigPreview() {
-    val allTiles = BigChessBoardData().allTiles
-    val chessBoardViewModel = ChessBoardViewModel(
-        allTiles,
-        BoardType.BIG, LocalContext.current
-    )
-    GameScreen(chessBoardViewModel, LocalContext.current,BoardType.BIG)
-}

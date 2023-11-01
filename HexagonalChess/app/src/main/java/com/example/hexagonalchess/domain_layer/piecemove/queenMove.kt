@@ -4,6 +4,6 @@ import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.TileId
 
-fun queenMove(selectedTile: Tile, board: List<Tile>, boardType: BoardType):List<TileId?> {
+suspend fun queenMove(selectedTile: Tile, board: List<Tile>, boardType: BoardType):List<TileId?> {
     return bishopMove(selectedTile, board, boardType) + rookMove(selectedTile, board, boardType)
 }

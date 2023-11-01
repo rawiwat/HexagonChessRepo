@@ -12,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -36,9 +37,9 @@ fun LoadingScreen(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Now Loading",
+            text = "Now Loading...",
             fontFamily = FontFamily(Font(R.font.menu_text)),
-            fontSize = 50.sp,
+            fontSize = (LocalConfiguration.current.screenWidthDp / 10).sp,
             textAlign = TextAlign.Center,
             style = TextStyle(
                 color = Color.White

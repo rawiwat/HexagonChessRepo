@@ -13,8 +13,10 @@ import com.example.hexagonalchess.data_layer.model.whitePawnForwardTwo
 import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.GameEndMethod
+import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.GameStateLocal
 import com.example.hexagonalchess.domain_layer.PieceColor
+import com.example.hexagonalchess.domain_layer.PieceType
 import com.example.hexagonalchess.domain_layer.PieceType.BISHOP
 import com.example.hexagonalchess.domain_layer.PieceType.KING
 import com.example.hexagonalchess.domain_layer.PieceType.KNIGHT
@@ -27,6 +29,7 @@ import com.example.hexagonalchess.domain_layer.findTile
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 import com.example.hexagonalchess.domain_layer.getListOfPromotionTile
 import com.example.hexagonalchess.domain_layer.getTileIndex
+import com.example.hexagonalchess.domain_layer.opposite
 import com.example.hexagonalchess.domain_layer.piecemove.bishopMove
 import com.example.hexagonalchess.domain_layer.piecemove.kingMove
 import com.example.hexagonalchess.domain_layer.piecemove.knightMove
@@ -37,11 +40,14 @@ import com.example.hexagonalchess.domain_layer.playSoundEffect
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class ChessBoardViewModel(
     allTiles: List<Tile>,
     val boardType: BoardType,
-    val context: Context
+    val context: Context,
+    val gameMode: GameMode,
+    val playerColor: PieceColor
 ) : ViewModel() {
     private val _chessBoard = MutableStateFlow(allTiles)
     val chessBoard: StateFlow<List<Tile>> = _chessBoard
@@ -75,8 +81,9 @@ class ChessBoardViewModel(
 
     private var selectingTile:Tile? = null
 
+    private val cpuColor = playerColor.opposite()
+
     fun onClickPieces(tile: Tile) {
-        println(tile.id)
         var result = listOf<TileId?>()
         if (_gameStateLocal.value == GameStateLocal.OPEN) {
             viewModelScope.launch {
@@ -383,6 +390,128 @@ class ChessBoardViewModel(
         _chessBoard.value[getTileIndex(selectingTile!!.id, boardType)].chessPiece = getChessPieceFromKeyWord(chosenPromotion)
         playSoundEffect(context, R.raw.promote)
         _gameStateLocal.value = GameStateLocal.OPEN
+    }
+
+
+    private fun cpuMove(board: List<Tile>,context:Context) {
+        val random = Random(System.currentTimeMillis())
+        playSoundEffect(context, R.raw.move)
+        val tileWithCpuPiece = mutableListOf<TileId>()
+        val tileWithMovablePiece = mutableListOf<TileId>()
+        for (tile in board) {
+            tile.chessPiece?.let { tileChessPiece ->
+                if (tileChessPiece.color == cpuColor) {
+                    tileWithCpuPiece.add(tile.id)
+                }
+            }
+        }
+
+        for (cpuTile in tileWithCpuPiece) {
+            val viableMove = mutableListOf<TileId?>()
+            viewModelScope.launch {
+                board[getTileIndex(cpuTile, boardType)].chessPiece?.let {
+                    viableMove.addAll(when(it.type) {
+                        KNIGHT -> knightMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
+                        PAWN -> pawnMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
+                        BISHOP -> bishopMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
+                        ROOK -> rookMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
+                        QUEEN -> queenMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
+                        KING -> kingMove(board[getTileIndex(cpuTile, boardType)],board, boardType)
+                    }.toMutableList())
+                }
+            }
+
+            val iterator = viableMove.iterator()
+            while (iterator.hasNext()){
+                val currentMove = iterator.next()
+                if (currentMove == null) {
+                    iterator.remove()
+                }
+            }
+            if (viableMove.isNotEmpty()) {
+                tileWithMovablePiece.add(cpuTile)
+            }
+        }
+        val chosenTile = tileWithMovablePiece[random.nextInt(tileWithMovablePiece.size)]
+        val movesInChosenTile = mutableListOf<TileId?>()
+        viewModelScope.launch {
+            board[getTileIndex(chosenTile, boardType)].chessPiece?.let {
+                movesInChosenTile.addAll(
+                    when(it.type) {
+                        KNIGHT -> knightMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
+                        PAWN -> pawnMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
+                        BISHOP -> bishopMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
+                        ROOK -> rookMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
+                        QUEEN -> queenMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
+                        KING -> kingMove(board[getTileIndex(chosenTile, boardType)],board, boardType)
+                    }
+                )
+            }
+        }
+
+        val iterator = movesInChosenTile.iterator()
+        while (iterator.hasNext()){
+            val currentMove = iterator.next()
+            if (currentMove == null) {
+                iterator.remove()
+            }
+        }
+        val chosenMove = movesInChosenTile[random.nextInt(movesInChosenTile.size)]
+
+        val targetedTile = board[getTileIndex(chosenMove!!, boardType)]
+        val movingTile = board[getTileIndex(chosenTile, boardType)]
+        selectingTile = targetedTile
+        for (tile in _chessBoard.value) {
+            tile.isAPossibleMove = false
+        }
+        val targetedIndex = getTileIndex(targetedTile.id, boardType)
+        if (_chessBoard.value[targetedIndex].chessPiece != null ) {
+            capturePiece(_chessBoard.value[targetedIndex].chessPiece)
+        }
+        _chessBoard.value[targetedIndex].chessPiece = movingTile.chessPiece
+        val selectedTileIndex = getTileIndex(movingTile.id, boardType)
+        _chessBoard.value[selectedTileIndex].chessPiece = null
+        targetedTile.chessPiece?.let {
+            if (it.type == PAWN && getListOfPromotionTile(boardType, it.color).contains(chosenMove)) {
+                cpuPromote(it.color, targetedTile)
+            }
+        }
+        val currentMovePath = TilePair(
+            startingPoint = movingTile.id,
+            endPoint = selectingTile!!.id
+        )
+
+        movingTile.chessPiece?.let {
+            if (it.type == PAWN) {
+                enPassantEnable(currentMovePath,targetedTile)
+                checkAndPerformEnPassant(
+                    movingTileId = movingTile.id,
+                    targetedTileId = targetedTile.id,
+                    enPassantLeftEnable = it.enPassantLeftEnable,
+                    enPassantRightEnable = it.enPassantRightEnable,
+                    color = it.color,
+                    board = _chessBoard.value
+                )
+            }
+        }
+        println("CpuTiles:$tileWithCpuPiece")
+        println("CpuTiles that can move:$tileWithMovablePiece")
+        println("Chosen CpuTiles:$chosenTile")
+        println("Chosen CpuTiles Moves:$movesInChosenTile")
+        println("Chosen Move:$chosenMove")
+        changeTurn()
+        updateBoard()
+    }
+
+    private fun cpuPromote(color: PieceColor, targetedTile: Tile) {
+        playSoundEffect(context, R.raw.promote)
+        val possibleResult = when(color) {
+            PieceColor.WHITE -> listOf(ChessPieceKeyWord.WHITE_KNIGHT,ChessPieceKeyWord.WHITE_BISHOP,ChessPieceKeyWord.WHITE_ROOK,ChessPieceKeyWord.WHITE_QUEEN)
+            PieceColor.BLACK -> listOf(ChessPieceKeyWord.BLACK_KNIGHT,ChessPieceKeyWord.BLACK_BISHOP,ChessPieceKeyWord.BLACK_ROOK,ChessPieceKeyWord.BLACK_QUEEN)
+        }
+        val chosenPromotion = possibleResult.random()
+        targetedTile.chessPiece = getChessPieceFromKeyWord(chosenPromotion)
+        println("promote to $chosenPromotion")
     }
 }
 

@@ -1,7 +1,6 @@
 package com.example.hexagonalchess.presentation_layer.composeui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,11 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,7 +20,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -58,16 +54,17 @@ fun BoardSelectionScreen(
     gameMode: GameMode
 ) {
     val currentBoard by boardSelectionViewModel.currentBoard.collectAsState()
-    val route = when(gameMode) {
-        GameMode.LOCAL -> Route.local
+    /*val gameMode = when(gameMode) {
+        GameMode.LOCAL -> Route.game
         GameMode.ONLINE -> Route.online
         GameMode.CPU -> Route.vsCpu
-    }
+    }*/
 
     val listOfBoardType = BoardType.values().toList()
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val previewHeight = screenWidth * 4 / 3
-    val encodedRoute = URLEncoder.encode("$route/$currentBoard","UTF-8")
+    val encodedRoute = URLEncoder.encode("${Route.game}/$gameMode/$currentBoard","UTF-8")
+
     Scaffold(
         bottomBar = {
             Box(
@@ -199,5 +196,6 @@ fun BoardSelectionPreview() {
     BoardSelectionScreen(
         boardSelectionViewModel = BoardSelectionViewModel(),
         navController = NavController(LocalContext.current),
-        gameMode = GameMode.ONLINE)
+        gameMode = GameMode.ONLINE
+    )
 }
