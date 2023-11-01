@@ -73,17 +73,11 @@ fun pawnMove(selectedTile: Tile, board:List<Tile>, boardType: BoardType): List<T
 
         val startingTiles = getPawnStartingPoint(boardType, PieceColor.BLACK)
         if(!containPiece(forward1, board, boardType) && !containPiece(forward2, board, boardType)) {
-            when(selectedTile.id) {
-                startingTiles[0] -> result.add(forward2)
-                startingTiles[1] -> result.add(forward2)
-                startingTiles[2] -> result.add(forward2)
-                startingTiles[3] -> result.add(forward2)
-                startingTiles[4] -> result.add(forward2)
-                startingTiles[5] -> result.add(forward2)
-                startingTiles[6] -> result.add(forward2)
-                startingTiles[7] -> result.add(forward2)
-                startingTiles[8] -> result.add(forward2)
-                else -> { }
+            for (tileId in startingTiles) {
+                if (tileId == selectedTile.id) {
+                    result.add(forward2)
+                    break
+                }
             }
         }
 
