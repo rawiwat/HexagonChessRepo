@@ -16,14 +16,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.chess_board_data.base.ChessboardData
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
@@ -44,7 +50,7 @@ fun PlayerUI(
     chessBoardViewModel: ChessBoardViewModel,
     listOfCapturedPiece: List<ChessPiece>
 ) {
-    val borderWidth = if (currentTurn == color) { 6.dp } else { 0.dp }
+    val borderWidth = if (currentTurn == color) { 4.dp } else { 0.dp }
 
     val currentAdvantage by if (color == PieceColor.BLACK) {
         chessBoardViewModel.blackAdvantage.collectAsState()
@@ -82,26 +88,79 @@ fun PlayerUI(
         }
     }
 
+    val playerImage by remember {
+        mutableIntStateOf(
+            when(color) {
+                PieceColor.WHITE -> R.drawable.white_player_icon
+                PieceColor.BLACK -> R.drawable.black_player_icon
+            }
+        )
+    }
+
+    val playerText by remember {
+        mutableStateOf(
+            when(color) {
+                PieceColor.WHITE -> "Player White"
+                PieceColor.BLACK -> "Player Black"
+            }
+        )
+    }
+
+    val isWhite = remember { color == PieceColor.WHITE }
+
+    val isBlack = remember { color == PieceColor.BLACK }
+
+    val whiteOfferedDraw by chessBoardViewModel.whiteOfferedDraw.collectAsState()
+
+    val blackOfferedDraw by chessBoardViewModel.blackOfferedDraw.collectAsState()
+
+    val whiteOfferedActive by rememberSaveable {
+        mutableStateOf(
+            isWhite && blackOfferedDraw
+        )
+    }
+    val blackOfferedActive by rememberSaveable {
+        mutableStateOf(
+            isBlack && whiteOfferedDraw
+        )
+    }
+    val drawOffered by rememberSaveable {
+        mutableStateOf(
+            whiteOfferedActive || blackOfferedActive
+        )
+    }
+
     Surface(
-        border = BorderStroke(borderWidth,color = Color.White),
+        border = BorderStroke(borderWidth,color = Color.DarkGray),
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp)
-            .background(
-                color = Color.Gray
-            )
+            .height(60.dp)
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.menu_template),
+            contentDescription = null,
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+        )
         Box(
             contentAlignment = Alignment.CenterStart,
             modifier = Modifier.padding(5.dp)
         ) {
-            Row {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_background),
+                    painter = painterResource(id = playerImage),
                     contentDescription = null
                 )
                 Column {
-                    Text(text = if (color == PieceColor.WHITE) "Player White" else "Player Black")
+                    Text(
+                        text = playerText,
+                        modifier = Modifier
+                            .padding(start = 4.dp)
+                    )
 
                     Row {
                         if (capturedPawn.isNotEmpty()) {
@@ -119,32 +178,79 @@ fun PlayerUI(
                         if (capturedQueen.isNotEmpty()) {
                             CapturedPieceUi(listOfCapturedPiece = capturedQueen)
                         }
-                        Text(text = if (currentAdvantage >= 1) " | Material +$currentAdvantage" else "")
+                        Text(text = if (currentAdvantage >= 1) " | +$currentAdvantage" else "")
                     }
                 }
+
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.CenterEnd
                 ) {
                     Row {
-                        val sizeModifierForIcon = Modifier
-                            .size(40.dp)
-                        Image(
-                            painter = painterResource(id = R.drawable.draw_offer_icon),
-                            contentDescription = null,
-                            modifier = sizeModifierForIcon
-                                .clickable {
+                        if (drawOffered) {
+                            Column {
+                                val fontSize = remember { 10.sp }
+                                Box(
+                                    modifier = Modifier
+                                        .size(width = 80.dp,height = 25.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.menu_template),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.FillBounds,
+                                        modifier = Modifier
+                                            .clickable {
+                                                chessBoardViewModel.drawAccepted(color)
+                                            }
+                                    )
+                                    Text(
+                                        text = "Accept draw",
+                                        fontSize = fontSize
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .size(width = 80.dp,height = 25.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.menu_template),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.FillBounds,
+                                        modifier = Modifier
+                                            .clickable {
+                                                chessBoardViewModel.drawRejected(color)
+                                            }
+                                    )
+                                    Text(
+                                        text = "Refuse Draw",
+                                        fontSize = fontSize
+                                    )
+                                }
+                            }
+                        }
 
-                                }
-                        )
-                        Image(
-                            painter = painterResource(id = R.drawable.resign_flag),
-                            contentDescription = null,
-                            modifier = sizeModifierForIcon
-                                .clickable {
-                                    chessBoardViewModel.resign(color)
-                                }
-                        )
+                        Column {
+                            val sizeModifierForIcon = Modifier
+                                .size(25.dp)
+                            Image(
+                                painter = painterResource(id = R.drawable.draw_offer_icon),
+                                contentDescription = null,
+                                modifier = sizeModifierForIcon
+                                    .clickable {
+                                        chessBoardViewModel.drawOffered(color)
+                                    }
+                            )
+                            Image(
+                                painter = painterResource(id = R.drawable.resign_flag),
+                                contentDescription = null,
+                                modifier = sizeModifierForIcon
+                                    .clickable {
+                                        chessBoardViewModel.resign(color)
+                                    }
+                            )
+                        }
                     }
                 }
             }
@@ -159,7 +265,9 @@ fun CapturedPieceUi(
     Row {
         Image(
             painter = painterResource(id = getChessPieceImage(listOfCapturedPiece[0])),
-            contentDescription = null
+            contentDescription = null,
+            modifier = Modifier
+                .size(20.dp)
         )
         Text(
             text = "×${listOfCapturedPiece.size}",
@@ -181,12 +289,29 @@ fun PlayerUIPreview() {
         PieceColor.BLACK
     )
 
-    val capturedPieces by viewModel.blackCaptured.collectAsState()
-
     PlayerUI(
         currentTurn = PieceColor.BLACK,
         color = PieceColor.BLACK,
         chessBoardViewModel = viewModel,
-        listOfCapturedPiece = capturedPieces
+        listOfCapturedPiece = listOf(
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_BISHOP),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_BISHOP),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_QUEEN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_QUEEN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_ROOK),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_ROOK),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_KNIGHT),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_KNIGHT),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_KNIGHT),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_KNIGHT),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_KNIGHT),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_KNIGHT),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+            getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
+        )
     )
 }

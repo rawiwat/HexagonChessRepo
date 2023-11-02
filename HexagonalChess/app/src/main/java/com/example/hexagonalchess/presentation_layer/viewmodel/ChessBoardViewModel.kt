@@ -591,12 +591,19 @@ class ChessBoardViewModel(
     fun drawOffered(color: PieceColor) {
         when(color) {
             PieceColor.WHITE -> _whiteOfferedDraw.value = true
-            PieceColor.BLACK -> _blackOfferedDraw.value = false
+            PieceColor.BLACK -> _blackOfferedDraw.value = true
         }
     }
 
     fun drawAccepted(color: PieceColor) {
         gameOver(color, GameEndMethod.DRAW)
+    }
+
+    fun drawRejected(color: PieceColor) {
+        when(color){
+            PieceColor.WHITE -> _blackOfferedDraw.value = false
+            PieceColor.BLACK -> _whiteOfferedDraw.value = false
+        }
     }
 
     fun resign(color: PieceColor) {
