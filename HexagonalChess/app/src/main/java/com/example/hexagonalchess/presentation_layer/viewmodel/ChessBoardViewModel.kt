@@ -362,7 +362,7 @@ class ChessBoardViewModel(
         }
     }
 
-    private fun capturePiece(piece:ChessPiece?) {
+    fun capturePiece(piece:ChessPiece?) {
         piece?.let {
             when(piece.color) {
                 PieceColor.BLACK -> {
@@ -600,7 +600,7 @@ class ChessBoardViewModel(
     }
 
     fun resign(color: PieceColor) {
-        gameOver(color.opposite(),GameEndMethod.RESIGN)
+        gameOver(color.opposite(), GameEndMethod.RESIGN)
     }
 }
 
