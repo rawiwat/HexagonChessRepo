@@ -100,6 +100,12 @@ class ChessBoardViewModel(
     private val _backMenu = MutableStateFlow(false)
     val backMenu:StateFlow<Boolean> = _backMenu
 
+    private val _whiteOfferedDraw = MutableStateFlow(false)
+    val whiteOfferedDraw:StateFlow<Boolean> = _whiteOfferedDraw
+
+    private val _blackOfferedDraw = MutableStateFlow(false)
+    val blackOfferedDraw:StateFlow<Boolean> = _blackOfferedDraw
+
     fun onClickPieces(tile: Tile) {
         var result = listOf<TileId?>()
         if (_gameState.value == ChessGameState.PLAYER1_TURN || _gameState.value == ChessGameState.PLAYER1_TURN) {
@@ -580,6 +586,21 @@ class ChessBoardViewModel(
         if (_gameState.value == ChessGameState.CPU_TURN) {
             cpuMove(_chessBoard.value, context)
         }
+    }
+
+    fun drawOffered(color: PieceColor) {
+        when(color) {
+            PieceColor.WHITE -> _whiteOfferedDraw.value = true
+            PieceColor.BLACK -> _blackOfferedDraw.value = false
+        }
+    }
+
+    fun drawAccepted(color: PieceColor) {
+        gameOver(color, GameEndMethod.DRAW)
+    }
+
+    fun resign(color: PieceColor) {
+        gameOver(color.opposite(),GameEndMethod.RESIGN)
     }
 }
 

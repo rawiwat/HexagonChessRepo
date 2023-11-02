@@ -8,10 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
@@ -95,95 +93,45 @@ fun PlayerUI(
                 )
                 Column {
                     Text(text = if (color == PieceColor.WHITE) "Player White" else "Player Black")
+
                     Row {
-                        Box {
-                            var totalPawnOffset = capturedPawn.size * 10
-                            when (capturedPawn.size) {
-                                1 -> totalPawnOffset += 5
-                                else -> totalPawnOffset -= 5 * (capturedPawn.size - 2)
-                            }
-                            var totalKnightOffset = (capturedKnight.size * 10) + totalPawnOffset
-                            if (capturedKnight.isNotEmpty()) {
-                                totalKnightOffset += 5
-                            }
-                            var totalBishopOffset = (capturedBishop.size * 10) + totalKnightOffset
-                            if (capturedBishop.isNotEmpty()) {
-                                totalBishopOffset += 5
-                            }
-                            var totalRookOffset = (capturedRook.size * 10) + totalBishopOffset
-                            if (capturedRook.isNotEmpty()) {
-                                totalRookOffset += 5
-                            }
-
-                            LazyRow {
-                                items(capturedPawn.size) {
-                                    Image(
-                                        painter = painterResource(id = getChessPieceImage(capturedPawn[it])),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .offset(x = (it * (-15)).dp)
-                                    )
-                                }
-                            }
-
-                            LazyRow(
-                                modifier = Modifier.offset(x = totalPawnOffset.dp)
-                            ) {
-                                items(capturedKnight.size) {
-                                    Image(
-                                        painter = painterResource(id = getChessPieceImage(capturedKnight[it])),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .offset(x = (it * (-15)).dp)
-                                    )
-                                }
-                            }
-                            LazyRow(
-                                modifier = Modifier.offset(x = totalKnightOffset.dp)
-                            ) {
-                                items(capturedBishop.size) {
-                                    Image(
-                                        painter = painterResource(id = getChessPieceImage(capturedBishop[it])),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .offset(x = (it * (-15)).dp)
-                                    )
-                                }
-                            }
-                            LazyRow(
-                                modifier = Modifier.offset(x = totalBishopOffset.dp)
-                            ) {
-                                items(capturedRook.size) {
-                                    Image(
-                                        painter = painterResource(id = getChessPieceImage(capturedRook[it])),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .offset(x = (it * (-15)).dp)
-                                    )
-                                }
-                            }
-                            LazyRow(
-                                modifier = Modifier.offset(x = totalRookOffset.dp)
-                            ) {
-                                items(capturedQueen.size) {
-                                    Image(
-                                        painter = painterResource(id = getChessPieceImage(capturedQueen[it])),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .offset(x = (it * (-15)).dp)
-                                    )
-                                }
-                            }
+                        if (capturedPawn.isNotEmpty()) {
+                            CapturedPieceUi(listOfCapturedPiece = capturedPawn)
                         }
-                        Text(text = if (currentAdvantage >= 1) "+$currentAdvantage" else "")
+                        if (capturedKnight.isNotEmpty()) {
+                            CapturedPieceUi(listOfCapturedPiece = capturedKnight)
+                        }
+                        if (capturedBishop.isNotEmpty()) {
+                            CapturedPieceUi(listOfCapturedPiece = capturedBishop)
+                        }
+                        if (capturedRook.isNotEmpty()) {
+                            CapturedPieceUi(listOfCapturedPiece = capturedRook)
+                        }
+                        if (capturedQueen.isNotEmpty()) {
+                            CapturedPieceUi(listOfCapturedPiece = capturedQueen)
+                        }
+                        Text(text = if (currentAdvantage >= 1) " | Material +$currentAdvantage" else "")
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun CapturedPieceUi(
+    listOfCapturedPiece: List<ChessPiece>
+) {
+    Row {
+        Image(
+            painter = painterResource(id = getChessPieceImage(listOfCapturedPiece[0])),
+            contentDescription = null
+        )
+        Text(
+            text = "×${listOfCapturedPiece.size}",
+            style = TextStyle(
+                color = Color.Black
+            )
+        )
     }
 }
