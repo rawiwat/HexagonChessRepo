@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,10 +25,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hexagonalchess.R
@@ -48,9 +51,16 @@ fun PlayerUI(
     currentTurn: PieceColor,
     color: PieceColor,
     chessBoardViewModel: ChessBoardViewModel,
-    listOfCapturedPiece: List<ChessPiece>
+    listOfCapturedPiece: List<ChessPiece>,
+    screenWidth: Dp
 ) {
-    val borderWidth = if (currentTurn == color) { 4.dp } else { 0.dp }
+    val borderWidth = if (currentTurn == color) { screenWidth / 100 } else { 0.dp }
+
+    val height = remember { screenWidth / 7 }
+
+    val menuButtonHeight = remember { screenWidth / 14 - screenWidth / 100 }
+
+    val menuButtonWidth = remember { screenWidth / 5 }
 
     val currentAdvantage by if (color == PieceColor.BLACK) {
         chessBoardViewModel.blackAdvantage.collectAsState()
@@ -106,47 +116,33 @@ fun PlayerUI(
         )
     }
 
-    val isWhite = remember { color == PieceColor.WHITE }
-
-    val isBlack = remember { color == PieceColor.BLACK }
-
     val whiteOfferedDraw by chessBoardViewModel.whiteOfferedDraw.collectAsState()
 
     val blackOfferedDraw by chessBoardViewModel.blackOfferedDraw.collectAsState()
 
-    val whiteOfferedActive by rememberSaveable {
-        mutableStateOf(
-            isWhite && blackOfferedDraw
-        )
-    }
-    val blackOfferedActive by rememberSaveable {
-        mutableStateOf(
-            isBlack && whiteOfferedDraw
-        )
-    }
-    val drawOffered by rememberSaveable {
-        mutableStateOf(
-            whiteOfferedActive || blackOfferedActive
-        )
-    }
+    val whiteConsiderResign by chessBoardViewModel.whiteConsiderResign.collectAsState()
+
+    val blackConsiderResign by chessBoardViewModel.blackConsiderResign.collectAsState()
+
+    val pieceUiSize = remember { screenWidth / 20 }
 
     Surface(
-        border = BorderStroke(borderWidth,color = Color.DarkGray),
+        border = BorderStroke(borderWidth,color = Color.Yellow),
         modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp)
+            .width(screenWidth)
+            .height(height)
     ) {
         Image(
             painter = painterResource(id = R.drawable.menu_template),
             contentDescription = null,
             contentScale = ContentScale.FillBounds,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
+                .width(screenWidth)
+                .height(height)
         )
         Box(
             contentAlignment = Alignment.CenterStart,
-            modifier = Modifier.padding(5.dp)
+            modifier = Modifier.padding(screenWidth / 100)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -164,19 +160,19 @@ fun PlayerUI(
 
                     Row {
                         if (capturedPawn.isNotEmpty()) {
-                            CapturedPieceUi(listOfCapturedPiece = capturedPawn)
+                            CapturedPieceUi(listOfCapturedPiece = capturedPawn, size = pieceUiSize)
                         }
                         if (capturedKnight.isNotEmpty()) {
-                            CapturedPieceUi(listOfCapturedPiece = capturedKnight)
+                            CapturedPieceUi(listOfCapturedPiece = capturedKnight, size = pieceUiSize)
                         }
                         if (capturedBishop.isNotEmpty()) {
-                            CapturedPieceUi(listOfCapturedPiece = capturedBishop)
+                            CapturedPieceUi(listOfCapturedPiece = capturedBishop, size = pieceUiSize)
                         }
                         if (capturedRook.isNotEmpty()) {
-                            CapturedPieceUi(listOfCapturedPiece = capturedRook)
+                            CapturedPieceUi(listOfCapturedPiece = capturedRook, size = pieceUiSize)
                         }
                         if (capturedQueen.isNotEmpty()) {
-                            CapturedPieceUi(listOfCapturedPiece = capturedQueen)
+                            CapturedPieceUi(listOfCapturedPiece = capturedQueen, size = pieceUiSize)
                         }
                         Text(text = if (currentAdvantage >= 1) " | +$currentAdvantage" else "")
                     }
@@ -187,12 +183,15 @@ fun PlayerUI(
                     contentAlignment = Alignment.CenterEnd
                 ) {
                     Row {
-                        if (drawOffered) {
+                        if (
+                            (color == PieceColor.WHITE && blackOfferedDraw) ||
+                            (color == PieceColor.BLACK && whiteOfferedDraw)
+                            ) {
                             Column {
                                 val fontSize = remember { 10.sp }
                                 Box(
                                     modifier = Modifier
-                                        .size(width = 80.dp,height = 25.dp),
+                                        .size(width = menuButtonWidth, height = menuButtonHeight),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Image(
@@ -211,7 +210,7 @@ fun PlayerUI(
                                 }
                                 Box(
                                     modifier = Modifier
-                                        .size(width = 80.dp,height = 25.dp),
+                                        .size(width = menuButtonWidth, height = menuButtonHeight),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Image(
@@ -233,7 +232,7 @@ fun PlayerUI(
 
                         Column {
                             val sizeModifierForIcon = Modifier
-                                .size(25.dp)
+                                .size(menuButtonHeight)
                             Image(
                                 painter = painterResource(id = R.drawable.draw_offer_icon),
                                 contentDescription = null,
@@ -247,9 +246,55 @@ fun PlayerUI(
                                 contentDescription = null,
                                 modifier = sizeModifierForIcon
                                     .clickable {
-                                        chessBoardViewModel.resign(color)
+                                        chessBoardViewModel.turnOnResignMenu(color)
                                     }
                             )
+                        }
+                        if (
+                            (color == PieceColor.WHITE && whiteConsiderResign) ||
+                            (color == PieceColor.BLACK && blackConsiderResign)
+                        ) {
+                            Column {
+                                val fontSize = remember { menuButtonHeight / 3 }
+                                Box(
+                                    modifier = Modifier
+                                        .size(width = menuButtonWidth, height = menuButtonHeight),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.menu_template),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.FillBounds,
+                                        modifier = Modifier
+                                            .clickable {
+                                                chessBoardViewModel.resign(color)
+                                            }
+                                    )
+                                    Text(
+                                        text = "Confirm Resign",
+                                        fontSize = fontSize.value.sp
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .size(width = menuButtonWidth, height = menuButtonHeight),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.menu_template),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.FillBounds,
+                                        modifier = Modifier
+                                            .clickable {
+                                                chessBoardViewModel.turnOffResignMenu(color)
+                                            }
+                                    )
+                                    Text(
+                                        text = "Cancel",
+                                        fontSize = fontSize.value.sp
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -260,14 +305,15 @@ fun PlayerUI(
 
 @Composable
 fun CapturedPieceUi(
-    listOfCapturedPiece: List<ChessPiece>
+    listOfCapturedPiece: List<ChessPiece>,
+    size: Dp
 ) {
     Row {
         Image(
             painter = painterResource(id = getChessPieceImage(listOfCapturedPiece[0])),
             contentDescription = null,
             modifier = Modifier
-                .size(20.dp)
+                .size(size)
         )
         Text(
             text = "×${listOfCapturedPiece.size}",
@@ -312,6 +358,7 @@ fun PlayerUIPreview() {
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
-        )
+        ),
+        LocalConfiguration.current.screenWidthDp.dp
     )
 }

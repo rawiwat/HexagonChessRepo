@@ -106,9 +106,15 @@ class ChessBoardViewModel(
     private val _blackOfferedDraw = MutableStateFlow(false)
     val blackOfferedDraw:StateFlow<Boolean> = _blackOfferedDraw
 
+    private val _whiteConsiderResign = MutableStateFlow(false)
+    val whiteConsiderResign:StateFlow<Boolean> = _whiteConsiderResign
+
+    private val _blackConsiderResign = MutableStateFlow(false)
+    val blackConsiderResign:StateFlow<Boolean> = _blackConsiderResign
+
     fun onClickPieces(tile: Tile) {
         var result = listOf<TileId?>()
-        if (_gameState.value == ChessGameState.PLAYER1_TURN || _gameState.value == ChessGameState.PLAYER1_TURN) {
+        if (_gameState.value == ChessGameState.PLAYER1_TURN || _gameState.value == ChessGameState.PLAYER2_TURN) {
             viewModelScope.launch {
                 for (tiles in _chessBoard.value) {
                     tiles.isAPossibleMove = false
@@ -227,7 +233,6 @@ class ChessBoardViewModel(
                     _gameState.value = ChessGameState.PLAYER1_TURN
                 } else if (_gameState.value == ChessGameState.PLAYER1_TURN) {
                     _gameState.value = ChessGameState.PLAYER2_TURN
-                    cpuMove(_chessBoard.value, context)
                 }
             }
         }
@@ -362,7 +367,7 @@ class ChessBoardViewModel(
         }
     }
 
-    fun capturePiece(piece:ChessPiece?) {
+    private fun capturePiece(piece:ChessPiece?) {
         piece?.let {
             when(piece.color) {
                 PieceColor.BLACK -> {
@@ -589,9 +594,11 @@ class ChessBoardViewModel(
     }
 
     fun drawOffered(color: PieceColor) {
-        when(color) {
-            PieceColor.WHITE -> _whiteOfferedDraw.value = true
-            PieceColor.BLACK -> _blackOfferedDraw.value = true
+        if (gameMode == GameMode.LOCAL) {
+            when(color) {
+                PieceColor.WHITE -> _whiteOfferedDraw.value = true
+                PieceColor.BLACK -> _blackOfferedDraw.value = true
+            }
         }
     }
 
@@ -608,6 +615,20 @@ class ChessBoardViewModel(
 
     fun resign(color: PieceColor) {
         gameOver(color.opposite(), GameEndMethod.RESIGN)
+    }
+
+    fun turnOnResignMenu(color: PieceColor) {
+        when(color) {
+            PieceColor.WHITE -> _whiteConsiderResign.value = true
+            PieceColor.BLACK -> _blackConsiderResign.value = true
+        }
+    }
+
+    fun turnOffResignMenu(color: PieceColor) {
+        when(color) {
+            PieceColor.WHITE -> _whiteConsiderResign.value = false
+            PieceColor.BLACK -> _blackConsiderResign.value = false
+        }
     }
 }
 
