@@ -32,10 +32,10 @@ class ShurikenColumnABC {
     private val b2 = Tile(
         id = TileId.B2,
         color = TileColor.DARK,
-        topTile = TileId.B2,
-        upperRightTile = TileId.C4,
-        underRightTile = TileId.C3,
-        bottomTile = null,
+        topTile = null,
+        upperRightTile = TileId.C5,
+        underRightTile = TileId.C4,
+        bottomTile = TileId.B1,
         underLeftTile = null,
         upperLeftTile = TileId.A1,
     )

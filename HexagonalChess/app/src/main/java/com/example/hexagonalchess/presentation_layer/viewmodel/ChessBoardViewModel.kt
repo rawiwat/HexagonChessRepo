@@ -6,10 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.model.TilePair
-import com.example.hexagonalchess.data_layer.model.blackPawnForwardTwo
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
-import com.example.hexagonalchess.data_layer.model.whitePawnForwardTwo
 import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.ChessGameState
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
@@ -30,6 +28,7 @@ import com.example.hexagonalchess.domain_layer.getListOfPromotionTile
 import com.example.hexagonalchess.domain_layer.getTileIndex
 import com.example.hexagonalchess.domain_layer.opposite
 import com.example.hexagonalchess.domain_layer.piecemove.bishopMove
+import com.example.hexagonalchess.domain_layer.piecemove.getForwardTwoPath
 import com.example.hexagonalchess.domain_layer.piecemove.kingMove
 import com.example.hexagonalchess.domain_layer.piecemove.knightMove
 import com.example.hexagonalchess.domain_layer.piecemove.pawnMove
@@ -276,7 +275,7 @@ class ChessBoardViewModel(
     private fun enPassantEnable(currentMovePath: TilePair, targetedTile: Tile) {
         when(movingTile?.chessPiece!!.color) {
             PieceColor.BLACK ->
-                for (pair in blackPawnForwardTwo) {
+                for (pair in getForwardTwoPath(boardType, PieceColor.BLACK)) {
                     if (pair == currentMovePath) {
                         val enPassant1 = findTile(targetedTile.id,TileDirections.UPPER_RIGHT,_chessBoard.value, boardType)
                         val enPassant2 = findTile(targetedTile.id,TileDirections.UPPER_LEFT,_chessBoard.value, boardType)
@@ -296,7 +295,7 @@ class ChessBoardViewModel(
                     }
                 }
             PieceColor.WHITE ->
-                for (pair in whitePawnForwardTwo) {
+                for (pair in getForwardTwoPath(boardType, PieceColor.WHITE)) {
                     if (pair == currentMovePath) {
                         val enPassant1 = findTile(targetedTile.id,TileDirections.UNDER_RIGHT,_chessBoard.value, boardType)
                         val enPassant2 = findTile(targetedTile.id,TileDirections.UNDER_LEFT,_chessBoard.value, boardType)
@@ -599,6 +598,7 @@ class ChessBoardViewModel(
                 PieceColor.WHITE -> _whiteOfferedDraw.value = true
                 PieceColor.BLACK -> _blackOfferedDraw.value = true
             }
+            turnOffResignMenu(color.opposite())
         }
     }
 
@@ -619,9 +619,14 @@ class ChessBoardViewModel(
 
     fun turnOnResignMenu(color: PieceColor) {
         when(color) {
-            PieceColor.WHITE -> _whiteConsiderResign.value = true
-            PieceColor.BLACK -> _blackConsiderResign.value = true
+            PieceColor.WHITE -> {
+                _whiteConsiderResign.value = true
+            }
+            PieceColor.BLACK -> {
+                _blackConsiderResign.value = true
+            }
         }
+        drawRejected(color)
     }
 
     fun turnOffResignMenu(color: PieceColor) {

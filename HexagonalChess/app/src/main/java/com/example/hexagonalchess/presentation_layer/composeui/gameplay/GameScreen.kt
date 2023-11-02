@@ -94,14 +94,16 @@ fun GameScreen(
             currentTurn = currentTurn,
             color = PieceColor.WHITE,
             chessBoardViewModel = chessBoardViewModel,
-            listOfCapturedPiece = whiteCaptured
+            listOfCapturedPiece = whiteCaptured,
+            screenWidth = screenWidth.dp
         )
 
         PlayerUI(
             currentTurn = currentTurn,
             color = PieceColor.BLACK,
             chessBoardViewModel = chessBoardViewModel,
-            listOfCapturedPiece = blackCaptured
+            listOfCapturedPiece = blackCaptured,
+            screenWidth = screenWidth.dp
         )
 
         Box(

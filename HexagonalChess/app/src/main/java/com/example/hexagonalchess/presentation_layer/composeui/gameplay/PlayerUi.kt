@@ -149,7 +149,9 @@ fun PlayerUI(
             ) {
                 Image(
                     painter = painterResource(id = playerImage),
-                    contentDescription = null
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(height * 4 / 5)
                 )
                 Column {
                     Text(
