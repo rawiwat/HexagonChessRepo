@@ -50,7 +50,7 @@ fun App(
             val boardType = it.arguments?.getSerializable("boardType") as BoardType
             val gameMode = it.arguments?.getSerializable("gameMode") as GameMode
             GameScreen(
-                chessBoardViewModel = ChessBoardViewModel(
+                chessViewModel = ChessBoardViewModel(
                     allTiles = when(boardType) {
                         BoardType.DEFAULT -> ChessboardData().allTiles
                         BoardType.STAR_CHESS -> ShurikenBoardData().allTiles
@@ -62,7 +62,8 @@ fun App(
                     playerColor = playerColor
                 ),
                 context = context,
-                boardType = boardType
+                boardType = boardType,
+                navController = navController
             )
         }
 

@@ -1,10 +1,11 @@
 package com.example.hexagonalchess.presentation_layer.composeui.gameplay
 
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,16 +14,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
@@ -32,20 +31,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.hexagonalchess.R
-import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.ChessGameState
 import com.example.hexagonalchess.domain_layer.PieceColor
-import com.example.hexagonalchess.domain_layer.PieceType
+import com.example.hexagonalchess.domain_layer.Route
 import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.tile_ui_manager.TileUiManager
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
@@ -57,10 +60,12 @@ import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewMod
 
 @Composable
 fun GameScreen(
-    chessBoardViewModel: ChessBoardViewModel,
+    chessViewModel: ChessBoardViewModel,
     context: Context,
-    boardType: BoardType
+    boardType: BoardType,
+    navController: NavController
 ) {
+    val chessBoardViewModel = remember { chessViewModel}
     val chessBoard by chessBoardViewModel.chessBoard.collectAsState()
     val currentTurn by chessBoardViewModel.currentTurn.collectAsState()
     val blackCaptured by chessBoardViewModel.blackCaptured.collectAsState()
@@ -73,7 +78,12 @@ fun GameScreen(
     val tileUiManager by remember { mutableStateOf(TileUiManager(screenWidth)) }
     val playerColor by remember { mutableStateOf(chessBoardViewModel.playerColor) }
     //val gameMode by remember { mutableStateOf(chessBoardViewModel.gameMode) }
+    val turnOnBack by chessBoardViewModel.backMenu.collectAsState()
 
+    DisposableEffect(Unit) {
+        chessBoardViewModel.cpuStart()
+        onDispose { }
+    }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -182,7 +192,7 @@ fun GameScreen(
     }
     Box(
         modifier = Modifier.fillMaxSize(),
-        //contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center
     ) {
         val popUpBoxWidth by remember { mutableStateOf(250.dp) }
         val popUpBoxHeight by remember { mutableStateOf(130.dp) }
@@ -193,23 +203,12 @@ fun GameScreen(
                 animationSpec = tween(150, 150)
             )
         ) {
-
-            Box(
-                modifier = Modifier
-                    .size(
-                        width = popUpBoxWidth,
-                        height = popUpBoxHeight
-                    )
-                    .background(
-                        color = Color.White
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = gameOverMessage,
-                    fontSize = 20.sp
-                )
-            }
+            GameOverMenu(
+                popUpBoxWidth =popUpBoxWidth,
+                popUpBoxHeight = popUpBoxHeight,
+                gameOverMessage = gameOverMessage,
+                navController = navController
+            )
         }
 
         AnimatedVisibility(
@@ -218,36 +217,134 @@ fun GameScreen(
                     gameState == ChessGameState.PLAYER2_PROMOTE
                     ),
         ) {
-            val color by rememberSaveable {
-                mutableStateOf(if (currentTurn == PieceColor.BLACK) PieceColor.WHITE else PieceColor.BLACK)
+            PromoteMenu(
+                width = popUpBoxWidth,
+                height = popUpBoxHeight,
+                chessBoardViewModel = chessBoardViewModel,
+                currentTurn = currentTurn
+            )
+        }
+
+        AnimatedVisibility(visible = turnOnBack) {
+            BackMenu(
+                navController = navController,
+                chessBoardViewModel = chessBoardViewModel,
+                width = popUpBoxWidth,
+                height = popUpBoxHeight
+            )
+        }
+    }
+
+    BackHandler(
+        onBack = {
+            if (!turnOnBack) {
+                chessBoardViewModel.turnOnBackMenu(true)
             }
-            val listOfPromotion = getPromotionKeyWordFromColor(color)
-            Box(
+        }
+    )
+}
+
+@Composable
+fun BackMenu(
+    navController: NavController,
+    chessBoardViewModel: ChessBoardViewModel,
+    width: Dp,
+    height: Dp
+) {
+    val buttonWidth by remember { mutableStateOf(width / 2) }
+    val buttonHeight by remember { mutableStateOf(height / 3) }
+    val textBoxHeight by remember { mutableStateOf(height * 2 / 3) }
+    
+    Box(
+        modifier = Modifier
+            .size(
+                width = width,
+                height = height
+            )
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.menu_button),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(
+                    width = width,
+                    height = height
+                )
+        )
+        Column {
+            Text(
+                text ="Go back to the Main Menu?",
                 modifier = Modifier
                     .size(
-                        width = popUpBoxWidth,
-                        height = popUpBoxHeight
+                        height = textBoxHeight,
+                        width = width
                     ),
-                contentAlignment = Alignment.Center
-            ) {
-                Column {
-                    Text(
-                        text = "PROMOTION",
-                        modifier = Modifier.padding(5.dp),
-                        fontSize = 25.sp,
-                        style = TextStyle(
-                            color = Color.Yellow
-                        )
+                textAlign = TextAlign.Center,
+                lineHeight = (textBoxHeight/2).value.sp
+            )
+            Row {
+                Box(
+                    modifier = Modifier
+                        .size(
+                            width = buttonWidth,
+                            height = buttonHeight
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.menu_button),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(
+                                width = buttonWidth,
+                                height = buttonHeight
+                            )
+                            .clickable {
+                                navController.navigate(Route.main)
+                            }
                     )
 
-                    LazyRow {
-                        items(listOfPromotion) { promotionOption ->
-                            PromotionIcon(
-                                chessBoardViewModel = chessBoardViewModel,
-                                keyWord = promotionOption
-                            )
-                        }
+                    Text(
+                        text = "Yes"
+                    )
+                }
+                Canvas(
+                    modifier = Modifier,
+                    onDraw = {
+                        drawLine(
+                            color = Color.Black,
+                            start = Offset(0f,0f),
+                            end = Offset(0f, height.value),
+                        )
                     }
+                )
+                Box(
+                    modifier = Modifier
+                        .size(
+                            width = buttonWidth,
+                            height = buttonHeight
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.menu_button),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(
+                                width = buttonWidth,
+                                height = buttonHeight
+                            )
+                            .clickable {
+                                chessBoardViewModel.turnOnBackMenu(false)
+                            }
+                    )
+
+                    Text(
+                        text = "No"
+                    )
                 }
             }
         }
@@ -326,165 +423,6 @@ fun TileUI(
 }
 
 @Composable
-fun PlayerUI(
-    currentTurn: PieceColor,
-    color: PieceColor,
-    chessBoardViewModel: ChessBoardViewModel,
-    listOfCapturedPiece: List<ChessPiece>
-) {
-    val borderWidth = if (currentTurn == color) { 6.dp } else { 0.dp }
-
-    val currentAdvantage by if (color == PieceColor.BLACK) {
-        chessBoardViewModel.blackAdvantage.collectAsState()
-    } else {
-        chessBoardViewModel.whiteAdvantage.collectAsState()
-    }
-    val capturedPawn = mutableListOf<ChessPiece>()
-
-    val capturedKnight = mutableListOf<ChessPiece>()
-
-    val capturedBishop = mutableListOf<ChessPiece>()
-
-    val capturedRook = mutableListOf<ChessPiece>()
-
-    val capturedQueen = mutableListOf<ChessPiece>()
-
-    for (piece in listOfCapturedPiece) {
-        when(piece.type) {
-            PieceType.KNIGHT -> {
-                capturedKnight.add(piece)
-            }
-            PieceType.PAWN -> {
-                capturedPawn.add(piece)
-            }
-            PieceType.BISHOP -> {
-                capturedBishop.add(piece)
-            }
-            PieceType.ROOK -> {
-                capturedRook.add(piece)
-            }
-            PieceType.QUEEN -> {
-                capturedQueen.add(piece)
-            }
-            PieceType.KING -> { }
-        }
-    }
-
-    Surface(
-        border = BorderStroke(borderWidth,color = Color.White),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-            .background(
-                color = Color.Gray
-            )
-    ) {
-        Box(
-            contentAlignment = Alignment.CenterStart,
-            modifier = Modifier.padding(5.dp)
-        ) {
-            Row {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_background),
-                    contentDescription = null
-                )
-                Column {
-                    Text(text = if (color == PieceColor.WHITE) "Player White" else "Player Black")
-                    Row {
-                        Box {
-                            var totalPawnOffset = capturedPawn.size * 10
-                            when (capturedPawn.size) {
-                                1 -> totalPawnOffset += 5
-                                else -> totalPawnOffset -= 5 * (capturedPawn.size - 2)
-                            }
-                            var totalKnightOffset = (capturedKnight.size * 10) + totalPawnOffset
-                            if (capturedKnight.isNotEmpty()) {
-                                totalKnightOffset += 5
-                            }
-                            var totalBishopOffset = (capturedBishop.size * 10) + totalKnightOffset
-                            if (capturedBishop.isNotEmpty()) {
-                                totalBishopOffset += 5
-                            }
-                            var totalRookOffset = (capturedRook.size * 10) + totalBishopOffset
-                            if (capturedRook.isNotEmpty()) {
-                                totalRookOffset += 5
-                            }
-
-                            LazyRow {
-                                items(capturedPawn.size) {
-                                    Image(
-                                        painter = painterResource(id = getChessPieceImage(capturedPawn[it])),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .offset(x = (it * (-15)).dp)
-                                    )
-                                }
-                            }
-
-                            LazyRow(
-                                modifier = Modifier.offset(x = totalPawnOffset.dp)
-                            ) {
-                                items(capturedKnight.size) {
-                                    Image(
-                                        painter = painterResource(id = getChessPieceImage(capturedKnight[it])),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .offset(x = (it * (-15)).dp)
-                                    )
-                                }
-                            }
-                            LazyRow(
-                                modifier = Modifier.offset(x = totalKnightOffset.dp)
-                            ) {
-                                items(capturedBishop.size) {
-                                    Image(
-                                        painter = painterResource(id = getChessPieceImage(capturedBishop[it])),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .offset(x = (it * (-15)).dp)
-                                    )
-                                }
-                            }
-                            LazyRow(
-                                modifier = Modifier.offset(x = totalBishopOffset.dp)
-                            ) {
-                                items(capturedRook.size) {
-                                    Image(
-                                        painter = painterResource(id = getChessPieceImage(capturedRook[it])),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .offset(x = (it * (-15)).dp)
-                                    )
-                                }
-                            }
-                            LazyRow(
-                                modifier = Modifier.offset(x = totalRookOffset.dp)
-                            ) {
-                                items(capturedQueen.size) {
-                                    Image(
-                                        painter = painterResource(id = getChessPieceImage(capturedQueen[it])),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .offset(x = (it * (-15)).dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Text(text = if (currentAdvantage >= 1) "+$currentAdvantage" else "")
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
 fun PromotionIcon(
     chessBoardViewModel: ChessBoardViewModel,
     keyWord: ChessPieceKeyWord
@@ -498,4 +436,113 @@ fun PromotionIcon(
             }
             .size(60.dp)
     )
+}
+
+@Composable
+fun GameOverMenu(
+    popUpBoxWidth: Dp,
+    popUpBoxHeight: Dp,
+    gameOverMessage: String,
+    navController: NavController
+) {
+    val textBoxHeight = popUpBoxHeight / 4 * 3
+    val backButtonHeight = popUpBoxHeight / 4
+
+    Box(
+        modifier = Modifier
+            .size(
+                width = popUpBoxWidth,
+                height = popUpBoxHeight
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.menu_button),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(
+                    width = popUpBoxWidth,
+                    height = popUpBoxHeight
+                )
+        )
+
+        Column {
+            Text(
+                text = gameOverMessage,
+                fontSize = 20.sp,
+                modifier = Modifier
+                    .size(
+                        width = popUpBoxWidth,
+                        height = textBoxHeight
+                    )
+            )
+
+            Box(
+                modifier = Modifier
+                    .size(
+                        width = popUpBoxWidth,
+                        height = backButtonHeight
+                    )
+                    .clickable {
+                        navController.navigate(Route.main)
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.menu_button),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(
+                            width = popUpBoxWidth,
+                            height = backButtonHeight
+                        )
+                )
+                Text(text = "Back to Main Menu")
+            }
+        }
+    }
+}
+
+@Composable
+fun PromoteMenu(
+    width: Dp,
+    height: Dp,
+    chessBoardViewModel: ChessBoardViewModel,
+    currentTurn: PieceColor
+) {
+
+    val color by rememberSaveable { mutableStateOf(if (currentTurn == PieceColor.BLACK) PieceColor.WHITE else PieceColor.BLACK) }
+    val listOfPromotion = getPromotionKeyWordFromColor(color)
+
+    Box(
+        modifier = Modifier
+            .size(
+                width = width,
+                height = height
+            )
+            .background(color = Color.DarkGray),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column {
+            Text(
+                text = "PROMOTION",
+                modifier = Modifier.padding(5.dp),
+                fontSize = 25.sp,
+                style = TextStyle(
+                    color = Color.Yellow
+                )
+            )
+
+            LazyRow {
+                items(listOfPromotion) { promotionOption ->
+                    PromotionIcon(
+                        chessBoardViewModel = chessBoardViewModel,
+                        keyWord = promotionOption
+                    )
+                }
+            }
+        }
+    }
 }

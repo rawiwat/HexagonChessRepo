@@ -97,6 +97,9 @@ class ChessBoardViewModel(
 
     private val cpuColor = playerColor.opposite()
 
+    private val _backMenu = MutableStateFlow(false)
+    val backMenu:StateFlow<Boolean> = _backMenu
+
     fun onClickPieces(tile: Tile) {
         var result = listOf<TileId?>()
         if (_gameState.value == ChessGameState.PLAYER1_TURN || _gameState.value == ChessGameState.PLAYER1_TURN) {
@@ -436,10 +439,15 @@ class ChessBoardViewModel(
     fun promotePawn(chosenPromotion : ChessPieceKeyWord) {
         _chessBoard.value[getTileIndex(selectingTile!!.id, boardType)].chessPiece = getChessPieceFromKeyWord(chosenPromotion)
         playSoundEffect(context, R.raw.promote)
-        if (_gameState.value == ChessGameState.PLAYER1_PROMOTE) {
-            _gameState.value = ChessGameState.PLAYER2_TURN
-        } else if (_gameState.value == ChessGameState.PLAYER2_PROMOTE) {
-            _gameState.value = ChessGameState.PLAYER1_TURN
+        if (gameMode == GameMode.LOCAL) {
+            if (_gameState.value == ChessGameState.PLAYER1_PROMOTE) {
+                _gameState.value = ChessGameState.PLAYER2_TURN
+            } else if (_gameState.value == ChessGameState.PLAYER2_PROMOTE) {
+                _gameState.value = ChessGameState.PLAYER1_TURN
+            }
+        } else if (gameMode == GameMode.CPU) {
+            _gameState.value = ChessGameState.CPU_TURN
+            cpuMove(_chessBoard.value, context)
         }
     }
 
@@ -564,7 +572,11 @@ class ChessBoardViewModel(
         println("promote to $chosenPromotion")
     }
 
-    init {
+    fun turnOnBackMenu(input: Boolean) {
+        _backMenu.value = input
+    }
+
+    fun cpuStart() {
         if (_gameState.value == ChessGameState.CPU_TURN) {
             cpuMove(_chessBoard.value, context)
         }

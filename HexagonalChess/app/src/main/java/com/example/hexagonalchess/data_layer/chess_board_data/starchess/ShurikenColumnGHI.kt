@@ -61,7 +61,7 @@ class ShurikenColumnGHI {
         color = TileColor.MID,
         topTile = TileId.G6,
         upperRightTile = null,
-        underRightTile = TileId.D4,
+        underRightTile = TileId.H2,
         bottomTile = TileId.G4,
         underLeftTile = TileId.F4,
         upperLeftTile = TileId.F5,

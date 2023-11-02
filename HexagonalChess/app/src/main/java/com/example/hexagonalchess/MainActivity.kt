@@ -10,11 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.hexagonalchess.data_layer.chess_board_data.base.ChessboardData
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.presentation_layer.composeui.App
-import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
-import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardVsCPUViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.SettingViewModel
 import com.example.hexagonalchess.ui.theme.HexagonalChessTheme
 
