@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
                         settingViewModel = settingViewModel,
                         playerColor = playerColor,
                         context = this@MainActivity
-                    )
+                    ) { finish() }
                 }
             }
         }

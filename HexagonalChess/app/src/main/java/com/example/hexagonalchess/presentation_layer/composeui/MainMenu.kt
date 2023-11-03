@@ -32,7 +32,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.hexagonalchess.MainActivity
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.Route
@@ -40,7 +39,8 @@ import kotlin.math.roundToInt
 
 @Composable
 fun MainMenu(
-    navController: NavController
+    navController: NavController,
+    closeApp: () -> Unit
 ) {
     val titleSize by rememberSaveable { mutableDoubleStateOf(60.00) }
 
@@ -119,7 +119,7 @@ fun MainMenu(
             MenuButton(
                 text = "Quit",
                 onClick = {
-                    MainActivity().finish()
+                    closeApp()
                 }
             )
         }
@@ -168,5 +168,5 @@ fun MenuButton(
 @Preview
 @Composable
 fun PreviewMainMenu() {
-    MainMenu(NavController(LocalContext.current))
+    MainMenu(NavController(LocalContext.current), {})
 }

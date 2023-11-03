@@ -25,7 +25,8 @@ fun App(
     navController: NavHostController,
     settingViewModel: SettingViewModel,
     playerColor: PieceColor,
-    context: Context
+    context: Context,
+    closeAppFunction:() -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -34,7 +35,10 @@ fun App(
         composable(
             route = Route.main
         ) {
-            MainMenu(navController = navController)
+            MainMenu(
+                navController = navController,
+                closeAppFunction
+            )
         }
         composable(
             route = "${Route.game}/{gameMode}/{boardType}",
