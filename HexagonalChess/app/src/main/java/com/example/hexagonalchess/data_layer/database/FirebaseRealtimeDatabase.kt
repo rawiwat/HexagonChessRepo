@@ -1,7 +1,9 @@
 package com.example.hexagonalchess.data_layer.model.database
 
+import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
+import com.example.hexagonalchess.domain_layer.PieceColor
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -14,7 +16,7 @@ class FirebaseRealtimeDatabase: Database {
         myRef.child("waitingroom").child("player")
     }
 
-    override fun getBoardState() {
+    override fun observeBoardState() {
         TODO("Not yet implemented")
     }
 
@@ -22,7 +24,19 @@ class FirebaseRealtimeDatabase: Database {
         myRef.child("")
     }
 
-    override fun capture() {
+    override fun capture(keyWord: ChessPieceKeyWord) {
+        TODO("Not yet implemented")
+    }
+
+    override fun observeCapture(color: PieceColor): List<ChessPiece> {
+        TODO("Not yet implemented")
+    }
+
+    override fun giveRankPoint() {
+        TODO("Not yet implemented")
+    }
+
+    override fun sendDrawOffer() {
         TODO("Not yet implemented")
     }
 

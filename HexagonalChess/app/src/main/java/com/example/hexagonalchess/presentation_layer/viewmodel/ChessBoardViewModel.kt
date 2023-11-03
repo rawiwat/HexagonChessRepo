@@ -600,6 +600,7 @@ class ChessBoardViewModel(
             }
             turnOffResignMenu(color.opposite())
         }
+        playSoundEffect(context,R.raw.notify)
     }
 
     fun drawAccepted(color: PieceColor) {
