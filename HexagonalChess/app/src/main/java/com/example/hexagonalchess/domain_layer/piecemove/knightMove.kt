@@ -6,72 +6,257 @@ import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.domain_layer.filterSameColor
 import com.example.hexagonalchess.domain_layer.findTile
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 
-fun knightMove(selectedTile: Tile, board:List<Tile>, boardType: BoardType):List<TileId?> {
-    val result = mutableListOf<TileId?>()
+suspend fun knightMove(selectedTile: Tile, board:List<Tile>, boardType: BoardType): List<TileId?> = coroutineScope {
+    val deferredResult = mutableListOf<Deferred<TileId?>>()
 
-    var move1 = findTile(selectedTile.id, TileDirections.TOP, board, boardType)
-    move1?.let { move1 = findTile(it, TileDirections.TOP, board, boardType) }
-    move1?.let { move1 = findTile(it, TileDirections.UPPER_LEFT, board, boardType) }
-    result.add(move1)
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.TOP,
+            TileDirections.TOP,
+            TileDirections.UPPER_LEFT,
+            board,boardType,selectedTile.id
+        )
+    })
 
-    var move2 = findTile(selectedTile.id, TileDirections.TOP, board, boardType)
-    move2?.let { move2 = findTile(it, TileDirections.TOP, board, boardType) }
-    move2?.let { move2 = findTile(it, TileDirections.UPPER_RIGHT, board, boardType) }
-    result.add(move2)
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.UPPER_LEFT,
+            TileDirections.TOP,
+            TileDirections.TOP,
+            board,boardType,selectedTile.id
+        )
+    })
 
-    var move3 = findTile(selectedTile.id, TileDirections.BOTTOM, board, boardType)
-    move3?.let { move3 = findTile(it, TileDirections.BOTTOM, board, boardType) }
-    move3?.let { move3 = findTile(it, TileDirections.UNDER_LEFT, board, boardType) }
-    result.add(move3)
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.TOP,
+            TileDirections.TOP,
+            TileDirections.UPPER_RIGHT,
+            board,boardType,selectedTile.id
+        )
+    })
 
-    var move4 = findTile(selectedTile.id, TileDirections.BOTTOM, board, boardType)
-    move4?.let { move4 = findTile(it, TileDirections.BOTTOM, board, boardType) }
-    move4?.let { move4 = findTile(it, TileDirections.UNDER_RIGHT, board, boardType) }
-    result.add(move4)
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.UPPER_RIGHT,
+            TileDirections.TOP,
+            TileDirections.TOP,
+            board,boardType,selectedTile.id
+        )
+    })
 
-    var move5 = findTile(selectedTile.id, TileDirections.TOP, board, boardType)
-    move5?.let { move5 = findTile(it, TileDirections.UPPER_LEFT, board, boardType) }
-    move5?.let { move5 = findTile(it, TileDirections.UPPER_LEFT, board, boardType) }
-    result.add(move5)
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.BOTTOM,
+            TileDirections.BOTTOM,
+            TileDirections.UNDER_LEFT,
+            board,boardType,selectedTile.id
+        )
+    })
 
-    var move6 = findTile(selectedTile.id, TileDirections.TOP, board, boardType)
-    move6?.let { move6 = findTile(it, TileDirections.UPPER_RIGHT, board, boardType) }
-    move6?.let { move6 = findTile(it, TileDirections.UPPER_RIGHT, board, boardType) }
-    result.add(move6)
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.UNDER_LEFT,
+            TileDirections.BOTTOM,
+            TileDirections.BOTTOM,
+            board,boardType,selectedTile.id
+        )
+    })
 
-    var move7= findTile(selectedTile.id, TileDirections.BOTTOM, board, boardType)
-    move7?.let { move7= findTile(it, TileDirections.UNDER_LEFT, board, boardType) }
-    move7?.let { move7= findTile(it, TileDirections.UNDER_LEFT, board, boardType) }
-    result.add(move7)
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.BOTTOM,
+            TileDirections.BOTTOM,
+            TileDirections.UNDER_RIGHT,
+            board,boardType,selectedTile.id
+        )
+    })
 
-    var move8 = findTile(selectedTile.id, TileDirections.BOTTOM, board, boardType)
-    move8?.let { move8 = findTile(it, TileDirections.UNDER_RIGHT, board, boardType) }
-    move8?.let { move8 = findTile(it, TileDirections.UNDER_RIGHT, board, boardType) }
-    result.add(move8)
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.UNDER_RIGHT,
+            TileDirections.BOTTOM,
+            TileDirections.BOTTOM,
+            board,boardType,selectedTile.id
+        )
+    })
 
-    var move9 = findTile(selectedTile.id, TileDirections.UPPER_LEFT, board, boardType)
-    move9?.let { move9 = findTile(it, TileDirections.UPPER_LEFT, board, boardType) }
-    move9?.let { move9 = findTile(it, TileDirections.UNDER_LEFT, board, boardType) }
-    result.add(move9)
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.UNDER_RIGHT,
+            TileDirections.BOTTOM,
+            TileDirections.BOTTOM,
+            board,boardType,selectedTile.id
+        )
+    })
 
-    var move10 = findTile(selectedTile.id, TileDirections.UNDER_LEFT, board, boardType)
-    move10?.let { move10 = findTile(it, TileDirections.UNDER_LEFT, board, boardType) }
-    move10?.let { move10 = findTile(it, TileDirections.UPPER_LEFT, board, boardType) }
-    result.add(move10)
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.TOP,
+            TileDirections.UPPER_LEFT,
+            TileDirections.UPPER_LEFT,
+            board,boardType,selectedTile.id
+        )
+    })
 
-    var move11 = findTile(selectedTile.id, TileDirections.UPPER_RIGHT, board, boardType)
-    move11?.let { move11 = findTile(it, TileDirections.UPPER_RIGHT, board, boardType) }
-    move11?.let { move11 = findTile(it, TileDirections.UNDER_RIGHT, board, boardType) }
-    result.add(move11)
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.UPPER_LEFT,
+            TileDirections.UPPER_LEFT,
+            TileDirections.TOP,
+            board,boardType,selectedTile.id
+        )
+    })
 
-    var move12 = findTile(selectedTile.id, TileDirections.UNDER_RIGHT, board, boardType)
-    move12?.let { move12 = findTile(it, TileDirections.UNDER_RIGHT, board, boardType) }
-    move12?.let { move12 = findTile(it, TileDirections.UPPER_RIGHT, board, boardType) }
-    result.add(move12)
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.TOP,
+            TileDirections.UPPER_RIGHT,
+            TileDirections.UPPER_RIGHT,
+            board,boardType,selectedTile.id
+        )
+    })
+
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.UPPER_RIGHT,
+            TileDirections.UPPER_RIGHT,
+            TileDirections.TOP,
+            board,boardType,selectedTile.id
+        )
+    })
+
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.BOTTOM,
+            TileDirections.UNDER_LEFT,
+            TileDirections.UNDER_LEFT,
+            board,boardType,selectedTile.id
+        )
+    })
+
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.UNDER_LEFT,
+            TileDirections.UNDER_LEFT,
+            TileDirections.BOTTOM,
+            board,boardType,selectedTile.id
+        )
+    })
+
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.UNDER_RIGHT,
+            TileDirections.UNDER_RIGHT,
+            TileDirections.BOTTOM,
+            board,boardType,selectedTile.id
+        )
+    })
+
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.BOTTOM,
+            TileDirections.UNDER_RIGHT,
+            TileDirections.UNDER_RIGHT,
+            board,boardType,selectedTile.id
+        )
+    })
+
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.UPPER_LEFT,
+            TileDirections.UPPER_LEFT,
+            TileDirections.UNDER_LEFT,
+            board,boardType,selectedTile.id
+        )
+    })
+
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.UNDER_LEFT,
+            TileDirections.UPPER_LEFT,
+            TileDirections.UPPER_LEFT,
+            board,boardType,selectedTile.id
+        )
+    })
+
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.UNDER_LEFT,
+            TileDirections.UNDER_LEFT,
+            TileDirections.UPPER_LEFT,
+            board,boardType,selectedTile.id
+        )
+    })
+
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.UPPER_LEFT,
+            TileDirections.UNDER_LEFT,
+            TileDirections.UNDER_LEFT,
+            board,boardType,selectedTile.id
+        )
+    })
+
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.UPPER_RIGHT,
+            TileDirections.UPPER_RIGHT,
+            TileDirections.UNDER_RIGHT,
+            board,boardType,selectedTile.id
+        )
+    })
+
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.UNDER_RIGHT,
+            TileDirections.UPPER_RIGHT,
+            TileDirections.UPPER_RIGHT,
+            board,boardType,selectedTile.id
+        )
+    })
+
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.UNDER_RIGHT,
+            TileDirections.UNDER_RIGHT,
+            TileDirections.UPPER_RIGHT,
+            board,boardType,selectedTile.id
+        )
+    })
+
+    deferredResult.add(async {
+        getAKnightMove(
+            TileDirections.UPPER_RIGHT,
+            TileDirections.UNDER_RIGHT,
+            TileDirections.UNDER_RIGHT,
+            board,boardType,selectedTile.id
+        )
+    })
+
+    val result = deferredResult.awaitAll().toMutableList()
 
     filterSameColor(selectedTile, result, board, boardType)
 
-    return result
+    return@coroutineScope result
+}
+
+fun getAKnightMove(
+    direction1:TileDirections,
+    direction2:TileDirections,
+    direction3:TileDirections,
+    board: List<Tile>,
+    boardType: BoardType,
+    selectedTileId: TileId
+): TileId? {
+    var move = findTile(selectedTileId, direction1, board, boardType)
+    move?.let { move = findTile(it, direction2, board, boardType) }
+    move?.let { move = findTile(it, direction3, board, boardType) }
+    return move
 }

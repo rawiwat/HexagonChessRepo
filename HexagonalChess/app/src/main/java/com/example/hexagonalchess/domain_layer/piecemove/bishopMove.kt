@@ -12,7 +12,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
 
-suspend fun bishopMove(selectedTile: Tile, board: List<Tile>, boardType: BoardType):List<TileId?> = coroutineScope {
+suspend fun bishopMove(selectedTile: Tile, board: List<Tile>, boardType: BoardType): List<TileId?> = coroutineScope {
     val deferredResults = mutableListOf<Deferred<List<TileId?>>>()
 
     deferredResults.add(async {
