@@ -38,6 +38,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -79,6 +80,7 @@ fun GameScreen(
     val tileUiManager by remember { mutableStateOf(TileUiManager(screenWidth)) }
     val playerColor by remember { mutableStateOf(chessBoardViewModel.playerColor) }
     val turnOnBack by chessBoardViewModel.backMenu.collectAsState()
+    val gameMode = chessBoardViewModel.gameMode
 
     DisposableEffect(Unit) {
         chessBoardViewModel.cpuStart()
@@ -120,7 +122,8 @@ fun GameScreen(
                         screenWidth = screenWidth,
                         tileUiManager = tileUiManager,
                         boardType = boardType,
-                        playerColor = playerColor
+                        playerColor = playerColor,
+                        gameMode = gameMode
                     )
                 }
                 BoardType.STAR_CHESS -> {
@@ -131,7 +134,8 @@ fun GameScreen(
                         screenWidth = screenWidth,
                         tileUiManager = tileUiManager,
                         boardType = boardType,
-                        playerColor = playerColor
+                        playerColor = playerColor,
+                        gameMode = gameMode
                     )
                 }
 
@@ -143,7 +147,8 @@ fun GameScreen(
                         screenWidth = screenWidth,
                         tileUiManager = tileUiManager,
                         boardType = boardType,
-                        playerColor = playerColor
+                        playerColor = playerColor,
+                        gameMode = gameMode
                     )
                 }
 
@@ -155,42 +160,12 @@ fun GameScreen(
                         screenWidth = screenWidth,
                         tileUiManager = tileUiManager,
                         boardType = boardType,
-                        playerColor = playerColor
+                        playerColor = playerColor,
+                        gameMode = gameMode
                     )
                 }
             }
         }
-
-        /*Button(
-            onClick = {
-                for (tile in chessBoard) {
-                    println("${tile.id} : ${ tile.isAPossibleMove }")
-                }
-            }
-        ) {
-            Text(text = "check board")
-        }
-
-        Button(
-            onClick = {
-                for (tile in chessBoard) {
-                    println("${tile.id} : ${tile.chessPiece?.keyWord}")
-                }
-            }
-        ) {
-            Text(text = "check board2")
-        }
-        Button(
-            onClick = {
-                for (piece in blackCaptured) {
-                    println("Black Captured : ${piece.keyWord}")
-                }
-                for (piece in whiteCaptured) {
-                    println("White Captured : ${piece.keyWord}")
-                }
-            }
-        ) {
-        }*/
     }
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -322,6 +297,7 @@ fun BackMenu(
                         )
                     }
                 )
+
                 Box(
                     modifier = Modifier
                         .size(
@@ -515,7 +491,6 @@ fun PromoteMenu(
     chessBoardViewModel: ChessBoardViewModel,
     currentTurn: PieceColor
 ) {
-
     val color by rememberSaveable { mutableStateOf(if (currentTurn == PieceColor.BLACK) PieceColor.WHITE else PieceColor.BLACK) }
     val listOfPromotion = getPromotionKeyWordFromColor(color)
 
@@ -529,32 +504,36 @@ fun PromoteMenu(
         contentAlignment = Alignment.Center,
     ) {
         Column {
-            Text(
-                text = "PROMOTION",
-                modifier = Modifier
-                    .padding(5.dp)
-                    .fillMaxWidth(),
-                fontSize = 25.sp,
-                style = TextStyle(
-                    color = Color.Yellow
-                ),
-                textAlign = TextAlign.Center
-            )
+            Box {
+                Text(
+                    text = "PROMOTION",
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .fillMaxWidth(),
+                    fontSize = 25.sp,
+                    style = TextStyle(
+                        color = Color.Yellow
+                    ),
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.ExtraBold
+                )
 
-            Text(
-                text = "PROMOTION",
-                modifier = Modifier
-                    .padding(5.dp)
-                    .fillMaxWidth(),
-                fontSize = 25.sp,
-                style = TextStyle(
-                    color = Color.Black,
-                    drawStyle = Stroke(
-                        width = 1.5f,
-                    )
-                ),
-                textAlign = TextAlign.Center
-            )
+                Text(
+                    text = "PROMOTION",
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .fillMaxWidth(),
+                    fontSize = 25.sp,
+                    style = TextStyle(
+                        color = Color.Black,
+                        drawStyle = Stroke(
+                            width = 1.5f,
+                        )
+                    ),
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.ExtraBold
+                )
+            }
 
             LazyRow {
                 items(listOfPromotion) { promotionOption ->

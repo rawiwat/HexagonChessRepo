@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.BoardType
+import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.tile_ui_manager.TileUiManager
@@ -25,7 +26,8 @@ fun StarBoardUI(
     tileUiManager: TileUiManager,
     screenWidth: Int,
     boardType: BoardType,
-    playerColor: PieceColor
+    playerColor: PieceColor,
+    gameMode: GameMode
 ) {
     var columnA = chessBoardData.subList(0,1)
     var columnB = chessBoardData.subList(1,3)
@@ -37,7 +39,7 @@ fun StarBoardUI(
     var columnH = chessBoardData.subList(34,36)
     var columnI = chessBoardData.subList(36,37)
 
-    if (playerColor == PieceColor.BLACK) {
+    if (gameMode != GameMode.LOCAL && playerColor == PieceColor.BLACK) {
         columnA = columnA.reversed()
         columnB = columnB.reversed()
         columnC = columnC.reversed()

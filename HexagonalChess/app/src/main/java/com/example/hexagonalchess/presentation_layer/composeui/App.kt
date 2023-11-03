@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.hexagonalchess.presentation_layer.composeui
 
 import android.content.Context
@@ -24,10 +26,10 @@ import com.example.hexagonalchess.presentation_layer.viewmodel.SettingViewModel
 fun App(
     navController: NavHostController,
     settingViewModel: SettingViewModel,
-    playerColor: PieceColor,
     context: Context,
     closeAppFunction:() -> Unit
 ) {
+    val viablePieceColor = listOf(PieceColor.WHITE,PieceColor.BLACK)
     NavHost(
         navController = navController,
         startDestination = "Main"
@@ -63,7 +65,7 @@ fun App(
                     }, boardType = boardType,
                     context = context,
                     gameMode = gameMode,
-                    playerColor = playerColor
+                    playerColor = viablePieceColor.random()
                 ),
                 context = context,
                 boardType = boardType,
@@ -79,28 +81,6 @@ fun App(
                 settingViewModel = settingViewModel
             )
         }
-
-        /*composable(
-            route = "${Route.vsCpu}/{boardType}",
-            arguments = listOf(navArgument("boardType") { type = NavType.EnumType(BoardType::class.java) })
-        ) {
-            val boardType = it.arguments?.getSerializable("boardType") as BoardType
-            PlayerVsCpuScreen(
-                chessBoardVsCpuViewModel = ChessBoardVsCPUViewModel(
-                    playerColor,
-                    board = when(boardType){
-                        BoardType.DEFAULT -> ChessboardData().allTiles
-                        BoardType.STAR_CHESS -> ShurikenBoardData().allTiles
-                        BoardType.SHAFRAN -> ShafranChessBoardData().allTiles
-                        BoardType.BIG -> BigChessBoardData().allTiles
-                    },
-                    boardType, context
-                ),
-                context = context,
-                playerColor = playerColor,
-                boardType = boardType
-            )
-        }*/
 
         composable(
             route = "${Route.boardSelection}/{gameMode}",

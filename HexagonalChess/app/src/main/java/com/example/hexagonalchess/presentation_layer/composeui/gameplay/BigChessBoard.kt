@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.BoardType
+import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.tile_ui_manager.TileUiManager
@@ -24,7 +25,8 @@ fun BigBoardUI(
     screenWidth: Int,
     tileUiManager: TileUiManager,
     boardType: BoardType,
-    playerColor: PieceColor
+    playerColor: PieceColor,
+    gameMode: GameMode
 ) {
     var columnA = chessBoardData.subList(0,6)
     var columnB = chessBoardData.subList(6,13)
@@ -38,7 +40,7 @@ fun BigBoardUI(
     var columnJ = chessBoardData.subList(78,85)
     var columnK = chessBoardData.subList(85,91)
 
-    if (playerColor == PieceColor.BLACK) {
+    if (gameMode != GameMode.LOCAL && playerColor == PieceColor.BLACK) {
         columnA = columnA.reversed()
         columnB = columnB.reversed()
         columnC = columnC.reversed()
