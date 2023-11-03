@@ -2,6 +2,7 @@ package com.example.hexagonalchess.presentation_layer.viewmodel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import com.example.hexagonalchess.domain_layer.SettingState
 import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.theme_setting.ThemeSharedPrefs
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,8 +16,8 @@ class SettingViewModel(
     private val _currentTheme = MutableStateFlow(themeSharedPref.getTheme())
     val currentTheme: StateFlow<TileTheme> = _currentTheme
 
-    private val _settingOpen = MutableStateFlow(false)
-    val settingThemOpen: StateFlow<Boolean> = _settingOpen
+    private val _settingState = MutableStateFlow(SettingState.NONE)
+    val settingState: StateFlow<SettingState> = _settingState
 
     fun changeTheme(chosenTheme: TileTheme) {
         themeSharedPref.saveTheme(chosenTheme)
@@ -24,11 +25,11 @@ class SettingViewModel(
     }
 
     fun turnOnTheme() {
-        _settingOpen.value = !_settingOpen.value
+        _settingState.value = SettingState.THEME
+        println(_settingState.value)
     }
 
-    fun turnOffTheme() {
-        _settingOpen.value = !_settingOpen.value
+    fun turnOffSettingMenu() {
+        _settingState.value = SettingState.NONE
     }
-
 }

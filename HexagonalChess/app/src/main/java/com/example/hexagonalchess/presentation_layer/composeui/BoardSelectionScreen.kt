@@ -112,13 +112,6 @@ fun BoardSelectionScreen(
                 modifier = Modifier.fillMaxSize()
             )
 
-            Image(
-                painter = painterResource(id = R.drawable.menu_background_2),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally

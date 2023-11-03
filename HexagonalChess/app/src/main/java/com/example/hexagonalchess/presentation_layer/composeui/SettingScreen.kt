@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -24,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.domain_layer.Route
+import com.example.hexagonalchess.domain_layer.SettingState
 import com.example.hexagonalchess.domain_layer.TileColor
 import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.getTileImage
@@ -51,7 +55,9 @@ fun SettingScreen(
     navController: NavController,
     settingViewModel: SettingViewModel
 ) {
-    val themeSettingEnable by settingViewModel.settingThemOpen.collectAsState()
+    val settingState by settingViewModel.settingState.collectAsState()
+
+    val themeSettingTurnOn by rememberUpdatedState(newValue = settingState == SettingState.THEME)
 
     Surface(
         modifier = Modifier.fillMaxSize()
@@ -62,32 +68,34 @@ fun SettingScreen(
             contentScale = ContentScale.Crop
         )
 
-        Image(
-            painter = painterResource(id = R.drawable.menu_background_2),
-            contentDescription = null,
-            contentScale = ContentScale.Crop
-        )
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-
             SettingButton(
                 text = "Theme",
                 onClick = {
                     settingViewModel.turnOnTheme()
+                    println(themeSettingTurnOn)
+                    println(settingState)
+                },
+            )
+
+            SettingButton(
+                text = "go back",
+                onClick = {
+                    navController.navigate(route = Route.main)
                 },
             )
         }
         
-        AnimatedVisibility(visible = themeSettingEnable) {
+        AnimatedVisibility(visible = themeSettingTurnOn) {
             ThemeSetting(settingViewModel)
         }
     }
     BackHandler(
         onBack = {
-            settingViewModel.turnOffTheme()
+            settingViewModel.turnOffSettingMenu()
             navController.navigate(route = Route.main)
         }
     )
@@ -150,12 +158,20 @@ fun ChangeTheme(
             .clickable { viewModel.changeTheme(thisTheme) }
             .border(width = if (thisTheme == currentTheme) 5.dp else 0.dp, color = themeColor)
             .background(color = Color.DarkGray)
-            .padding(top = 15.dp)
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.menu_template_dark),
+            contentDescription = null,
+            modifier = Modifier.size(width = 272.dp, height = 96.dp),
+            contentScale = ContentScale.FillBounds
+        )
+
         Column(
             Modifier.verticalScroll(scrollState),
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
+            Spacer(modifier = Modifier.height(15.dp))
+
             Text(
                 text = themeName,
                 modifier = Modifier.fillMaxWidth(),
@@ -168,7 +184,9 @@ fun ChangeTheme(
             )
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color.Transparent)
             ) {
                 Image(
                     painter = painterResource(id = getTileImage(TileColor.DARK, theme)),
@@ -198,6 +216,7 @@ fun ChangeTheme(
 fun ThemeSetting(
     settingViewModel: SettingViewModel
 ) {
+
     Column(
         modifier = Modifier
     ) {
@@ -249,6 +268,9 @@ fun ThemeSetting(
             themeName = "Orange Theme",
             themeColor = Color(0xFFFFA500)
         )
+        SettingButton(text = "Done") {
+            settingViewModel.turnOffSettingMenu()
+        }
     }
 }
 

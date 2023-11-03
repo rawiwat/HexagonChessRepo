@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -77,7 +78,6 @@ fun GameScreen(
     val screenWidth by remember { mutableIntStateOf(localConfiguration.screenWidthDp) }
     val tileUiManager by remember { mutableStateOf(TileUiManager(screenWidth)) }
     val playerColor by remember { mutableStateOf(chessBoardViewModel.playerColor) }
-    //val gameMode by remember { mutableStateOf(chessBoardViewModel.gameMode) }
     val turnOnBack by chessBoardViewModel.backMenu.collectAsState()
 
     DisposableEffect(Unit) {
@@ -275,16 +275,16 @@ fun BackMenu(
                 )
         )
         Column {
-            Text(
-                text ="Go back to the Main Menu?",
+            Box(
                 modifier = Modifier
-                    .size(
-                        height = textBoxHeight,
-                        width = width
-                    ),
-                textAlign = TextAlign.Center,
-                lineHeight = (textBoxHeight/2).value.sp
-            )
+                    .size(width, textBoxHeight),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text ="Go back to the Main Menu?"
+                )
+            }
+
             Row {
                 Box(
                     modifier = Modifier
@@ -470,15 +470,16 @@ fun GameOverMenu(
         )
 
         Column {
-            Text(
-                text = gameOverMessage,
-                fontSize = 20.sp,
+            Box(
                 modifier = Modifier
-                    .size(
-                        width = popUpBoxWidth,
-                        height = textBoxHeight
-                    )
-            )
+                    .size(popUpBoxWidth, textBoxHeight),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = gameOverMessage,
+                    fontSize = 20.sp,
+                )
+            }
 
             Box(
                 modifier = Modifier
@@ -530,11 +531,29 @@ fun PromoteMenu(
         Column {
             Text(
                 text = "PROMOTION",
-                modifier = Modifier.padding(5.dp),
+                modifier = Modifier
+                    .padding(5.dp)
+                    .fillMaxWidth(),
                 fontSize = 25.sp,
                 style = TextStyle(
                     color = Color.Yellow
-                )
+                ),
+                textAlign = TextAlign.Center
+            )
+
+            Text(
+                text = "PROMOTION",
+                modifier = Modifier
+                    .padding(5.dp)
+                    .fillMaxWidth(),
+                fontSize = 25.sp,
+                style = TextStyle(
+                    color = Color.Black,
+                    drawStyle = Stroke(
+                        width = 1.5f,
+                    )
+                ),
+                textAlign = TextAlign.Center
             )
 
             LazyRow {

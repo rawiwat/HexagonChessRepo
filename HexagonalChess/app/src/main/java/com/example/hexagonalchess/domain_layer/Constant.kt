@@ -115,3 +115,8 @@ enum class GameMode {
     ONLINE,
     CPU
 }
+
+enum class SettingState {
+    NONE,
+    THEME
+}
