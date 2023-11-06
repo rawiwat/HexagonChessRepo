@@ -18,11 +18,11 @@ import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.Route
-import com.example.hexagonalchess.domain_layer.player.manager.FirebasePlayerManager
 import com.example.hexagonalchess.presentation_layer.composeui.gameplay.GameScreen
 import com.example.hexagonalchess.presentation_layer.viewmodel.BoardSelectionViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.SettingViewModel
+import com.example.hexagonalchess.presentation_layer.viewmodel.SignInViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.SignUpViewModel
 
 @Composable
@@ -35,6 +35,7 @@ fun App(
 ) {
     val viablePieceColor = listOf(PieceColor.WHITE,PieceColor.BLACK)
 
+    val databaseForPlayer = FireBaseDatabasePlayer(context)
     val startDestination = if (playerName.isNullOrBlank()) {
         Route.signUp
     } else {
@@ -128,7 +129,17 @@ fun App(
         ) {
             SignUpScreen(
                 navController = navController,
-                signUpViewModel = SignUpViewModel(FirebasePlayerManager(),FireBaseDatabasePlayer(context))
+                signUpViewModel = SignUpViewModel(databaseForPlayer)
+            )
+        }
+
+        composable(
+            route = Route.signIn
+        ) {
+            SignInScreen(
+                navController = navController,
+                signInViewModel = SignInViewModel(databaseForPlayer),
+                context = context
             )
         }
     }

@@ -1,20 +1,20 @@
 package com.example.hexagonalchess.presentation_layer.viewmodel
 
-import androidx.lifecycle.ViewModel
+import android.content.Context
 import androidx.navigation.NavController
 import com.example.hexagonalchess.data_layer.database.DatabasePlayer
 import com.example.hexagonalchess.domain_layer.Route
+import com.example.hexagonalchess.domain_layer.player.manager.PlayerNameSharedPref
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class SignUpViewModel(
+class SignInViewModel(
     private val databasePlayer: DatabasePlayer
-):ViewModel() {
-    //val playerManager: ManagePlayer = FirebasePlayerManager()
+) {
     private val _nameMessage = MutableStateFlow("enter name")
-    val nameMessage:StateFlow<String> = _nameMessage
+    val nameMessage: StateFlow<String> = _nameMessage
     private val _passwordMessage = MutableStateFlow("enter password")
-    val passwordMessage:StateFlow<String> = _passwordMessage
+    val passwordMessage: StateFlow<String> = _passwordMessage
 
     private var nameReady = false
 
@@ -24,20 +24,15 @@ class SignUpViewModel(
         databasePlayer.checkIfPlayerExists(name, resolve)
     }
 
-    fun addNewPlayer(name: String ,password: String, navController: NavController) {
+    fun loginAndGotoMain(name: String, navController: NavController,context: Context) {
         if (nameReady && passwordReady) {
-            databasePlayer.addNewPlayer(name, password)
+            PlayerNameSharedPref(context).savePlayer(name)
             navController.navigate(Route.main)
         }
     }
 
-    fun nameAlreadyExisted(name: String) {
-        _nameMessage.value = "$name was already used"
-        nameReady = false
-    }
-
-    fun passwordTooShort() {
-        _passwordMessage.value = "password too short"
+    fun passwordIncorrect() {
+        _passwordMessage.value = "incorrect password"
         passwordReady = false
     }
 
@@ -46,8 +41,17 @@ class SignUpViewModel(
         _nameMessage.value = "name Valid"
     }
 
+    fun nameNotFind() {
+        nameReady = false
+        _nameMessage.value = "name Invalid"
+    }
+
     fun passwordIsReady() {
         passwordReady = true
         _passwordMessage.value = "password Valid"
+    }
+
+    fun checkPassword() {
+
     }
 }

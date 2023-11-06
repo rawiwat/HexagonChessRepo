@@ -1,5 +1,6 @@
 package com.example.hexagonalchess.presentation_layer.composeui
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,12 +26,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.domain_layer.Route
-import com.example.hexagonalchess.presentation_layer.viewmodel.SignUpViewModel
+import com.example.hexagonalchess.presentation_layer.viewmodel.SignInViewModel
 
 @Composable
-fun SignUpScreen(
+fun SignInScreen(
     navController: NavController,
-    signUpViewModel: SignUpViewModel
+    signInViewModel: SignInViewModel,
+    context: Context
 ) {
     var nameInput by rememberSaveable { mutableStateOf("") }
 
@@ -40,9 +42,9 @@ fun SignUpScreen(
 
     val boxSize = remember { screenWidth / 4 * 3 }
 
-    val nameMessage by signUpViewModel.nameMessage.collectAsState()
+    val nameMessage by signInViewModel.nameMessage.collectAsState()
 
-    val passwordMessage by signUpViewModel.passwordMessage.collectAsState()
+    val passwordMessage by signInViewModel.passwordMessage.collectAsState()
 
     val textBoxWidth = remember { (boxSize - 10).dp }
     val textBoxHeight = 25.dp
@@ -136,31 +138,29 @@ fun SignUpScreen(
 
                     Text(text = passwordMessage)
 
-                    MenuButton(text = "Sign Up") {
-                        signUpViewModel.checkIfPlayerExists(nameInput) { playerExisted ->
+                    MenuButton(text = "Sign In") {
+                        signInViewModel.checkIfPlayerExists(nameInput) { playerExisted ->
                             if (playerExisted) {
-                                signUpViewModel.nameAlreadyExisted(nameInput)
+                                signInViewModel.nameIsReady()
                             } else {
-                                signUpViewModel.nameIsReady()
+                                signInViewModel.nameNotFind()
                             }
 
-                            if (passwordInput.length >= 8) {
-                                signUpViewModel.passwordIsReady()
-                            } else {
-                                signUpViewModel.passwordTooShort()
-                            }
 
-                            signUpViewModel.addNewPlayer(
-                                nameInput,
-                                passwordInput,
-                                navController
-                            )
                         }
+
+                        signInViewModel.checkPassword()
+
+                        signInViewModel.loginAndGotoMain(
+                                nameInput,
+                        navController,
+                        context
+                        )
                     }
 
                     MenuButton(
-                        text = "Sign In",
-                        onClick = { navController.navigate(Route.signIn) }
+                        text = "Sign Up",
+                        onClick = { navController.navigate(Route.signUp) }
                     )
                 }
             }
