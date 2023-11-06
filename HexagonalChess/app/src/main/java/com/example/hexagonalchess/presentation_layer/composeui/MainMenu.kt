@@ -70,29 +70,7 @@ fun MainMenu(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            Box {
-                Text(
-                    text = "Hexagonal Chess Online",
-                    fontFamily = FontFamily(Font(R.font.game_title)),
-                    fontSize = titleSize.roundToInt().sp,
-                    textAlign = TextAlign.Center,
-                    style = TextStyle( color = Color.Black ),
-                    fontWeight = FontWeight.ExtraBold
-                )
-                Text(
-                    text = "Hexagonal Chess Online",
-                    fontFamily = FontFamily(Font(R.font.game_title)),
-                    fontSize = titleSize.roundToInt().sp,
-                    textAlign = TextAlign.Center,
-                    style = TextStyle(
-                        color = Color.White,
-                        drawStyle = Stroke(
-                            width = 1.5f,
-                        )
-                    ),
-                    fontWeight = FontWeight.ExtraBold
-                )
-            }
+            GameTitle(titleSize = titleSize)
 
             MenuButton(
                 text = "Play\nOnline",
@@ -293,6 +271,33 @@ fun QuitMenu(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun GameTitle(titleSize:Double) {
+    Box {
+        Text(
+            text = "Hexagonal Chess Online",
+            fontFamily = FontFamily(Font(R.font.game_title)),
+            fontSize = titleSize.roundToInt().sp,
+            textAlign = TextAlign.Center,
+            style = TextStyle( color = Color.Black ),
+            fontWeight = FontWeight.ExtraBold
+        )
+        Text(
+            text = "Hexagonal Chess Online",
+            fontFamily = FontFamily(Font(R.font.game_title)),
+            fontSize = titleSize.roundToInt().sp,
+            textAlign = TextAlign.Center,
+            style = TextStyle(
+                color = Color.White,
+                drawStyle = Stroke(
+                    width = 1.5f,
+                )
+            ),
+            fontWeight = FontWeight.ExtraBold
+        )
     }
 }
 

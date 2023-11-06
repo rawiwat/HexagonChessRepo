@@ -5,7 +5,7 @@ import com.example.hexagonalchess.domain_layer.player.generatePlayerIdFromName
 
 data class Player(
     val name: String,
-    val image: ImageBitmap,
+    val password: String,
     val rating: Int = 0,
     val playerId: Int = generatePlayerIdFromName(name),
 )

@@ -1,16 +1,14 @@
 package com.example.hexagonalchess.data_layer.model.database
 
+import com.example.hexagonalchess.data_layer.database.DatabaseGame
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.PieceColor
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 
-class FirebaseRealtimeDatabase: Database {
+class FirebaseRealtimeDatabaseGame: DatabaseGame {
     private val myRef = FirebaseDatabase.getInstance().getReference("game")
 
     override fun sendPlayerToOnlineWaitingRoom(name: String) {

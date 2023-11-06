@@ -11,6 +11,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.hexagonalchess.domain_layer.PieceColor
+import com.example.hexagonalchess.domain_layer.player.manager.PlayerNameSharedPref
 import com.example.hexagonalchess.presentation_layer.composeui.App
 import com.example.hexagonalchess.presentation_layer.viewmodel.SettingViewModel
 import com.example.hexagonalchess.ui.theme.HexagonalChessTheme
@@ -26,6 +27,8 @@ class MainActivity : ComponentActivity() {
         //val chessBoardVsCPUViewModel = ChessBoardVsCPUViewModel(playerColor, allTiles)
         val settingViewModel = SettingViewModel(this@MainActivity)
 
+        val playerName = PlayerNameSharedPref(this@MainActivity).getPlayerName()
+
         setContent {
             HexagonalChessTheme {
                 navController = rememberNavController()
@@ -36,8 +39,10 @@ class MainActivity : ComponentActivity() {
                     App(
                         navController = navController as NavHostController,
                         settingViewModel = settingViewModel,
-                        context = this@MainActivity
-                    ) { finish() }
+                        context = this@MainActivity,
+                        closeAppFunction = { finish() },
+                        playerName = playerName
+                    )
                 }
             }
         }

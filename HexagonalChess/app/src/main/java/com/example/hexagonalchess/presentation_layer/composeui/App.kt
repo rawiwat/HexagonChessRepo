@@ -13,26 +13,36 @@ import com.example.hexagonalchess.data_layer.chess_board_data.base.ChessboardDat
 import com.example.hexagonalchess.data_layer.chess_board_data.big.BigChessBoardData
 import com.example.hexagonalchess.data_layer.chess_board_data.shafran.ShafranChessBoardData
 import com.example.hexagonalchess.data_layer.chess_board_data.starchess.ShurikenBoardData
+import com.example.hexagonalchess.data_layer.database.FireBaseDatabasePlayer
 import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.Route
+import com.example.hexagonalchess.domain_layer.player.manager.FirebasePlayerManager
 import com.example.hexagonalchess.presentation_layer.composeui.gameplay.GameScreen
 import com.example.hexagonalchess.presentation_layer.viewmodel.BoardSelectionViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.SettingViewModel
+import com.example.hexagonalchess.presentation_layer.viewmodel.SignUpViewModel
 
 @Composable
 fun App(
     navController: NavHostController,
     settingViewModel: SettingViewModel,
     context: Context,
-    closeAppFunction:() -> Unit
+    closeAppFunction:() -> Unit,
+    playerName: String?
 ) {
     val viablePieceColor = listOf(PieceColor.WHITE,PieceColor.BLACK)
+
+    val startDestination = if (playerName.isNullOrBlank()) {
+        Route.signUp
+    } else {
+        Route.main
+    }
     NavHost(
         navController = navController,
-        startDestination = "Main"
+        startDestination = startDestination
     ) {
         composable(
             route = Route.main
@@ -111,6 +121,15 @@ fun App(
                     encodedRoute = loadingArguments.getString("encodedRoute").toString()
                 )
             }
+        }
+
+        composable(
+            route = Route.signUp
+        ) {
+            SignUpScreen(
+                navController = navController,
+                signUpViewModel = SignUpViewModel(FirebasePlayerManager(),FireBaseDatabasePlayer(context))
+            )
         }
     }
 }

@@ -222,3 +222,4 @@ fun getPawnStartingPoint(boardType: BoardType, color: PieceColor): List<TileId> 
     println(result)
     return result
 }
+
