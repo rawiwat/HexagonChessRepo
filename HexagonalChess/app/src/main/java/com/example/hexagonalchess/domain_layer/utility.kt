@@ -105,11 +105,6 @@ fun getPromotionKeyWordFromColor(color: PieceColor):List<ChessPieceKeyWord> {
     }
 }
 
-fun generatePlayerIdFromName(input: String): Int {
-    val hashCode = input.hashCode().absoluteValue
-    return String.format("%06d", hashCode % 1000000).toInt()
-}
-
 fun getImageIdFromBoardType(boardType: BoardType): Int {
     return when(boardType) {
         BoardType.DEFAULT -> R.drawable.board_preview_default

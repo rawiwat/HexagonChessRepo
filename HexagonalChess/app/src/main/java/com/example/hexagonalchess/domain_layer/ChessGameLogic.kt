@@ -26,7 +26,7 @@ fun containPiece(tileId: TileId?, board: List<Tile>, boardType: BoardType): Bool
     return false
 }
 
-suspend fun getAllTileInMultiDirection(
+fun getAllTileInMultiDirection(
     selectedTile: Tile,
     directions: List<TileDirections>,
     board: List<Tile>,

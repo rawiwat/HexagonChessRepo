@@ -1,7 +1,7 @@
 package com.example.hexagonalchess.data_layer.model.player
 
 import androidx.compose.ui.graphics.ImageBitmap
-import com.example.hexagonalchess.domain_layer.generatePlayerIdFromName
+import com.example.hexagonalchess.domain_layer.player.generatePlayerIdFromName
 
 data class Player(
     val name: String,
