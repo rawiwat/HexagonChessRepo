@@ -1,5 +1,7 @@
 package com.example.hexagonalchess.presentation_layer.composeui
 
+import android.content.Context
+import android.graphics.Bitmap
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
@@ -10,12 +12,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -25,8 +32,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -41,9 +52,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberImagePainter
 import com.example.hexagonalchess.R
+import com.example.hexagonalchess.data_layer.database.DatabasePlayer
+import com.example.hexagonalchess.data_layer.database.FireBaseDatabasePlayer
+import com.example.hexagonalchess.data_layer.model.player.Player
 import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.Route
+import com.example.hexagonalchess.domain_layer.getPlayerImageBitmap
 import com.example.hexagonalchess.presentation_layer.viewmodel.MainMenuViewModel
 import kotlin.math.roundToInt
 
@@ -51,10 +67,12 @@ import kotlin.math.roundToInt
 fun MainMenu(
     navController: NavController,
     playerName: String,
+    databasePlayer: DatabasePlayer,
+    context: Context,
     closeApp: () -> Unit
 ) {
     val titleSize by rememberSaveable { mutableDoubleStateOf(60.00) }
-    val viewModel = remember { MainMenuViewModel() }
+    val viewModel = remember { MainMenuViewModel(databasePlayer, playerName) }
     val quitMenuOn by viewModel.quitMenuActive.collectAsState()
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val sizeModifier = remember {
@@ -64,6 +82,9 @@ fun MainMenu(
         )
     }
     val fontSize = remember { screenWidth / 16 }
+    val playerModel by viewModel.player.collectAsState()
+
+    println(playerName)
     Surface(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -77,6 +98,11 @@ fun MainMenu(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
+            PlayerOnMain(
+                player = playerModel,
+                screenWidth = screenWidth.dp,
+                context = context
+            )
             GameTitle(titleSize = titleSize)
 
             MenuButton(
@@ -140,7 +166,7 @@ fun MainMenu(
         }
     }
 
-    BackHandler(onBack = { })
+    BackHandler(onBack = { viewModel.turnOnQuitMenu() })
 }
 
 @Composable
@@ -318,18 +344,154 @@ fun GameTitle(titleSize:Double) {
         )
     }
 }
-
+/*
 @Preview
 @Composable
 fun PreviewMainMenu() {
-    MainMenu(NavController(LocalContext.current),"pete" , {})
+    CompositionLocalProvider(LocalTitleSize provides 60.0) {
+        MainMenu(NavController(LocalContext.current),"pete" , databasePlayer = FireBaseDatabasePlayer(
+            LocalContext.current), {})
+    }
 }
 
 @Preview
 @Composable
 fun PreviewQuit() {
     QuitMenu(
-        viewModel = MainMenuViewModel(),
-        closeApp = { /*TODO*/ },
+        viewModel = MainMenuViewModel(
+            databasePlayer = FireBaseDatabasePlayer(
+                LocalContext.current
+            )
+        ),
+        closeApp = {  },
         width = 200.dp, height = 150.dp)
+}*/
+
+@Composable
+fun PlayerOnMain(
+    player:Player,
+    screenWidth: Dp,
+    context: Context
+) {
+    var playerImageBitmap = getPlayerImageBitmap(
+        encodedString = player.encodedImageBitmap,
+        context = context
+    )
+    val imageSize = remember {screenWidth / 4}
+    /*playerImageBitmap = Bitmap.createScaledBitmap(
+        playerImageBitmap,
+        imageSize.value.toInt(),
+        imageSize.value.toInt(),
+        true
+    )*/
+
+    val idGap = remember { screenWidth / 8 * 3 }
+
+    val painter = rememberImagePainter(data = playerImageBitmap)
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(imageSize)
+        ,
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Row {
+            TextWithStroke(
+                text = "id : ${player.playerId}",
+                modifier = Modifier.width(idGap),
+                textColor = Color.Black,
+                strokeColor = Color.White
+            )
+
+            /*Canvas(
+                modifier = Modifier,
+                onDraw = {
+                    drawImage(
+                        playerImageBitmap.asImageBitmap(),
+                        topLeft = Offset(0f, 0f), // Set the destination rectangle
+                        alpha = 1f,
+                    )
+                }
+            )*/
+            Image(
+                painter = painter,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(imageSize),
+                contentScale = ContentScale.Crop
+            )
+
+            Box(
+                modifier = Modifier
+                    .height(imageSize),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.player_name_and_rating_display),
+                    contentDescription = null,
+                    modifier = Modifier
+                )
+
+                Column {
+                    Text(
+                        text = player.name,
+                        style = TextStyle(
+                            color = Color.White
+                        )
+                    )
+                    Text(
+                        text = "Rank Rating : ${player.rating}",
+                        style = TextStyle(
+                            color = Color.White
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TextWithStroke(
+    text: String,
+    modifier: Modifier,
+    textColor: Color,
+    strokeColor: Color,
+) {
+    Box {
+        Text(
+            text = text,
+            textAlign = TextAlign.Start,
+            modifier = modifier,
+            style = TextStyle(
+                color = textColor
+            )
+        )
+
+        Text(
+            text = text,
+            textAlign = TextAlign.Start,
+            modifier = modifier,
+            style = TextStyle(
+                color = strokeColor,
+                drawStyle = Stroke(
+                    width = 1f
+                )
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PlayerPreview() {
+    PlayerOnMain(
+        player = Player(
+            name = "Jeb zebos",
+            encodedImageBitmap = ""
+        ),
+        context = LocalContext.current,
+        screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    )
 }

@@ -7,5 +7,6 @@ data class Player(
     val name: String = "",
     val password: String = "",
     val rating: Int = 0,
+    val encodedImageBitmap:String = "",
     val playerId: Int = generatePlayerIdFromName(name),
 )

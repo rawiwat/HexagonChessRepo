@@ -52,6 +52,8 @@ fun App(
             MainMenu(
                 navController = navController,
                 playerName = PlayerNameSharedPref(context).getPlayerName().toString(),
+                databasePlayer = databaseForPlayer,
+                context = context,
                 closeAppFunction
             )
         }
@@ -91,7 +93,8 @@ fun App(
         ) {
             SettingScreen(
                 navController = navController,
-                settingViewModel = settingViewModel
+                settingViewModel = settingViewModel,
+                context = context
             )
         }
 

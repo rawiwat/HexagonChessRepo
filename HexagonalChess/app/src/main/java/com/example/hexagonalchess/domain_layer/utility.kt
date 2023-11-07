@@ -1,13 +1,18 @@
 package com.example.hexagonalchess.domain_layer
 
+import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaPlayer
+import android.net.Uri
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import java.io.ByteArrayOutputStream
 import android.util.Base64
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.io.InputStream
 import kotlin.math.absoluteValue
 
 fun getChessPieceFromKeyWord(chessPieceKeyWord: ChessPieceKeyWord): ChessPiece {
@@ -237,4 +242,47 @@ fun encodeBitmapToString(bitmap:Bitmap): String {
 fun decodeStringToBitmap(encodedString: String):Bitmap {
     val decodedString = Base64.decode(encodedString, Base64.DEFAULT)
     return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+}
+
+fun getPlayerImageBitmap(
+    encodedString: String,
+    context: Context
+): Bitmap {
+    return if (encodedString.isBlank()) {
+        getBitmapFromDrawable(context, drawableId = R.drawable.white_player_icon)
+    } else {
+        decodeStringToBitmap(encodedString)
+    }
+}
+
+
+fun getBitmapFromDrawable(context: Context, drawableId: Int): Bitmap {
+    return BitmapFactory.decodeResource(context.resources, drawableId)
+}
+
+
+fun getBitmapFromUri(context: Context, imageUri: Uri?): Bitmap? {
+    var inputStream: InputStream? = null
+    try {
+        val contentResolver: ContentResolver = context.contentResolver
+        // Open an input stream from the image URI
+        inputStream = imageUri?.let { contentResolver.openInputStream(it) }
+
+        // Decode the input stream into a Bitmap
+        return BitmapFactory.decodeStream(inputStream)
+    } catch (e: FileNotFoundException) {
+        e.printStackTrace()
+    } catch (e: IOException) {
+        e.printStackTrace()
+    } finally {
+        // Close the input stream to release resources
+        inputStream?.close()
+    }
+    return null
+}
+
+fun bitmapToByteArray(bitmap: Bitmap?): ByteArray {
+    val stream = ByteArrayOutputStream()
+    bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
+    return stream.toByteArray()
 }

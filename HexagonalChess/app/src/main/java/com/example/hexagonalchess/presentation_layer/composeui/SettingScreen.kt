@@ -1,5 +1,6 @@
 package com.example.hexagonalchess.presentation_layer.composeui
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -42,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.hexagonalchess.MainActivity
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.domain_layer.Route
 import com.example.hexagonalchess.domain_layer.SettingState
@@ -53,7 +55,8 @@ import com.example.hexagonalchess.presentation_layer.viewmodel.SettingViewModel
 @Composable
 fun SettingScreen(
     navController: NavController,
-    settingViewModel: SettingViewModel
+    settingViewModel: SettingViewModel,
+    context: Context
 ) {
     val settingState by settingViewModel.settingState.collectAsState()
 
@@ -78,6 +81,13 @@ fun SettingScreen(
                     settingViewModel.turnOnTheme()
                     println(themeSettingTurnOn)
                     println(settingState)
+                },
+            )
+
+            SettingButton(
+                text = "Change Image",
+                onClick = {
+                    (context as? MainActivity)?.fetchImage()
                 },
             )
 
@@ -291,7 +301,9 @@ fun SettingScreenPreview() {
     val context = LocalContext.current
     SettingScreen(
         navController = NavController(context),
-        settingViewModel = SettingViewModel(context))
+        settingViewModel = SettingViewModel(context),
+        context
+    )
 }
 
 @Preview

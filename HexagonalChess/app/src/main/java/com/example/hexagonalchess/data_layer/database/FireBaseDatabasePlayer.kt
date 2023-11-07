@@ -13,6 +13,7 @@ class FireBaseDatabasePlayer(
 ): DatabasePlayer {
     private val gameRef = FirebaseDatabase.getInstance().reference.child("game")
     private val playersRef = gameRef.child("player")
+
     override fun addNewPlayer(name: String, password: String) {
         val newPlayer = Player(name, password)
         gameRef.child("player").push().setValue(newPlayer)
@@ -55,6 +56,52 @@ class FireBaseDatabasePlayer(
 
                 override fun onCancelled(databaseError: DatabaseError) {
                     // Handle any errors here
+                }
+            })
+    }
+
+    override fun searchPlayerByName(name: String, callback: PlayerSearchCallback) {
+        playersRef.orderByChild("name").equalTo(name)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    for (snapshot in dataSnapshot.children) {
+                        val player = snapshot.getValue(Player::class.java)
+                        player?.let {
+                            callback.onPlayerFound(player)
+                            return
+                        }
+                    }
+                    callback.onPlayerNotFound()
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // TODO : Handle error
+                }
+            })
+    }
+
+    fun updatePlayerImage(playerName: String, encodedImage: String) {
+        playersRef.orderByChild("name").equalTo(playerName)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    for (snapshot in dataSnapshot.children) {
+                        val playerId = snapshot.key // Assuming playerId is the unique identifier
+                        val playerRef = playerId?.let { playersRef.child(it) }
+
+                        val updates = hashMapOf<String, Any>()
+                        updates["encodedImageBitmap"] = encodedImage
+
+                        playerRef?.updateChildren(updates)?.addOnSuccessListener {
+                            // Update successful
+                        }?.addOnFailureListener {
+                            // TODO : Handle the error
+                        }
+                        return
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // TODO : Handle error
                 }
             })
     }
