@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,12 +23,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.domain_layer.Route
 import com.example.hexagonalchess.presentation_layer.viewmodel.SignInViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignInScreen(
     navController: NavController,
@@ -46,8 +50,15 @@ fun SignInScreen(
 
     val passwordMessage by signInViewModel.passwordMessage.collectAsState()
 
-    val textBoxWidth = remember { (boxSize - 10).dp }
-    val textBoxHeight = 25.dp
+    val showPassword by signInViewModel.showPassword.collectAsState()
+
+    val textBoxWidth = remember { (boxSize * 9 /10).dp }
+    val textBoxHeight = remember { (boxSize / 8).dp }
+
+    val sizeModifierBigButton = remember { Modifier.size(width = textBoxWidth / 4 * 3 , height = textBoxHeight * 3 / 2) }
+    val sizeModifierSmallButton = remember { Modifier.size(width = textBoxWidth / 8 * 3 , height = textBoxHeight * 3 / 4) }
+    val fontSize = remember { 20 }
+    val fontSizeSmall = remember { 10 }
 
     Surface(
         modifier = Modifier
@@ -124,42 +135,46 @@ fun SignInScreen(
                                 ),
                             contentScale = ContentScale.FillBounds
                         )
+
                         BasicTextField(
-                            passwordInput ,
+                            value = passwordInput,
                             onValueChange = { passwordInput = it },
                             modifier = Modifier
                                 .size(
                                     width = textBoxWidth,
                                     height = textBoxHeight
-                                )
+                                ),
+                            visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                         )
-
                     }
 
                     Text(text = passwordMessage)
 
-                    MenuButton(text = "Sign In") {
-                        signInViewModel.checkIfPlayerExists(nameInput) { playerExisted ->
-                            if (playerExisted) {
-                                signInViewModel.nameIsReady()
-                            } else {
-                                signInViewModel.nameNotFind()
-                            }
+                    MenuButton(
+                        text = "Show Password",
+                        modifier = sizeModifierSmallButton,
+                        fontSize = fontSizeSmall
+                    ) {
+                        signInViewModel.showPassword()
+                    }
 
-
-                        }
-
-                        signInViewModel.checkPassword()
-
-                        signInViewModel.loginAndGotoMain(
-                                nameInput,
-                        navController,
-                        context
+                    MenuButton(
+                        text = "Sign In",
+                        modifier = sizeModifierBigButton,
+                        fontSize = fontSize
+                    ) {
+                        signInViewModel.onClickSignIn(
+                            name = nameInput,
+                            password = passwordInput,
+                            context = context,
+                            navController = navController
                         )
                     }
 
                     MenuButton(
                         text = "Sign Up",
+                        modifier = sizeModifierBigButton,
+                        fontSize = fontSize,
                         onClick = { navController.navigate(Route.signUp) }
                     )
                 }

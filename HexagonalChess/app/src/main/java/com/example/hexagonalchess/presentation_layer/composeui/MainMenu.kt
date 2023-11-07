@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Surface
@@ -29,6 +28,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -50,13 +50,20 @@ import kotlin.math.roundToInt
 @Composable
 fun MainMenu(
     navController: NavController,
+    playerName: String,
     closeApp: () -> Unit
 ) {
     val titleSize by rememberSaveable { mutableDoubleStateOf(60.00) }
-
     val viewModel = remember { MainMenuViewModel() }
     val quitMenuOn by viewModel.quitMenuActive.collectAsState()
-
+    val screenWidth = LocalConfiguration.current.screenWidthDp
+    val sizeModifier = remember {
+        Modifier.size(
+            width = (screenWidth / 2).dp,
+            height = (screenWidth / 6).dp
+        )
+    }
+    val fontSize = remember { screenWidth / 16 }
     Surface(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -76,35 +83,45 @@ fun MainMenu(
                 text = "Play\nOnline",
                 onClick = {
                     navController.navigate("${Route.boardSelection}/${GameMode.ONLINE}")
-                }
+                },
+                modifier = sizeModifier,
+                fontSize = fontSize
             )
 
             MenuButton(
                 text = "Play\nLocal",
                 onClick = {
                     navController.navigate("${Route.boardSelection}/${GameMode.LOCAL}")
-                }
+                },
+                modifier = sizeModifier,
+                fontSize = fontSize
             )
 
             MenuButton(
                 text = "Play Cpu",
                 onClick = {
                     navController.navigate("${Route.boardSelection}/${GameMode.CPU}")
-                }
+                },
+                modifier = sizeModifier,
+                fontSize = fontSize
             )
 
             MenuButton(
                 text = "Setting",
                 onClick = {
                     navController.navigate(Route.setting)
-                }
+                },
+                modifier = sizeModifier,
+                fontSize = fontSize
             )
 
             MenuButton(
                 text = "Quit",
                 onClick = {
                     viewModel.turnOnQuitMenu()
-                }
+                },
+                modifier = sizeModifier,
+                fontSize = fontSize
             )
         }
     }
@@ -129,14 +146,15 @@ fun MainMenu(
 @Composable
 fun MenuButton(
     text: String,
-    onClick: () -> Unit
+    modifier: Modifier,
+    fontSize: Int,
+    onClick: () -> Unit,
 ) {
     Box(
-        modifier = Modifier
-            .size(width = 215.dp, height = 63.dp),
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        val fontSize by remember { mutableIntStateOf(24) }
+
         Image(
             painter = painterResource(id = R.drawable.menu_button),
             contentDescription = null,
@@ -304,7 +322,7 @@ fun GameTitle(titleSize:Double) {
 @Preview
 @Composable
 fun PreviewMainMenu() {
-    MainMenu(NavController(LocalContext.current), {})
+    MainMenu(NavController(LocalContext.current),"pete" , {})
 }
 
 @Preview

@@ -16,42 +16,86 @@ class SignInViewModel(
     private val _passwordMessage = MutableStateFlow("enter password")
     val passwordMessage: StateFlow<String> = _passwordMessage
 
+    private val _showPassword = MutableStateFlow(false)
+    val showPassword: StateFlow<Boolean> = _showPassword
+
     private var nameReady = false
 
     private var passwordReady = false
 
-    fun checkIfPlayerExists(name:String, resolve:(Boolean) ->Unit) {
+    private fun checkIfPlayerExists(name:String, resolve:(Boolean) ->Unit) {
         databasePlayer.checkIfPlayerExists(name, resolve)
     }
 
-    fun loginAndGotoMain(name: String, navController: NavController,context: Context) {
+    private fun loginAndGotoMain(name: String, navController: NavController, context: Context) {
         if (nameReady && passwordReady) {
             PlayerNameSharedPref(context).savePlayer(name)
             navController.navigate(Route.main)
         }
     }
 
-    fun passwordIncorrect() {
+    private fun passwordIncorrect() {
         _passwordMessage.value = "incorrect password"
         passwordReady = false
     }
 
-    fun nameIsReady() {
+    private fun nameIsReady() {
         nameReady = true
         _nameMessage.value = "name Valid"
     }
 
-    fun nameNotFind() {
+    private fun nameNotFind() {
         nameReady = false
         _nameMessage.value = "name Invalid"
     }
 
-    fun passwordIsReady() {
+    private fun passwordIsReady() {
         passwordReady = true
         _passwordMessage.value = "password Valid"
     }
 
-    fun checkPassword() {
+    private fun checkPassword(
+        name: String,
+        password: String,
+        context: Context,
+        navController: NavController
+    ) {
+        databasePlayer.checkPassword(
+            name , password
+        ) { passwordCorrect ->
+            if (passwordCorrect) {
+                passwordIsReady()
+                loginAndGotoMain(
+                    name,
+                    navController,
+                    context
+                )
+            } else {
+                passwordIncorrect()
+            }
+        }
+    }
 
+    fun onClickSignIn(
+        name: String,
+        password: String,
+        context: Context,
+        navController: NavController
+    ) {
+        checkIfPlayerExists(name) {
+                playerExisted ->
+            if (playerExisted) {
+                nameIsReady()
+            } else {
+                nameNotFind()
+            }
+        }
+        checkPassword(
+            name, password , context, navController
+        )
+    }
+
+    fun showPassword() {
+        _showPassword.value = !_showPassword.value
     }
 }

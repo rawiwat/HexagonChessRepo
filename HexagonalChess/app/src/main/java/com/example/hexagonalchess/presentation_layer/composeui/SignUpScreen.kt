@@ -44,8 +44,12 @@ fun SignUpScreen(
 
     val passwordMessage by signUpViewModel.passwordMessage.collectAsState()
 
-    val textBoxWidth = remember { (boxSize - 10).dp }
-    val textBoxHeight = 25.dp
+    val textBoxWidth = remember { (boxSize * 9 / 10).dp }
+    val textBoxHeight = remember { (boxSize / 10).dp }
+    val sizeModifierBigButton = remember { Modifier.size(width = textBoxWidth / 4 * 3 , height = textBoxHeight * 3 / 2) }
+    val sizeModifierSmallButton = remember { Modifier.size(width = textBoxWidth / 8 * 3 , height = textBoxHeight * 3 / 4) }
+    val fontSize = remember { 20 }
+    val fontSizeSmall = remember { 10 }
 
     Surface(
         modifier = Modifier
@@ -102,7 +106,8 @@ fun SignUpScreen(
                                 .size(
                                     width = textBoxWidth,
                                     height = textBoxHeight
-                                )
+                                ),
+                            maxLines = 1,
                         )
 
                     }
@@ -129,37 +134,37 @@ fun SignUpScreen(
                                 .size(
                                     width = textBoxWidth,
                                     height = textBoxHeight
-                                )
+                                ),
+                            maxLines = 1
                         )
 
                     }
 
                     Text(text = passwordMessage)
 
-                    MenuButton(text = "Sign Up") {
-                        signUpViewModel.checkIfPlayerExists(nameInput) { playerExisted ->
-                            if (playerExisted) {
-                                signUpViewModel.nameAlreadyExisted(nameInput)
-                            } else {
-                                signUpViewModel.nameIsReady()
-                            }
-
-                            if (passwordInput.length >= 8) {
-                                signUpViewModel.passwordIsReady()
-                            } else {
-                                signUpViewModel.passwordTooShort()
-                            }
-
-                            signUpViewModel.addNewPlayer(
-                                nameInput,
-                                passwordInput,
-                                navController
-                            )
-                        }
+                    MenuButton(
+                        text = "Show Password",
+                        modifier = sizeModifierSmallButton,
+                        fontSize = fontSizeSmall
+                    ) {
+                        signUpViewModel.showPassword()
+                    }
+                    MenuButton(
+                        text = "Sign Up",
+                        modifier = sizeModifierBigButton,
+                        fontSize = fontSize
+                    ) {
+                        signUpViewModel.onClickSignUp(
+                            name = nameInput,
+                            password = passwordInput,
+                            navController = navController
+                        )
                     }
 
                     MenuButton(
                         text = "Sign In",
+                        modifier = sizeModifierBigButton,
+                        fontSize = fontSize,
                         onClick = { navController.navigate(Route.signIn) }
                     )
                 }

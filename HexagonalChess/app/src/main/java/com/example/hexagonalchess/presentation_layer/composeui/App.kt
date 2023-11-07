@@ -18,6 +18,7 @@ import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.Route
+import com.example.hexagonalchess.domain_layer.player.manager.PlayerNameSharedPref
 import com.example.hexagonalchess.presentation_layer.composeui.gameplay.GameScreen
 import com.example.hexagonalchess.presentation_layer.viewmodel.BoardSelectionViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
@@ -50,6 +51,7 @@ fun App(
         ) {
             MainMenu(
                 navController = navController,
+                playerName = PlayerNameSharedPref(context).getPlayerName().toString(),
                 closeAppFunction
             )
         }

@@ -16,38 +16,71 @@ class SignUpViewModel(
     private val _passwordMessage = MutableStateFlow("enter password")
     val passwordMessage:StateFlow<String> = _passwordMessage
 
+    private val _showPassword = MutableStateFlow(false)
+    val showPassword: StateFlow<Boolean> = _showPassword
+
     private var nameReady = false
 
     private var passwordReady = false
 
-    fun checkIfPlayerExists(name:String, resolve:(Boolean) ->Unit) {
+    private fun checkIfPlayerExists(name:String, resolve:(Boolean) ->Unit) {
         databasePlayer.checkIfPlayerExists(name, resolve)
     }
 
-    fun addNewPlayer(name: String ,password: String, navController: NavController) {
+    private fun addNewPlayer(name: String, password: String, navController: NavController) {
         if (nameReady && passwordReady) {
             databasePlayer.addNewPlayer(name, password)
             navController.navigate(Route.main)
         }
     }
 
-    fun nameAlreadyExisted(name: String) {
+    private fun nameAlreadyExisted(name: String) {
         _nameMessage.value = "$name was already used"
         nameReady = false
     }
 
-    fun passwordTooShort() {
+    private fun passwordTooShort() {
         _passwordMessage.value = "password too short"
         passwordReady = false
     }
 
-    fun nameIsReady() {
+    private fun nameIsReady() {
         nameReady = true
         _nameMessage.value = "name Valid"
     }
 
-    fun passwordIsReady() {
+    private fun passwordIsReady() {
         passwordReady = true
         _passwordMessage.value = "password Valid"
+    }
+
+    fun onClickSignUp(
+        name: String,
+        password: String,
+        navController: NavController
+    ) {
+        checkIfPlayerExists(name) { playerExisted ->
+            if (playerExisted) {
+                nameAlreadyExisted(name)
+            } else {
+                nameIsReady()
+            }
+
+            if (password.length >= 8) {
+                passwordIsReady()
+            } else {
+                passwordTooShort()
+            }
+
+            addNewPlayer(
+                name,
+                password,
+                navController
+            )
+        }
+    }
+
+    fun showPassword() {
+        _showPassword.value = !_showPassword.value
     }
 }

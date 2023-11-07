@@ -1,9 +1,13 @@
 package com.example.hexagonalchess.domain_layer
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.MediaPlayer
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
+import java.io.ByteArrayOutputStream
+import android.util.Base64
 import kotlin.math.absoluteValue
 
 fun getChessPieceFromKeyWord(chessPieceKeyWord: ChessPieceKeyWord): ChessPiece {
@@ -223,3 +227,14 @@ fun getPawnStartingPoint(boardType: BoardType, color: PieceColor): List<TileId> 
     return result
 }
 
+fun encodeBitmapToString(bitmap:Bitmap): String {
+    val byteArrayOutputStream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+    val byteArray = byteArrayOutputStream.toByteArray()
+    return Base64.encodeToString(byteArray, Base64.DEFAULT)
+}
+
+fun decodeStringToBitmap(encodedString: String):Bitmap {
+    val decodedString = Base64.decode(encodedString, Base64.DEFAULT)
+    return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+}
