@@ -80,7 +80,11 @@ fun BoardSelectionScreen(
                     modifier = Modifier
                         .clickable {
                             try {
-                                navController.navigate("${Route.loading}/$encodedRoute")
+                                if (gameMode == GameMode.LOCAL || gameMode == GameMode.CPU) {
+                                    navController.navigate("${Route.loading}/$encodedRoute")
+                                } else {
+                                    navController.navigate("")
+                                }
                             } catch (e: Exception) {
                                 println(e)
                             }

@@ -100,6 +100,7 @@ class Route {
         const val online = "Online"
         const val boardSelection = "Board Selection"
         const val loading = "Loading"
+        const val loadingOnline = "LoadingOnline"
         const val signUp = "SignUp"
         const val signIn = "SignIn"
     }

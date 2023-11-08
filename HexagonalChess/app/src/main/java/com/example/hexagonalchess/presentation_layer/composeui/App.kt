@@ -14,6 +14,7 @@ import com.example.hexagonalchess.data_layer.chess_board_data.big.BigChessBoardD
 import com.example.hexagonalchess.data_layer.chess_board_data.shafran.ShafranChessBoardData
 import com.example.hexagonalchess.data_layer.chess_board_data.starchess.ShurikenBoardData
 import com.example.hexagonalchess.data_layer.database.FireBaseDatabasePlayer
+import com.example.hexagonalchess.data_layer.database.FirebaseRealtimeDatabaseGame
 import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.PieceColor
@@ -37,6 +38,8 @@ fun App(
     val viablePieceColor = listOf(PieceColor.WHITE,PieceColor.BLACK)
 
     val databaseForPlayer = FireBaseDatabasePlayer(context)
+    val databaseGame = FirebaseRealtimeDatabaseGame()
+
     val startDestination = if (playerName.isNullOrBlank()) {
         Route.signUp
     } else {
@@ -145,6 +148,28 @@ fun App(
                 navController = navController,
                 signInViewModel = SignInViewModel(databaseForPlayer),
                 context = context
+            )
+        }
+
+        composable(
+            route = "${Route.loadingOnline}/{boardType}",
+            arguments = listOf(
+                navArgument("boardType") {
+                    type = NavType.EnumType(BoardType::class.java)
+                }
+            )
+        ) {
+            val boardType = it.arguments?.getSerializable("boardType") as BoardType
+            LoadingScreenOnline(
+                playerName = PlayerNameSharedPref(context).getPlayerName().toString(),
+                databaseGame = databaseGame,
+                board = when(boardType) {
+                    BoardType.DEFAULT -> ChessboardData().allTiles
+                    BoardType.STAR_CHESS -> ShurikenBoardData().allTiles
+                    BoardType.SHAFRAN -> ShafranChessBoardData().allTiles
+                    BoardType.BIG -> BigChessBoardData().allTiles
+                },
+                navController = navController
             )
         }
     }

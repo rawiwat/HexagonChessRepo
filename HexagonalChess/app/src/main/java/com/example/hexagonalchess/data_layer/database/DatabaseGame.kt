@@ -7,11 +7,12 @@ import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.PieceColor
 
 interface DatabaseGame {
-    fun sendPlayerToOnlineWaitingRoom(name: String)
-    fun observeBoardState(playerId: Int, boardType: BoardType)
+    fun sendPlayerToOnlineWaitingRoom(name: String, board: List<Tile>)
+    fun observeBoardState(gameRoomName: String, boardType: BoardType)
     fun movePieces(from: Tile, to: Tile)
     fun capture(keyWord: ChessPieceKeyWord)
-    fun observeCapture(color: PieceColor):List<ChessPiece>
+    fun observeCapture(color: PieceColor)
     fun giveRankPoint()
     fun sendDrawOffer()
+    fun initializeGame(board: List<Tile>)
 }
