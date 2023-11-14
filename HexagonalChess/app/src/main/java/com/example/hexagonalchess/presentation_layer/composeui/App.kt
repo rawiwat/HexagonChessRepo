@@ -20,7 +20,8 @@ import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.Route
 import com.example.hexagonalchess.domain_layer.player.manager.PlayerNameSharedPref
-import com.example.hexagonalchess.presentation_layer.composeui.gameplay.GameScreen
+import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.GameScreen
+import com.example.hexagonalchess.presentation_layer.composeui.gameplay.online.MultiplayerGameScreen
 import com.example.hexagonalchess.presentation_layer.viewmodel.BoardSelectionViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.SettingViewModel
@@ -31,6 +32,7 @@ import com.example.hexagonalchess.presentation_layer.viewmodel.SignUpViewModel
 fun App(
     navController: NavHostController,
     settingViewModel: SettingViewModel,
+    playerNameSharedPref: PlayerNameSharedPref,
     context: Context,
     closeAppFunction:() -> Unit,
     playerName: String?
@@ -38,7 +40,7 @@ fun App(
     val viablePieceColor = listOf(PieceColor.WHITE,PieceColor.BLACK)
 
     val databaseForPlayer = FireBaseDatabasePlayer(context)
-    val databaseGame = FirebaseRealtimeDatabaseGame()
+    val databaseGame = FirebaseRealtimeDatabaseGame(context)
 
     val startDestination = if (playerName.isNullOrBlank()) {
         Route.signUp
@@ -54,7 +56,7 @@ fun App(
         ) {
             MainMenu(
                 navController = navController,
-                playerName = PlayerNameSharedPref(context).getPlayerName().toString(),
+                playerName = playerNameSharedPref.getPlayerName().toString(),
                 databasePlayer = databaseForPlayer,
                 context = context,
                 closeAppFunction
@@ -161,7 +163,7 @@ fun App(
         ) {
             val boardType = it.arguments?.getSerializable("boardType") as BoardType
             LoadingScreenOnline(
-                playerName = PlayerNameSharedPref(context).getPlayerName().toString(),
+                playerName = playerNameSharedPref.getPlayerName().toString(),
                 databaseGame = databaseGame,
                 board = when(boardType) {
                     BoardType.DEFAULT -> ChessboardData().allTiles
@@ -169,7 +171,32 @@ fun App(
                     BoardType.SHAFRAN -> ShafranChessBoardData().allTiles
                     BoardType.BIG -> BigChessBoardData().allTiles
                 },
-                navController = navController
+                boardType = boardType,
+                navController = navController,
+                context = context
+            )
+        }
+
+        composable(
+            route = "${Route.online}/{boardType}",
+            arguments = listOf(
+                navArgument("boardType") {
+                    type = NavType.EnumType(BoardType::class.java)
+                }
+            )
+        ) {
+            val boardType = it.arguments?.getSerializable("boardType") as BoardType
+            MultiplayerGameScreen(
+                navController = navController,
+                database = databaseGame,
+                board = when(boardType) {
+                    BoardType.DEFAULT -> ChessboardData().allTiles
+                    BoardType.STAR_CHESS -> ShurikenBoardData().allTiles
+                    BoardType.SHAFRAN -> ShafranChessBoardData().allTiles
+                    BoardType.BIG -> BigChessBoardData().allTiles
+                },
+                boardType = boardType,
+                context = context
             )
         }
     }

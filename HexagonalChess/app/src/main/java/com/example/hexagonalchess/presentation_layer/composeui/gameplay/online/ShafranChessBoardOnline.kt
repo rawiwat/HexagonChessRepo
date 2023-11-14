@@ -1,4 +1,4 @@
-package com.example.hexagonalchess.presentation_layer.composeui.gameplay
+package com.example.hexagonalchess.presentation_layer.composeui.gameplay.online
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
@@ -15,31 +15,32 @@ import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.tile_ui_manager.TileUiManager
+import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.TileUI
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
+import com.example.hexagonalchess.presentation_layer.viewmodel.ChessMultiPlayerViewModel
 
 
 @Composable
-fun StarBoardUI(
+fun ShafranChessBoardUIOnline(
     chessBoardData:List<Tile>,
-    chessBoardViewModel: ChessBoardViewModel,
+    chessBoardViewModel: ChessMultiPlayerViewModel,
     theme: TileTheme,
     tileUiManager: TileUiManager,
     screenWidth: Int,
     boardType: BoardType,
-    playerColor: PieceColor,
-    gameMode: GameMode
+    playerColor: PieceColor
 ) {
-    var columnA = chessBoardData.subList(0,1)
-    var columnB = chessBoardData.subList(1,3)
-    var columnC = chessBoardData.subList(3,10)
-    var columnD = chessBoardData.subList(10,16)
-    var columnE = chessBoardData.subList(16,21)
-    var columnF = chessBoardData.subList(21,27)
-    var columnG = chessBoardData.subList(27,34)
-    var columnH = chessBoardData.subList(34,36)
-    var columnI = chessBoardData.subList(36,37)
+    var columnA = chessBoardData.subList(0,6)
+    var columnB = chessBoardData.subList(6,13)
+    var columnC = chessBoardData.subList(13,21)
+    var columnD = chessBoardData.subList(21,30)
+    var columnE = chessBoardData.subList(30,40)
+    var columnF = chessBoardData.subList(40,49)
+    var columnG = chessBoardData.subList(49,57)
+    var columnH = chessBoardData.subList(57,64)
+    var columnI = chessBoardData.subList(64,70)
 
-    if (gameMode != GameMode.LOCAL && playerColor == PieceColor.BLACK) {
+    if (playerColor == PieceColor.BLACK) {
         columnA = columnA.reversed()
         columnB = columnB.reversed()
         columnC = columnC.reversed()
@@ -50,6 +51,7 @@ fun StarBoardUI(
         columnH = columnH.reversed()
         columnI = columnI.reversed()
     }
+
     Box(
         modifier = Modifier
             .wrapContentSize()
@@ -57,13 +59,13 @@ fun StarBoardUI(
     ) {
         LazyColumn(
             modifier = Modifier
-                .offset(y = tileUiManager.columnAYShuriken.dp)
+                .offset(y = tileUiManager.columnAY.dp)
         ) {
             items(
                 columnA,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIOnline(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
@@ -77,14 +79,14 @@ fun StarBoardUI(
             modifier = Modifier
                 .offset(
                     x = tileUiManager.columnBX.dp,
-                    y = tileUiManager.columnBYShuriken.dp
+                    y = tileUiManager.columnBY.dp
                 )
         ) {
             items(
                 columnB,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIOnline(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
@@ -97,14 +99,15 @@ fun StarBoardUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.columnCX.dp
+                    x = tileUiManager.columnCX.dp,
+                    y = tileUiManager.columnCY.dp
                 )
         ) {
             items(
                 columnC,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIOnline(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
@@ -118,14 +121,14 @@ fun StarBoardUI(
             modifier = Modifier
                 .offset(
                     x = tileUiManager.columnDX.dp,
-                    y = tileUiManager.columnDYShuriken.dp
+                    y = tileUiManager.columnDY.dp
                 )
         ) {
             items(
                 columnD,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIOnline(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
@@ -138,15 +141,14 @@ fun StarBoardUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.columnEX.dp,
-                    y = tileUiManager.columnEYShuriken.dp
+                    x = tileUiManager.columnEX.dp
                 )
         ) {
             items(
                 columnE,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIOnline(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
@@ -160,14 +162,14 @@ fun StarBoardUI(
             modifier = Modifier
                 .offset(
                     x = tileUiManager.columnFX.dp,
-                    y = tileUiManager.columnFYShuriken.dp
+                    y = tileUiManager.columnFY.dp
                 )
         ) {
             items(
                 columnF,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIOnline(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
@@ -180,14 +182,15 @@ fun StarBoardUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.columnGX.dp
+                    x = tileUiManager.columnGX.dp,
+                    y = tileUiManager.columnGY.dp
                 )
         ) {
             items(
                 columnG,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIOnline(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
@@ -201,14 +204,14 @@ fun StarBoardUI(
             modifier = Modifier
                 .offset(
                     x = tileUiManager.columnHX.dp,
-                    y = tileUiManager.columnHYShuriken.dp
+                    y = tileUiManager.columnHY.dp
                 )
         ) {
             items(
                 columnH,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIOnline(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
@@ -222,14 +225,14 @@ fun StarBoardUI(
             modifier = Modifier
                 .offset(
                     x = tileUiManager.columnIX.dp,
-                    y = tileUiManager.columnIYShuriken.dp
+                    y = tileUiManager.columnIY.dp
                 )
         ) {
             items(
                 columnI,
                 key = { it.id }
             ) {
-                TileUI(
+                TileUIOnline(
                     tile = it,
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,

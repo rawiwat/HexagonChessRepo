@@ -8,6 +8,8 @@ import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.ChessGameState
+import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
+import com.example.hexagonalchess.domain_layer.GameEndMethod
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.PieceType
 import com.example.hexagonalchess.domain_layer.TileId
@@ -30,10 +32,6 @@ import kotlinx.coroutines.runBlocking
 
 class ChessMultiPlayerViewModel(
     private val board: List<Tile>,
-    private val gameRoomName: String,
-    private val playerName: String,
-    private val opponentName: String,
-    private val playerColor: PieceColor,
     private val database: DatabaseGame,
     private val boardType: BoardType,
     private val context: Context,
@@ -41,7 +39,19 @@ class ChessMultiPlayerViewModel(
     private val _chessBoard = MutableStateFlow(board)
     val chessBoard:StateFlow<List<Tile>> = _chessBoard
 
-    private val opponentColor = playerColor.opposite()
+    private val gameRoomName: String = database.gameRoomName
+
+    private val _playerName = MutableStateFlow(database.playerName)
+    val playerName:StateFlow<String> = _playerName
+
+    private val _opponentName = MutableStateFlow(database.opponentName)
+    val opponentName:StateFlow<String> = _opponentName
+
+    private val _playerColor = MutableStateFlow(database.playerColor)
+    val playerColor:StateFlow<PieceColor> = _playerColor
+
+    private val _opponentColor = MutableStateFlow(database.opponentColor)
+    val opponentColor:StateFlow<PieceColor> = _opponentColor
 
     private val _playerCaptured = MutableStateFlow(mutableListOf<ChessPiece>())
     val playerCaptured:StateFlow<List<ChessPiece>> = _playerCaptured
@@ -90,7 +100,7 @@ class ChessMultiPlayerViewModel(
 
     fun onClickPieces(tile: Tile) {
         var result = listOf<TileId?>()
-        if (_gameState.value == ChessGameState.PLAYER1_TURN || _gameState.value == ChessGameState.PLAYER2_TURN) {
+        if (_currentTurn.value == _playerColor.value) {
             viewModelScope.launch {
                 for (tiles in _chessBoard.value) {
                     tiles.isAPossibleMove = false
@@ -145,7 +155,7 @@ class ChessMultiPlayerViewModel(
         val updatedChessBoard = _chessBoard.value.map { tile ->
             tile.copy()
         }
-        _chessBoard.value = updatedChessBoard
+        _chessBoard.value = updatedChessBoard.toMutableList()
     }
 
     private fun checkTurn(selectedTile: Tile):Boolean {
@@ -156,9 +166,91 @@ class ChessMultiPlayerViewModel(
         }
         return false
     }
-    fun initializeGame() {
-        database.initializeGame(
-            board = board
-        )
+
+    private fun changeTurn() {
+        /*_currentTurn.value = _currentTurn.value.opposite()
+        database.observeBoardState {
+            _chessBoard.value = database.getCurrentBoard()
+        }*/
+    }
+
+    fun turnOnBackMenu(input: Boolean) {
+        _backMenu.value = input
+    }
+
+    fun onClickTargeted(targetTile: Tile) {
+        for (tiles in _chessBoard.value) {
+            tiles.isAPossibleMove = false
+        }
+        movingTile?.let {
+            database.movePieces(it, targetTile)
+            changeTurn()
+            updateBoard()
+        }
+    }
+
+
+    fun resign(color: PieceColor) {
+        gameOver(color.opposite(), GameEndMethod.RESIGN)
+    }
+
+    fun drawAccepted(color: PieceColor) {
+
+    }
+
+    fun drawRejected(color: PieceColor) {
+
+    }
+
+    fun drawOffered(color: PieceColor) {
+
+    }
+
+    fun turnOnResignMenu() {
+        _playerConsiderResign.value = true
+    }
+
+    fun turnOffResignMenu() {
+        _playerConsiderResign.value = false
+    }
+    fun promotePawn(keyWord: ChessPieceKeyWord) {
+
+    }
+
+    private fun gameOver(winnerColor: PieceColor, method: GameEndMethod) {
+        _gameState.value = ChessGameState.GAME_OVER
+        val winnerColorInMessage = when(winnerColor) {
+            PieceColor.BLACK -> "Black"
+            PieceColor.WHITE -> "White"
+        }
+
+        val loserColorInMessage = when(winnerColor) {
+            PieceColor.BLACK -> "White"
+            PieceColor.WHITE -> "Black"
+        }
+        val gameEndMessage = when(method){
+            GameEndMethod.KING_WAS_CAPTURED -> "$winnerColorInMessage Wins\n$loserColorInMessage King was captured"
+            GameEndMethod.DRAW -> "$winnerColorInMessage accept the draw offer"
+            GameEndMethod.RESIGN -> "$loserColorInMessage resign"
+            GameEndMethod.CHECKMATE -> "$winnerColorInMessage Wins\nCheckmate"
+        }
+        _gameOverMessage.value = gameEndMessage
+    }
+
+    fun updateNameAndColor() {
+        _playerName.value = database.playerName
+        _opponentName.value = database.opponentName
+        _playerColor.value = database.playerColor
+        _opponentColor.value = database.opponentColor
+    }
+
+    init {
+        database.updateBoard = {
+            _chessBoard.value = database.getCurrentBoard()
+        }
+        database.updateCaptured = {
+            _playerCaptured.value = database.getPlayerCaptured()
+            _opponentCaptured.value = database.getOpponentCaptured()
+        }
     }
 }

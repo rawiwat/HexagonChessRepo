@@ -5,9 +5,9 @@ import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.PieceType
 
 open class ChessPiece(
-    val type: PieceType,
-    val color: PieceColor,
-    val keyWord: ChessPieceKeyWord,
+    val type: PieceType = PieceType.PAWN,
+    val color: PieceColor = PieceColor.WHITE,
+    val keyWord: ChessPieceKeyWord = ChessPieceKeyWord.WHITE_PAWN,
     var materialValue: Int = 0,
     var enPassantLeftEnable: Boolean = false,
     var enPassantRightEnable: Boolean = false

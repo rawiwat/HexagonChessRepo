@@ -1,4 +1,4 @@
-package com.example.hexagonalchess.presentation_layer.composeui.gameplay
+package com.example.hexagonalchess.presentation_layer.composeui.gameplay.local
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

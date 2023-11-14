@@ -1,4 +1,4 @@
-package com.example.hexagonalchess.presentation_layer.composeui.gameplay
+package com.example.hexagonalchess.presentation_layer.composeui.gameplay.local
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
@@ -17,9 +17,8 @@ import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.tile_ui_manager.TileUiManager
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 
-
 @Composable
-fun ShafranChessBoardUI(
+fun StarBoardUI(
     chessBoardData:List<Tile>,
     chessBoardViewModel: ChessBoardViewModel,
     theme: TileTheme,
@@ -29,15 +28,15 @@ fun ShafranChessBoardUI(
     playerColor: PieceColor,
     gameMode: GameMode
 ) {
-    var columnA = chessBoardData.subList(0,6)
-    var columnB = chessBoardData.subList(6,13)
-    var columnC = chessBoardData.subList(13,21)
-    var columnD = chessBoardData.subList(21,30)
-    var columnE = chessBoardData.subList(30,40)
-    var columnF = chessBoardData.subList(40,49)
-    var columnG = chessBoardData.subList(49,57)
-    var columnH = chessBoardData.subList(57,64)
-    var columnI = chessBoardData.subList(64,70)
+    var columnA = chessBoardData.subList(0,1)
+    var columnB = chessBoardData.subList(1,3)
+    var columnC = chessBoardData.subList(3,10)
+    var columnD = chessBoardData.subList(10,16)
+    var columnE = chessBoardData.subList(16,21)
+    var columnF = chessBoardData.subList(21,27)
+    var columnG = chessBoardData.subList(27,34)
+    var columnH = chessBoardData.subList(34,36)
+    var columnI = chessBoardData.subList(36,37)
 
     if (gameMode != GameMode.LOCAL && playerColor == PieceColor.BLACK) {
         columnA = columnA.reversed()
@@ -50,7 +49,6 @@ fun ShafranChessBoardUI(
         columnH = columnH.reversed()
         columnI = columnI.reversed()
     }
-
     Box(
         modifier = Modifier
             .wrapContentSize()
@@ -58,7 +56,7 @@ fun ShafranChessBoardUI(
     ) {
         LazyColumn(
             modifier = Modifier
-                .offset(y = tileUiManager.columnAY.dp)
+                .offset(y = tileUiManager.columnAYShuriken.dp)
         ) {
             items(
                 columnA,
@@ -78,7 +76,7 @@ fun ShafranChessBoardUI(
             modifier = Modifier
                 .offset(
                     x = tileUiManager.columnBX.dp,
-                    y = tileUiManager.columnBY.dp
+                    y = tileUiManager.columnBYShuriken.dp
                 )
         ) {
             items(
@@ -98,8 +96,7 @@ fun ShafranChessBoardUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.columnCX.dp,
-                    y = tileUiManager.columnCY.dp
+                    x = tileUiManager.columnCX.dp
                 )
         ) {
             items(
@@ -120,7 +117,7 @@ fun ShafranChessBoardUI(
             modifier = Modifier
                 .offset(
                     x = tileUiManager.columnDX.dp,
-                    y = tileUiManager.columnDY.dp
+                    y = tileUiManager.columnDYShuriken.dp
                 )
         ) {
             items(
@@ -140,7 +137,8 @@ fun ShafranChessBoardUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.columnEX.dp
+                    x = tileUiManager.columnEX.dp,
+                    y = tileUiManager.columnEYShuriken.dp
                 )
         ) {
             items(
@@ -161,7 +159,7 @@ fun ShafranChessBoardUI(
             modifier = Modifier
                 .offset(
                     x = tileUiManager.columnFX.dp,
-                    y = tileUiManager.columnFY.dp
+                    y = tileUiManager.columnFYShuriken.dp
                 )
         ) {
             items(
@@ -181,8 +179,7 @@ fun ShafranChessBoardUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.columnGX.dp,
-                    y = tileUiManager.columnGY.dp
+                    x = tileUiManager.columnGX.dp
                 )
         ) {
             items(
@@ -203,7 +200,7 @@ fun ShafranChessBoardUI(
             modifier = Modifier
                 .offset(
                     x = tileUiManager.columnHX.dp,
-                    y = tileUiManager.columnHY.dp
+                    y = tileUiManager.columnHYShuriken.dp
                 )
         ) {
             items(
@@ -224,7 +221,7 @@ fun ShafranChessBoardUI(
             modifier = Modifier
                 .offset(
                     x = tileUiManager.columnIX.dp,
-                    y = tileUiManager.columnIY.dp
+                    y = tileUiManager.columnIYShuriken.dp
                 )
         ) {
             items(

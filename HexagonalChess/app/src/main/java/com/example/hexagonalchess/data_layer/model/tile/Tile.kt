@@ -7,14 +7,14 @@ import com.google.errorprone.annotations.Immutable
 
 @Immutable
 open class Tile(
-    val id: TileId,
-    val color: TileColor,
-    var topTile: TileId?,
-    var upperRightTile: TileId?,
-    var underRightTile: TileId?,
-    var bottomTile: TileId?,
-    var underLeftTile: TileId?,
-    var upperLeftTile: TileId?,
+    val id: TileId = TileId.A1,
+    val color: TileColor = TileColor.MID,
+    var topTile: TileId? = null,
+    var upperRightTile: TileId? = null,
+    var underRightTile: TileId? = null,
+    var bottomTile: TileId? = null,
+    var underLeftTile: TileId? = null,
+    var upperLeftTile: TileId? = null,
     var isAPossibleMove: Boolean = false,
     var chessPiece: ChessPiece? = null
 ) {

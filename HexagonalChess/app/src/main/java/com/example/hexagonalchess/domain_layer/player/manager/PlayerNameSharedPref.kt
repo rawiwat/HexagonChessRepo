@@ -13,8 +13,16 @@ class PlayerNameSharedPref(context: Context) {
             .putString("player_name", name)
             .apply()
     }
+
     fun getPlayerName():String? {
         return sharedPreferences
             .getString("player_name", null)
+    }
+
+    fun logOutPlayer() {
+        sharedPreferences
+            .edit()
+            .putString("player_name", null)
+            .apply()
     }
 }

@@ -1,4 +1,4 @@
-package com.example.hexagonalchess.presentation_layer.composeui.gameplay
+package com.example.hexagonalchess.presentation_layer.composeui.gameplay.online
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
@@ -21,7 +21,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
@@ -45,66 +45,90 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hexagonalchess.R
+import com.example.hexagonalchess.data_layer.database.DatabaseGame
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.BoardType
-import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.ChessGameState
+import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.Route
 import com.example.hexagonalchess.domain_layer.TileTheme
-import com.example.hexagonalchess.domain_layer.tile_ui_manager.TileUiManager
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 import com.example.hexagonalchess.domain_layer.getChessPieceImage
 import com.example.hexagonalchess.domain_layer.getPromotionKeyWordFromColor
 import com.example.hexagonalchess.domain_layer.getTileImage
+import com.example.hexagonalchess.domain_layer.opposite
 import com.example.hexagonalchess.domain_layer.theme_setting.ThemeSharedPrefs
+import com.example.hexagonalchess.domain_layer.tile_ui_manager.TileUiManager
+import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.BackMenu
+import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.BigBoardUI
+import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.ChessBoardUI
+import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.GameOverMenu
+import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.PlayerUI
+import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.PromoteMenu
+import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.PromotionIcon
+import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.ShafranChessBoardUI
+import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.StarBoardUI
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
+import com.example.hexagonalchess.presentation_layer.viewmodel.ChessMultiPlayerViewModel
 
 @Composable
-fun GameScreen(
-    chessViewModel: ChessBoardViewModel,
-    context: Context,
+fun MultiplayerGameScreen(
+    navController: NavController,
+    database: DatabaseGame,
+    board: List<Tile>,
     boardType: BoardType,
-    navController: NavController
+    context: Context
 ) {
-    val chessBoardViewModel = remember { chessViewModel}
+    val chessBoardViewModel = remember { ChessMultiPlayerViewModel(
+        database = database,
+        board = board.toMutableList(),
+        boardType = boardType,
+        context = context,
+        )
+    }
+
     val chessBoard by chessBoardViewModel.chessBoard.collectAsState()
     val currentTurn by chessBoardViewModel.currentTurn.collectAsState()
-    val blackCaptured by chessBoardViewModel.blackCaptured.collectAsState()
-    val whiteCaptured by chessBoardViewModel.whiteCaptured.collectAsState()
+    val playerCaptured by chessBoardViewModel.playerCaptured.collectAsState()
+    val opponentCaptured by chessBoardViewModel.opponentCaptured.collectAsState()
     val gameState by chessBoardViewModel.gameState.collectAsState()
     val gameOverMessage by chessBoardViewModel.gameOverMessage.collectAsState()
     val theme by remember { mutableStateOf(ThemeSharedPrefs(context).getTheme()) }
     val localConfiguration = LocalConfiguration.current
     val screenWidth by remember { mutableIntStateOf(localConfiguration.screenWidthDp) }
     val tileUiManager by remember { mutableStateOf(TileUiManager(screenWidth)) }
-    val playerColor by remember { mutableStateOf(chessBoardViewModel.playerColor) }
+    val playerColor by chessBoardViewModel.playerColor.collectAsState()
+    val opponentColor by chessBoardViewModel.opponentColor.collectAsState()
     val turnOnBack by chessBoardViewModel.backMenu.collectAsState()
-    val gameMode = chessBoardViewModel.gameMode
+    val playerName by chessBoardViewModel.playerName.collectAsState()
+    val opponentName by chessBoardViewModel.opponentName.collectAsState()
 
-    DisposableEffect(Unit) {
-        chessBoardViewModel.cpuStart()
-        onDispose { }
+    LaunchedEffect(Unit) {
+        chessBoardViewModel.updateNameAndColor()
     }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .background(color = Color.DarkGray)
             .fillMaxSize()
     ) {
-        PlayerUI(
+        PlayerUIOnline(
+            name = playerName,
             currentTurn = currentTurn,
-            color = PieceColor.WHITE,
+            color = playerColor,
             chessBoardViewModel = chessBoardViewModel,
-            listOfCapturedPiece = whiteCaptured,
+            listOfCapturedPiece = playerCaptured,
             screenWidth = screenWidth.dp
         )
 
-        PlayerUI(
+        PlayerUIOnline(
+            name = opponentName,
             currentTurn = currentTurn,
-            color = PieceColor.BLACK,
+            color = opponentColor,
             chessBoardViewModel = chessBoardViewModel,
-            listOfCapturedPiece = blackCaptured,
+            listOfCapturedPiece = opponentCaptured,
             screenWidth = screenWidth.dp
         )
 
@@ -115,53 +139,49 @@ fun GameScreen(
         ) {
             when(boardType) {
                 BoardType.DEFAULT -> {
-                    ChessBoardUI(
+                    ChessBoardUIOnline(
                         chessBoardData = chessBoard,
                         chessBoardViewModel = chessBoardViewModel,
                         theme = theme,
                         screenWidth = screenWidth,
                         tileUiManager = tileUiManager,
                         boardType = boardType,
-                        playerColor = playerColor,
-                        gameMode = gameMode
+                        playerColor = playerColor
                     )
                 }
                 BoardType.STAR_CHESS -> {
-                    StarBoardUI(
+                    StarBoardUIOnline(
                         chessBoardData = chessBoard,
                         chessBoardViewModel = chessBoardViewModel,
                         theme = theme,
                         screenWidth = screenWidth,
                         tileUiManager = tileUiManager,
                         boardType = boardType,
-                        playerColor = playerColor,
-                        gameMode = gameMode
+                        playerColor = playerColor
                     )
                 }
 
                 BoardType.SHAFRAN -> {
-                    ShafranChessBoardUI(
+                    ShafranChessBoardUIOnline(
                         chessBoardData = chessBoard,
                         chessBoardViewModel = chessBoardViewModel,
                         theme = theme,
                         screenWidth = screenWidth,
                         tileUiManager = tileUiManager,
                         boardType = boardType,
-                        playerColor = playerColor,
-                        gameMode = gameMode
+                        playerColor = playerColor
                     )
                 }
 
                 BoardType.BIG -> {
-                    BigBoardUI(
+                    BigBoardUIOnline(
                         chessBoardData = chessBoard,
                         chessBoardViewModel = chessBoardViewModel,
                         theme = theme,
                         screenWidth = screenWidth,
                         tileUiManager = tileUiManager,
                         boardType = boardType,
-                        playerColor = playerColor,
-                        gameMode = gameMode
+                        playerColor = playerColor
                     )
                 }
             }
@@ -191,10 +211,10 @@ fun GameScreen(
         AnimatedVisibility(
             visible = (
                     gameState == ChessGameState.PLAYER1_PROMOTE ||
-                    gameState == ChessGameState.PLAYER2_PROMOTE
+                            gameState == ChessGameState.PLAYER2_PROMOTE
                     ),
         ) {
-            PromoteMenu(
+            PromoteMenuOnline(
                 width = popUpBoxWidth,
                 height = popUpBoxHeight,
                 chessBoardViewModel = chessBoardViewModel,
@@ -203,7 +223,7 @@ fun GameScreen(
         }
 
         AnimatedVisibility(visible = turnOnBack) {
-            BackMenu(
+            BackMenuOnline(
                 navController = navController,
                 chessBoardViewModel = chessBoardViewModel,
                 width = popUpBoxWidth,
@@ -221,17 +241,18 @@ fun GameScreen(
     )
 }
 
+
 @Composable
-fun BackMenu(
+fun BackMenuOnline(
     navController: NavController,
-    chessBoardViewModel: ChessBoardViewModel,
+    chessBoardViewModel: ChessMultiPlayerViewModel,
     width: Dp,
     height: Dp
 ) {
     val buttonWidth by remember { mutableStateOf(width / 2) }
     val buttonHeight by remember { mutableStateOf(height / 3) }
     val textBoxHeight by remember { mutableStateOf(height * 2 / 3) }
-    
+
     Box(
         modifier = Modifier
             .size(
@@ -330,10 +351,10 @@ fun BackMenu(
 }
 
 @Composable
-fun TileUI(
+fun TileUIOnline(
     tile: Tile,
     tileUiManager: TileUiManager,
-    chessBoardViewModel: ChessBoardViewModel,
+    chessBoardViewModel: ChessMultiPlayerViewModel,
     theme: TileTheme,
     boardType: BoardType
 ) {
@@ -358,6 +379,7 @@ fun TileUI(
     val imageId by remember {
         mutableIntStateOf(getTileImage(tile.color, theme))
     }
+
     Box(
         modifier = Modifier.wrapContentSize(),
     ) {
@@ -401,8 +423,8 @@ fun TileUI(
 }
 
 @Composable
-fun PromotionIcon(
-    chessBoardViewModel: ChessBoardViewModel,
+fun PromotionIconOnline(
+    chessBoardViewModel: ChessMultiPlayerViewModel,
     keyWord: ChessPieceKeyWord
 ) {
     Image(
@@ -416,83 +438,16 @@ fun PromotionIcon(
     )
 }
 
-@Composable
-fun GameOverMenu(
-    popUpBoxWidth: Dp,
-    popUpBoxHeight: Dp,
-    gameOverMessage: String,
-    navController: NavController
-) {
-    val textBoxHeight = popUpBoxHeight / 4 * 3
-    val backButtonHeight = popUpBoxHeight / 4
-
-    Box(
-        modifier = Modifier
-            .size(
-                width = popUpBoxWidth,
-                height = popUpBoxHeight
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.menu_button),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(
-                    width = popUpBoxWidth,
-                    height = popUpBoxHeight
-                )
-        )
-
-        Column {
-            Box(
-                modifier = Modifier
-                    .size(popUpBoxWidth, textBoxHeight),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = gameOverMessage,
-                    fontSize = 20.sp,
-                )
-            }
-
-            Box(
-                modifier = Modifier
-                    .size(
-                        width = popUpBoxWidth,
-                        height = backButtonHeight
-                    )
-                    .clickable {
-                        navController.navigate(Route.main)
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.menu_button),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(
-                            width = popUpBoxWidth,
-                            height = backButtonHeight
-                        )
-                )
-                Text(text = "Back to Main Menu")
-            }
-        }
-    }
-}
 
 @Composable
-fun PromoteMenu(
+fun PromoteMenuOnline(
     width: Dp,
     height: Dp,
-    chessBoardViewModel: ChessBoardViewModel,
+    chessBoardViewModel: ChessMultiPlayerViewModel,
     currentTurn: PieceColor
 ) {
     val color by rememberSaveable { mutableStateOf(if (currentTurn == PieceColor.BLACK) PieceColor.WHITE else PieceColor.BLACK) }
-    val listOfPromotion = getPromotionKeyWordFromColor(color)
+    val listOfPromotion = remember { getPromotionKeyWordFromColor(color) }
 
     Box(
         modifier = Modifier
@@ -537,7 +492,7 @@ fun PromoteMenu(
 
             LazyRow {
                 items(listOfPromotion) { promotionOption ->
-                    PromotionIcon(
+                    PromotionIconOnline(
                         chessBoardViewModel = chessBoardViewModel,
                         keyWord = promotionOption
                     )

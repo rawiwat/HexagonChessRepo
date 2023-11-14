@@ -34,9 +34,10 @@ class MainActivity : ComponentActivity() {
         //val allTiles = ChessboardData().allTiles
         //val chessBoardViewModel = ChessBoardViewModel(allTiles)
         //val chessBoardVsCPUViewModel = ChessBoardVsCPUViewModel(playerColor, allTiles)
-        val settingViewModel = SettingViewModel(this@MainActivity)
+        val playerNameSharedPref = PlayerNameSharedPref(this@MainActivity)
 
-        val playerName = PlayerNameSharedPref(this@MainActivity).getPlayerName()
+
+        val playerName = playerNameSharedPref.getPlayerName()
         fetchImageResultLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             if (uri != null) {
                 val imageBitmap = getBitmapFromUri(this@MainActivity, uri)
@@ -54,6 +55,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             HexagonalChessTheme {
                 navController = rememberNavController()
+                val settingViewModel = SettingViewModel(
+                    context = this@MainActivity,
+                    navController = navController,
+                    playerNameSharedPref = playerNameSharedPref
+            )
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -61,6 +67,7 @@ class MainActivity : ComponentActivity() {
                     App(
                         navController = navController as NavHostController,
                         settingViewModel = settingViewModel,
+                        playerNameSharedPref = playerNameSharedPref,
                         context = this@MainActivity,
                         closeAppFunction = { finish() },
                         playerName = playerName

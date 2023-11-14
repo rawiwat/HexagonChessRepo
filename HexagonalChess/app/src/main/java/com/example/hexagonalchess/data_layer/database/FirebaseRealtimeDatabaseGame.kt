@@ -1,49 +1,138 @@
 package com.example.hexagonalchess.data_layer.database
 
+import android.content.Context
+import android.content.Intent
+import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.player.PlayerInGame
+import com.example.hexagonalchess.data_layer.model.player.PlayerInWaiting
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.PieceColor
+import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 import com.example.hexagonalchess.domain_layer.opposite
+import com.example.hexagonalchess.domain_layer.player.manager.PlayerNameSharedPref
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class FirebaseRealtimeDatabaseGame: DatabaseGame {
+class FirebaseRealtimeDatabaseGame(
+    val context: Context
+) : DatabaseGame {
     private val myRef = FirebaseDatabase.getInstance().getReference("game")
-
     private val waitingRoomRef = myRef.child("waiting-room")
+    private val onlineGameRef = myRef.child("online_game")
+    override var gameRoomName = ""
+    override var playerColor: PieceColor = PieceColor.WHITE
+    override var opponentColor: PieceColor = PieceColor.WHITE
+    override val playerName: String = PlayerNameSharedPref(context).getPlayerName().toString()
+    override var opponentName: String = ""
+    val allTiles: MutableList<Tile> = mutableListOf()
+    val playerCapturedPiece = mutableListOf<ChessPiece>()
+    val opponentCapturedPiece = mutableListOf<ChessPiece>()
 
-    var gameRoomName = ""
-    override fun sendPlayerToOnlineWaitingRoom(name: String, board: List<Tile>) {
-        myRef.child("waiting-room").push().setValue(name)
-            .addOnSuccessListener {
-                checkAndCreateRoom(board)
+    override var updateBoard: () -> Unit = { }
+    override var updateCaptured: () -> Unit = { }
+
+    override fun sendPlayerToOnlineWaitingRoom(name: String, board: List<Tile>, boardType: BoardType) {
+        val playerModel = PlayerInWaiting(
+            name = name,
+            boardType = boardType
+        )
+        val playerWaitingRefs =  myRef.child("waiting-room").push()
+
+        val playerWaitingKey = playerWaitingRefs.key
+        playerWaitingRefs.setValue(playerModel)
+            .addOnSuccessListener { checkAndCreateRoom(board, boardType) }
+        val playerWaitingRefListener = playerWaitingKey?.let { myRef.child("waiting-room").child(it) }
+
+        playerWaitingRefListener?.addChildEventListener(
+            object : ChildEventListener {
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {}
+
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+
+                override fun onChildRemoved(snapshot: DataSnapshot) {
+                    onlineGameRef.get().addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val dataSnapshot = task.result
+                            val gameRoomList = mutableListOf<String>()
+                            if (dataSnapshot != null) {
+                                for (child in dataSnapshot.children) {
+                                    gameRoomList.add(child.value.toString())
+                                }
+                            }
+
+                            for (roomName in gameRoomList) {
+                                val splitName = roomName.split("_")
+                                if (splitName[0] == playerName) {
+                                    gameRoomName = roomName
+                                    println(gameRoomName)
+                                    opponentName = splitName[1]
+                                    break
+                                } else if (splitName[1] == playerName) {
+                                    gameRoomName = roomName
+                                    println(gameRoomName)
+                                    opponentName = splitName[0]
+                                    break
+                                }
+                            }
+                            updateColor()
+                            val turnValueEventListener = object : ValueEventListener {
+                                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                    val currentTurn = dataSnapshot.getValue(PieceColor::class.java)
+
+                                    if (currentTurn == playerColor) {
+                                        observeAndUpdateBoardState()
+                                    }
+                                }
+
+                                override fun onCancelled(databaseError: DatabaseError) {
+                                    // TODO : Handle errors that occurred while trying to read the data
+                                }
+                            }
+                            onlineGameRef.child(gameRoomName).child("currentTurn").addValueEventListener(turnValueEventListener)
+                            context.sendBroadcast(Intent("GAME_START"))
+                        } else {
+                            val exception = task.exception
+                            println("Error: ${exception?.message}")
+                        }
+                    }
+                }
+
+                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+
+                override fun onCancelled(error: DatabaseError) {}
             }
-            .addOnCanceledListener {}
+        )
     }
 
-    private fun checkAndCreateRoom(board: List<Tile>) {
+    private fun checkAndCreateRoom(board: List<Tile>, boardType: BoardType) {
         waitingRoomRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val count = dataSnapshot.childrenCount.toInt()
+                println("number of player in waiting room : $count")
                 if (count >= 2) {
-                    val firstTwoPlayers = mutableListOf<String>()
+                    val viablePlayersInWaitingRoom = mutableListOf<PlayerInWaiting>()
 
                     for (childSnapshot in dataSnapshot.children) {
-                        if (firstTwoPlayers.size < 2) {
-                            val playerName = childSnapshot.getValue(String::class.java)
-                            if (playerName != null) {
-                                firstTwoPlayers.add(playerName)
+                        val playerInWaiting = childSnapshot.getValue(PlayerInWaiting::class.java)
+                        playerInWaiting?.let {
+                            if (it.name != playerName && it.boardType == boardType) {
+                                viablePlayersInWaitingRoom.add(it)
                             }
-                        } else {
-                            break
                         }
                     }
-                    gameRoomName = firstTwoPlayers[0] + "/" + firstTwoPlayers[1]
-                    initializeGame(board)
+
+                    if (viablePlayersInWaitingRoom.isNotEmpty()) {
+                        val randomPlayer = viablePlayersInWaitingRoom.random()
+                        opponentName = randomPlayer.name
+                        gameRoomName = "${playerName}_${opponentName}"
+                        println(gameRoomName)
+                        initializeGame(board)
+                    }
                 }
             }
 
@@ -52,25 +141,184 @@ class FirebaseRealtimeDatabaseGame: DatabaseGame {
             }
         })
     }
-    override fun observeBoardState(gameRoomName: String, boardType: BoardType) {
-        when(boardType) {
-            BoardType.DEFAULT -> TODO()
-            BoardType.STAR_CHESS -> TODO()
-            BoardType.SHAFRAN -> TODO()
-            BoardType.BIG -> TODO()
+
+    override fun observeAndUpdateBoardState() {
+        val boardRef = onlineGameRef.child(gameRoomName).child("board")
+        boardRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (tileSnapshot in dataSnapshot.children) {
+                        val tile = tileSnapshot.getValue(Tile::class.java)
+                        if (tile != null) {
+                            allTiles.add(tile)
+                        }
+                    }
+
+                    //self.onBoardUpdated()
+                    updateBoard.invoke()
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // TODO : Handle Errors
+            }
+        })
+
+    }
+
+    override fun getCurrentBoard(): List<Tile> {
+        for (tile in allTiles) {
+            if (tile.chessPiece != null) {
+                println("${tile.id} : ${tile.chessPiece!!.keyWord}")
+            } else {
+                println("${tile.id} : no piece")
+            }
         }
+        return allTiles
+    }
+
+    override fun getPlayerCaptured(): MutableList <ChessPiece> {
+        return playerCapturedPiece
+    }
+
+    override fun getOpponentCaptured(): MutableList <ChessPiece> {
+        return opponentCapturedPiece
     }
 
     override fun movePieces(from: Tile, to: Tile) {
-        myRef.child("")
+        val movingTileId = from.id
+        val targetTileId = to.id
+        val boardRef = onlineGameRef.child(gameRoomName).child("board")
+        val movingPiece = from.chessPiece
+
+        boardRef.orderByChild("id").equalTo(movingTileId.name).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (tileSnapshot in dataSnapshot.children) {
+                        val tile = tileSnapshot.getValue(Tile::class.java)
+                        if (tile != null) {
+                            // Do something with the retrieved tile
+                            val movedOutTile = Tile(
+                                id = tile.id,
+                                color = tile.color,
+                                topTile = tile.topTile,
+                                upperRightTile = tile.upperRightTile,
+                                underRightTile = tile.underRightTile,
+                                bottomTile = tile.bottomTile,
+                                underLeftTile = tile.underLeftTile,
+                                upperLeftTile = tile.upperLeftTile,
+                                isAPossibleMove = false,
+                                chessPiece = null
+                            )
+                            val tileKey = tileSnapshot.key
+                            if (tileKey != null) {
+                                boardRef.child(tileKey).setValue(movedOutTile)
+                                println("Tile $targetTileId updated successfully")
+                            }
+                        }
+                    }
+                } else {
+                    println("No tile found with TileId: $movingTileId")
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("Error getting tile: ${databaseError.toException()}")
+            }
+        })
+
+        boardRef.orderByChild("id").equalTo(targetTileId.name).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (tileSnapshot in dataSnapshot.children) {
+                        val tile = tileSnapshot.getValue(Tile::class.java)
+                        if (tile != null) {
+                            // Do something with the retrieved tile
+                            val movedInTile = Tile(
+                                id = tile.id,
+                                color = tile.color,
+                                topTile = tile.topTile,
+                                upperRightTile = tile.upperRightTile,
+                                underRightTile = tile.underRightTile,
+                                bottomTile = tile.bottomTile,
+                                underLeftTile = tile.underLeftTile,
+                                upperLeftTile = tile.upperLeftTile,
+                                isAPossibleMove = false,
+                                chessPiece = movingPiece
+                            )
+                            val tileKey = tileSnapshot.key
+                            if (tileKey != null) {
+                                boardRef.child(tileKey).setValue(movedInTile)
+                                println("Tile $targetTileId updated successfully")
+                            }
+                        }
+                    }
+                } else {
+                    println("No tile found with TileId: $targetTileId")
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("Error updating tile: ${databaseError.toException()}")
+            }
+        })
+
+        if (to.chessPiece != null) {
+            capture(to.chessPiece!!.keyWord)
+        }
+         
+        val newTurn = playerColor.opposite()
+
+        val turnRef = onlineGameRef.child(gameRoomName).child("currentTurn")
+
+        turnRef.setValue(newTurn)
+            .addOnSuccessListener {
+            println("Current turn is now : $newTurn")
+        }
+
     }
 
     override fun capture(keyWord: ChessPieceKeyWord) {
-        TODO("Not yet implemented")
-    }
+        val piece = getChessPieceFromKeyWord(keyWord)
+        val targetPlayerColor = when(piece.color) {
+            PieceColor.WHITE -> {
+                PieceColor.BLACK
+            }
 
-    override fun observeCapture(color: PieceColor) {
-        TODO("Not yet implemented")
+            PieceColor.BLACK -> {
+                PieceColor.WHITE
+            }
+        }
+
+        val path = onlineGameRef.child(gameRoomName).child("players")
+        path.orderByChild("color").equalTo(targetPlayerColor.name).addListenerForSingleValueEvent(
+            object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        for (playerFound in snapshot.children) {
+                            val player = playerFound.getValue(PlayerInGame::class.java)
+                            player?.let {
+                                val updatedCapture = player.captured + piece.keyWord
+                                player.captured = updatedCapture
+                                val key = snapshot.key
+                                if (key != null) {
+                                    path.child(key).setValue(player)
+                                }
+                                when (targetPlayerColor) {
+                                    playerColor -> playerCapturedPiece.add(piece)
+                                    else -> opponentCapturedPiece.add(piece)
+                                }
+                                updateCaptured.invoke()
+                            }
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+            }
+        )
     }
 
     override fun giveRankPoint() {
@@ -83,16 +331,16 @@ class FirebaseRealtimeDatabaseGame: DatabaseGame {
 
     override fun initializeGame(board: List<Tile>) {
         val gameRoomRef = myRef.child("online_game").child(gameRoomName)
-
         gameRoomRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
                     // do nothing the room already existed in database
                 } else {
                     // Create the game room since it doesn't exist
-                    val splitedPlayer = gameRoomName.split("/")
+                    val splitedPlayer = gameRoomName.split("_")
                     val player1Name = splitedPlayer[0]
                     val player2Name = splitedPlayer[1]
+                    println(player2Name)
                     val player1Color = listOf(PieceColor.WHITE,PieceColor.BLACK).random()
                     val player2Color = player1Color.opposite()
                     val player1Model = PlayerInGame(
@@ -111,6 +359,25 @@ class FirebaseRealtimeDatabaseGame: DatabaseGame {
                     for (tile in board) {
                         boardRef.push().setValue(tile)
                     }
+
+                    val turnRef = gameRoomRef.child("currentTurn")
+                    turnRef.push().setValue(PieceColor.WHITE)
+                    val turnValueEventListener = object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            val currentTurn = dataSnapshot.getValue(PieceColor::class.java)
+
+                            if (currentTurn == playerColor) {
+                                observeAndUpdateBoardState()
+                            }
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            // TODO : Handle errors that occurred while trying to read the data
+                        }
+                    }
+                    turnRef.addValueEventListener(turnValueEventListener)
+                    removeFromWaitingRoom(player1Name)
+                    removeFromWaitingRoom(player2Name)
                 }
             }
 
@@ -120,18 +387,43 @@ class FirebaseRealtimeDatabaseGame: DatabaseGame {
         })
     }
 
-    /*init {
-        myRef.child("waiting-room").addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val childrenCount = dataSnapshot.childrenCount
-                if (childrenCount >= 2) {
+    private fun removeFromWaitingRoom(name: String) {
+        waitingRoomRef.orderByChild("name").equalTo(name)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (childSnapshot in snapshot.children) {
+                        childSnapshot.ref.removeValue()
+                    }
+                }
 
+                override fun onCancelled(error: DatabaseError) {
+                    // TODO : Handle error
+                }
+            })
+    }
+
+    fun updateColor() {
+        val playersRef = onlineGameRef.child(gameRoomName).child("players")
+
+        playersRef.child(playerName).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val playerModel = dataSnapshot.getValue(PlayerInGame::class.java)
+                    val foundedPlayerColor = playerModel?.color
+                    if (foundedPlayerColor != null) {
+                        playerColor = foundedPlayerColor
+                        opponentColor = playerColor.opposite()
+                        checkValue()
+                    }
                 }
             }
 
-            override fun onCancelled(error: DatabaseError) {
-                // Handle an error
+            override fun onCancelled(databaseError: DatabaseError) {
+                // TODO : Handle Error
             }
         })
-    }*/
+    }
+    private fun checkValue() {
+        println("checking name and color\nyour name : $playerName\nyour color : $playerColor\nopponent name : $opponentName\nopponent color : $opponentColor")
+    }
 }

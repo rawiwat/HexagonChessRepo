@@ -2,14 +2,19 @@ package com.example.hexagonalchess.presentation_layer.viewmodel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
+import com.example.hexagonalchess.domain_layer.Route
 import com.example.hexagonalchess.domain_layer.SettingState
 import com.example.hexagonalchess.domain_layer.TileTheme
+import com.example.hexagonalchess.domain_layer.player.manager.PlayerNameSharedPref
 import com.example.hexagonalchess.domain_layer.theme_setting.ThemeSharedPrefs
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class SettingViewModel(
-    context: Context
+    context: Context,
+    private val navController: NavController,
+    private val playerNameSharedPref: PlayerNameSharedPref
 ): ViewModel() {
     private val themeSharedPref = ThemeSharedPrefs(context)
 
@@ -25,11 +30,29 @@ class SettingViewModel(
     }
 
     fun turnOnTheme() {
-        _settingState.value = SettingState.THEME
-        println(_settingState.value)
+        if (_settingState.value == SettingState.NONE) {
+            _settingState.value = SettingState.THEME
+        }
+     }
+
+    fun turnOnLogOutMenu() {
+        if (_settingState.value == SettingState.NONE) {
+            _settingState.value = SettingState.LOG_OUT
+        }
+    }
+
+    fun logOut() {
+        playerNameSharedPref.logOutPlayer()
+        navController.navigate(Route.signIn)
     }
 
     fun turnOffSettingMenu() {
-        _settingState.value = SettingState.NONE
+        if (_settingState.value == SettingState.NONE) {
+            _settingState.value = SettingState.NONE
+        }
+    }
+
+    fun backToMain() {
+        navController.navigate(Route.main)
     }
 }

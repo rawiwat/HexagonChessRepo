@@ -1,4 +1,4 @@
-package com.example.hexagonalchess.presentation_layer.composeui.gameplay
+package com.example.hexagonalchess.presentation_layer.composeui.gameplay.local
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
@@ -17,8 +17,9 @@ import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.tile_ui_manager.TileUiManager
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 
+
 @Composable
-fun BigBoardUI(
+fun ChessBoardUI(
     chessBoardData:List<Tile>,
     chessBoardViewModel: ChessBoardViewModel,
     theme: TileTheme,
@@ -28,17 +29,15 @@ fun BigBoardUI(
     playerColor: PieceColor,
     gameMode: GameMode
 ) {
-    var columnA = chessBoardData.subList(0,6)
-    var columnB = chessBoardData.subList(6,13)
-    var columnC = chessBoardData.subList(13,21)
-    var columnD = chessBoardData.subList(21,30)
-    var columnE = chessBoardData.subList(30,40)
-    var columnF = chessBoardData.subList(40,51)
-    var columnG = chessBoardData.subList(51,61)
-    var columnH = chessBoardData.subList(61,70)
-    var columnI = chessBoardData.subList(70,78)
-    var columnJ = chessBoardData.subList(78,85)
-    var columnK = chessBoardData.subList(85,91)
+    var columnA = chessBoardData.subList(0,8)
+    var columnB = chessBoardData.subList(8,17)
+    var columnC = chessBoardData.subList(17,27)
+    var columnD = chessBoardData.subList(27,38)
+    var columnE = chessBoardData.subList(38,50)
+    var columnF = chessBoardData.subList(50,61)
+    var columnG = chessBoardData.subList(61,71)
+    var columnH = chessBoardData.subList(71,80)
+    var columnI = chessBoardData.subList(80,88)
 
     if (gameMode != GameMode.LOCAL && playerColor == PieceColor.BLACK) {
         columnA = columnA.reversed()
@@ -50,17 +49,16 @@ fun BigBoardUI(
         columnG = columnG.reversed()
         columnH = columnH.reversed()
         columnI = columnI.reversed()
-        columnJ = columnJ.reversed()
-        columnK = columnK.reversed()
     }
+
     Box(
         modifier = Modifier
             .wrapContentSize()
-            .padding(start = (screenWidth / 60).dp)
+            .padding(start = (screenWidth / 15).dp)
     ) {
         LazyColumn(
             modifier = Modifier
-                .offset(y = tileUiManager.bigColumnAY.dp)
+                .offset(y = tileUiManager.columnAY.dp)
         ) {
             items(
                 columnA,
@@ -79,8 +77,8 @@ fun BigBoardUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.bigColumnBX.dp,
-                    y = tileUiManager.bigColumnBY.dp
+                    x = tileUiManager.columnBX.dp,
+                    y = tileUiManager.columnBY.dp
                 )
         ) {
             items(
@@ -100,8 +98,8 @@ fun BigBoardUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.bigColumnCX.dp,
-                    y = tileUiManager.bigColumnCY.dp
+                    x = tileUiManager.columnCX.dp,
+                    y = tileUiManager.columnCY.dp
                 )
         ) {
             items(
@@ -121,8 +119,8 @@ fun BigBoardUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.bigColumnDX.dp,
-                    y = tileUiManager.bigColumnDY.dp
+                    x = tileUiManager.columnDX.dp,
+                    y = tileUiManager.columnDY.dp
                 )
         ) {
             items(
@@ -142,8 +140,7 @@ fun BigBoardUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.bigColumnEX.dp,
-                    y = tileUiManager.bigColumnEY.dp
+                    x = tileUiManager.columnEX.dp
                 )
         ) {
             items(
@@ -163,7 +160,8 @@ fun BigBoardUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.bigColumnFX.dp
+                    x = tileUiManager.columnFX.dp,
+                    y = tileUiManager.columnFY.dp
                 )
         ) {
             items(
@@ -183,8 +181,8 @@ fun BigBoardUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.bigColumnGX.dp,
-                    y = tileUiManager.bigColumnGY.dp
+                    x = tileUiManager.columnGX.dp,
+                    y = tileUiManager.columnGY.dp
                 )
         ) {
             items(
@@ -204,8 +202,8 @@ fun BigBoardUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.bigColumnHX.dp,
-                    y = tileUiManager.bigColumnHY.dp
+                    x = tileUiManager.columnHX.dp,
+                    y = tileUiManager.columnHY.dp
                 )
         ) {
             items(
@@ -225,52 +223,12 @@ fun BigBoardUI(
         LazyColumn(
             modifier = Modifier
                 .offset(
-                    x = tileUiManager.bigColumnIX.dp,
-                    y = tileUiManager.bigColumnIY.dp
+                    x = tileUiManager.columnIX.dp,
+                    y = tileUiManager.columnIY.dp
                 )
         ) {
             items(
                 columnI,
-                key = { it.id }
-            ) {
-                TileUI(
-                    tile = it,
-                    tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel,
-                    theme = theme,
-                    boardType = boardType
-                )
-            }
-        }
-        LazyColumn(
-            modifier = Modifier
-                .offset(
-                    x = tileUiManager.bigColumnJX.dp,
-                    y = tileUiManager.bigColumnJY.dp
-                )
-        ) {
-            items(
-                columnJ,
-                key = { it.id }
-            ) {
-                TileUI(
-                    tile = it,
-                    tileUiManager = tileUiManager,
-                    chessBoardViewModel = chessBoardViewModel,
-                    theme = theme,
-                    boardType = boardType
-                )
-            }
-        }
-        LazyColumn(
-            modifier = Modifier
-                .offset(
-                    x = tileUiManager.bigColumnKX.dp,
-                    y = tileUiManager.bigColumnKY.dp
-                )
-        ) {
-            items(
-                columnK,
                 key = { it.id }
             ) {
                 TileUI(

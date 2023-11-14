@@ -83,7 +83,7 @@ fun BoardSelectionScreen(
                                 if (gameMode == GameMode.LOCAL || gameMode == GameMode.CPU) {
                                     navController.navigate("${Route.loading}/$encodedRoute")
                                 } else {
-                                    navController.navigate("")
+                                    navController.navigate("${Route.loadingOnline}/$currentBoard")
                                 }
                             } catch (e: Exception) {
                                 println(e)
