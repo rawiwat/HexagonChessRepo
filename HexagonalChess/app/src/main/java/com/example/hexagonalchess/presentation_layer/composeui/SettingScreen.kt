@@ -60,6 +60,7 @@ import com.example.hexagonalchess.presentation_layer.viewmodel.SettingViewModel
 fun SettingScreen(
     navController: NavController,
     settingViewModel: SettingViewModel,
+    closeAppFunction:()-> Unit,
     context: Context
 ) {
     val settingState by settingViewModel.settingState.collectAsState()
@@ -124,7 +125,8 @@ fun SettingScreen(
                 LogOutMenu(
                     settingViewModel = settingViewModel,
                     width = 250.dp,
-                    height = 130.dp
+                    height = 130.dp,
+                    closeAppFunction = closeAppFunction
                 )
             }
         }
@@ -245,7 +247,6 @@ fun ChangeTheme(
                 )
             }
         }
-
     }
 }
 
@@ -317,7 +318,8 @@ fun ThemeSetting(
 fun LogOutMenu(
     settingViewModel: SettingViewModel,
     width: Dp,
-    height: Dp
+    height: Dp,
+    closeAppFunction: () -> Unit
 ) {
     val buttonWidth by remember { mutableStateOf(width / 2) }
     val buttonHeight by remember { mutableStateOf(height / 3) }
@@ -347,7 +349,7 @@ fun LogOutMenu(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text ="are you sure you want to log out?"
+                    text = "are you sure you want to log out and Quit the Game?"
                 )
             }
 
@@ -371,6 +373,7 @@ fun LogOutMenu(
                             )
                             .clickable {
                                 settingViewModel.logOut()
+                                closeAppFunction()
                             }
                     )
 
@@ -378,16 +381,6 @@ fun LogOutMenu(
                         text = "Yes"
                     )
                 }
-                Canvas(
-                    modifier = Modifier,
-                    onDraw = {
-                        drawLine(
-                            color = Color.Black,
-                            start = Offset(0f,0f),
-                            end = Offset(0f, height.value),
-                        )
-                    }
-                )
 
                 Box(
                     modifier = Modifier
@@ -446,7 +439,7 @@ fun SettingScreenPreview() {
             context,
             NavController(context),
             PlayerNameSharedPref(context)
-        ),
+        ),{},
         context
     )
 }

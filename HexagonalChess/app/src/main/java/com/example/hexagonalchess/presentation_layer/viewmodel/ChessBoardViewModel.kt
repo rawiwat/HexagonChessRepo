@@ -271,7 +271,6 @@ class ChessBoardViewModel(
         return false
     }
 
-
     private fun enPassantEnable(currentMovePath: TilePair, targetedTile: Tile) {
         when(movingTile?.chessPiece!!.color) {
             PieceColor.BLACK ->

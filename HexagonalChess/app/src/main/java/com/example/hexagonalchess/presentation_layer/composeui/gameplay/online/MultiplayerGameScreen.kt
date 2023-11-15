@@ -45,48 +45,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hexagonalchess.R
-import com.example.hexagonalchess.data_layer.database.DatabaseGame
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.ChessGameState
+import com.example.hexagonalchess.domain_layer.ChessGameStateOnline
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.Route
+import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 import com.example.hexagonalchess.domain_layer.getChessPieceImage
 import com.example.hexagonalchess.domain_layer.getPromotionKeyWordFromColor
 import com.example.hexagonalchess.domain_layer.getTileImage
-import com.example.hexagonalchess.domain_layer.opposite
 import com.example.hexagonalchess.domain_layer.theme_setting.ThemeSharedPrefs
 import com.example.hexagonalchess.domain_layer.tile_ui_manager.TileUiManager
-import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.BackMenu
-import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.BigBoardUI
-import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.ChessBoardUI
 import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.GameOverMenu
-import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.PlayerUI
-import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.PromoteMenu
-import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.PromotionIcon
-import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.ShafranChessBoardUI
-import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.StarBoardUI
-import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessMultiPlayerViewModel
 
 @Composable
 fun MultiplayerGameScreen(
     navController: NavController,
-    database: DatabaseGame,
-    board: List<Tile>,
     boardType: BoardType,
+    chessBoardViewModel: ChessMultiPlayerViewModel,
     context: Context
 ) {
-    val chessBoardViewModel = remember { ChessMultiPlayerViewModel(
-        database = database,
-        board = board.toMutableList(),
-        boardType = boardType,
-        context = context,
-        )
-    }
 
     val chessBoard by chessBoardViewModel.chessBoard.collectAsState()
     val currentTurn by chessBoardViewModel.currentTurn.collectAsState()
@@ -123,7 +106,7 @@ fun MultiplayerGameScreen(
             screenWidth = screenWidth.dp
         )
 
-        PlayerUIOnline(
+        OpponentUIOnline(
             name = opponentName,
             currentTurn = currentTurn,
             color = opponentColor,
@@ -195,7 +178,7 @@ fun MultiplayerGameScreen(
         val popUpBoxHeight by remember { mutableStateOf(130.dp) }
 
         AnimatedVisibility(
-            visible = (gameState == ChessGameState.GAME_OVER),
+            visible = (gameState == ChessGameStateOnline.GAME_OVER),
             enter = scaleIn(
                 animationSpec = tween(150, 150)
             )
@@ -210,8 +193,8 @@ fun MultiplayerGameScreen(
 
         AnimatedVisibility(
             visible = (
-                    gameState == ChessGameState.PLAYER1_PROMOTE ||
-                            gameState == ChessGameState.PLAYER2_PROMOTE
+                    gameState == ChessGameStateOnline.PLAYER1_PROMOTE ||
+                            gameState == ChessGameStateOnline.PLAYER2_PROMOTE
                     ),
         ) {
             PromoteMenuOnline(
@@ -308,16 +291,6 @@ fun BackMenuOnline(
                         text = "Yes"
                     )
                 }
-                Canvas(
-                    modifier = Modifier,
-                    onDraw = {
-                        drawLine(
-                            color = Color.Black,
-                            start = Offset(0f,0f),
-                            end = Offset(0f, height.value),
-                        )
-                    }
-                )
 
                 Box(
                     modifier = Modifier
@@ -432,7 +405,7 @@ fun PromotionIconOnline(
         contentDescription = null,
         modifier = Modifier
             .clickable {
-                chessBoardViewModel.promotePawn(keyWord)
+                chessBoardViewModel.selectingTile?.let { chessBoardViewModel.promotePawn(keyWord, it.id) }
             }
             .size(60.dp)
     )

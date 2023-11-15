@@ -287,16 +287,6 @@ fun BackMenu(
                         text = "Yes"
                     )
                 }
-                Canvas(
-                    modifier = Modifier,
-                    onDraw = {
-                        drawLine(
-                            color = Color.Black,
-                            start = Offset(0f,0f),
-                            end = Offset(0f, height.value),
-                        )
-                    }
-                )
 
                 Box(
                     modifier = Modifier

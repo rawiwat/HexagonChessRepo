@@ -43,19 +43,19 @@ enum class TileDirections {
     UNDER_LEFT
 }
 
-enum class ChessPieceKeyWord(key:String) {
-    WHITE_PAWN("wP"),
-    WHITE_KNIGHT("wN"),
-    WHITE_BISHOP("wB"),
-    WHITE_ROOK("wR"),
-    WHITE_QUEEN("wQ"),
-    WHITE_KING("wK"),
-    BLACK_PAWN("bP"),
-    BLACK_KNIGHT("bN"),
-    BLACK_BISHOP("bB"),
-    BLACK_ROOK("bR"),
-    BLACK_QUEEN("bQ"),
-    BLACK_KING("bK"),
+enum class ChessPieceKeyWord {
+    WHITE_PAWN,
+    WHITE_KNIGHT,
+    WHITE_BISHOP,
+    WHITE_ROOK,
+    WHITE_QUEEN,
+    WHITE_KING,
+    BLACK_PAWN,
+    BLACK_KNIGHT,
+    BLACK_BISHOP,
+    BLACK_ROOK,
+    BLACK_QUEEN,
+    BLACK_KING,
 }
 
 enum class GameEndMethod {
@@ -74,13 +74,12 @@ enum class ChessGameState {
     CPU_TURN
 }
 
-enum class GameStateVsCpu {
-    PLAYER_TURN,
-    PROMOTE,
+enum class ChessGameStateOnline {
+    PLAYER1_PROMOTE,
+    PLAYER2_PROMOTE,
     GAME_OVER,
-    CPU_TURN
+    OPEN
 }
-
 enum class TileTheme {
     DEFAULT,
     RED,
@@ -96,7 +95,6 @@ class Route {
         const val main = "Main"
         const val game = "gameplay"
         const val setting = "Setting"
-        const val vsCpu = "Vs Cpu"
         const val online = "Online"
         const val boardSelection = "Board Selection"
         const val loading = "Loading"

@@ -1,10 +1,11 @@
 package com.example.hexagonalchess.domain_layer.player.manager
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import com.example.hexagonalchess.domain_layer.TileTheme
 
-class PlayerNameSharedPref(context: Context) {
+class PlayerNameSharedPref(val context: Context) {
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("MyPlayer", Context.MODE_PRIVATE)
 
     fun savePlayer(name: String) {
@@ -12,6 +13,9 @@ class PlayerNameSharedPref(context: Context) {
             .edit()
             .putString("player_name", name)
             .apply()
+        val sendPlayer = Intent("CurrentPlayer")
+        sendPlayer.putExtra("CurrentPlayer", name)
+        context.sendBroadcast(sendPlayer)
     }
 
     fun getPlayerName():String? {

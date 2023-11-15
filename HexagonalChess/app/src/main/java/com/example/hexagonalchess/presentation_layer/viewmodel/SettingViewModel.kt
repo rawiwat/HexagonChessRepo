@@ -43,7 +43,7 @@ class SettingViewModel(
 
     fun logOut() {
         playerNameSharedPref.logOutPlayer()
-        navController.navigate(Route.signIn)
+        //navController.navigate(Route.signIn)
     }
 
     fun turnOffSettingMenu() {

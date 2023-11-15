@@ -24,6 +24,7 @@ import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.Ga
 import com.example.hexagonalchess.presentation_layer.composeui.gameplay.online.MultiplayerGameScreen
 import com.example.hexagonalchess.presentation_layer.viewmodel.BoardSelectionViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
+import com.example.hexagonalchess.presentation_layer.viewmodel.ChessMultiPlayerViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.SettingViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.SignInViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.SignUpViewModel
@@ -99,6 +100,7 @@ fun App(
             SettingScreen(
                 navController = navController,
                 settingViewModel = settingViewModel,
+                closeAppFunction = closeAppFunction,
                 context = context
             )
         }
@@ -188,14 +190,18 @@ fun App(
             val boardType = it.arguments?.getSerializable("boardType") as BoardType
             MultiplayerGameScreen(
                 navController = navController,
-                database = databaseGame,
-                board = when(boardType) {
-                    BoardType.DEFAULT -> ChessboardData().allTiles
-                    BoardType.STAR_CHESS -> ShurikenBoardData().allTiles
-                    BoardType.SHAFRAN -> ShafranChessBoardData().allTiles
-                    BoardType.BIG -> BigChessBoardData().allTiles
-                },
                 boardType = boardType,
+                chessBoardViewModel = ChessMultiPlayerViewModel(
+                    database = databaseGame,
+                    board = when(boardType) {
+                        BoardType.DEFAULT -> ChessboardData().allTiles
+                        BoardType.STAR_CHESS -> ShurikenBoardData().allTiles
+                        BoardType.SHAFRAN -> ShafranChessBoardData().allTiles
+                        BoardType.BIG -> BigChessBoardData().allTiles
+                    },
+                    boardType = boardType,
+                    context = context
+                ),
                 context = context
             )
         }

@@ -35,7 +35,6 @@ import com.example.hexagonalchess.domain_layer.PieceType
 import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.CapturedPieceUi
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessMultiPlayerViewModel
 
-
 @Composable
 fun PlayerUIOnline(
     name: String,
