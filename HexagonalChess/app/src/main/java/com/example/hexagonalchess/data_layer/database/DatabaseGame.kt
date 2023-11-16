@@ -5,6 +5,7 @@ import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.ChessGameStateOnline
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
+import com.example.hexagonalchess.domain_layer.GameEndMethod
 import com.example.hexagonalchess.domain_layer.PieceColor
 
 interface DatabaseGame {
@@ -14,11 +15,12 @@ interface DatabaseGame {
     fun getPlayerCaptured(): MutableList<ChessPiece>
     fun getOpponentCaptured(): MutableList<ChessPiece>
     fun getCurrentTurn(): PieceColor
-    fun getGameState(): ChessGameStateOnline
+    fun getCurrentGameState(): ChessGameStateOnline
+    fun getGameOverMessage(): String
     fun movePieces(from: Tile, to: Tile)
     fun capture(keyWord: ChessPieceKeyWord)
-    fun giveRankPoint()
     fun sendDrawOffer()
+    fun gameOver(winnerName: String, loserName: String, method: GameEndMethod)
     fun initializeGame(board: List<Tile>)
     val playerColor: PieceColor
     val opponentColor: PieceColor
@@ -30,4 +32,5 @@ interface DatabaseGame {
     var updateCaptured:() -> Unit
     var updateTurn:()-> Unit
     var updateGameState:() -> Unit
+    var updateGameOverMessage:() -> Unit
 }

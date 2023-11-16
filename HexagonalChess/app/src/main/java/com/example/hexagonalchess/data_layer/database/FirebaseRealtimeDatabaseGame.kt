@@ -19,7 +19,6 @@ import com.example.hexagonalchess.domain_layer.GameEndMethod
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 import com.example.hexagonalchess.domain_layer.opposite
-import com.example.hexagonalchess.domain_layer.player.generatePlayerIdFromName
 import com.example.hexagonalchess.domain_layer.player.manager.PlayerNameSharedPref
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
@@ -41,12 +40,14 @@ class FirebaseRealtimeDatabaseGame(
     var allTiles: MutableList<Tile> = mutableListOf()
     val playerCapturedPiece = mutableListOf<ChessPiece>()
     val opponentCapturedPiece = mutableListOf<ChessPiece>()
+    var gameEndMessage = ""
     private var currentTurn = PieceColor.WHITE
     override var gameState = ChessGameStateOnline.OPEN
     override var updateBoard: () -> Unit = { }
     override var updateCaptured: () -> Unit = { }
     override var updateTurn: () -> Unit = { }
     override var updateGameState: () -> Unit = { }
+    override var updateGameOverMessage: () -> Unit = { }
 
     private val playerReceiver = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
@@ -58,7 +59,7 @@ class FirebaseRealtimeDatabaseGame(
     }
 
     init {
-        ContextCompat.registerReceiver(context,playerReceiver, IntentFilter("CurrentPlayer"), ContextCompat.RECEIVER_NOT_EXPORTED)
+        ContextCompat.registerReceiver(context, playerReceiver, IntentFilter("CurrentPlayer"), ContextCompat.RECEIVER_NOT_EXPORTED)
     }
 
     override fun sendPlayerToOnlineWaitingRoom(name: String, board: List<Tile>, boardType: BoardType) {
@@ -126,7 +127,11 @@ class FirebaseRealtimeDatabaseGame(
                                     dataSnapshot.getValue(ChessGameStateOnline::class.java)?.let {
                                         gameState = it
                                         when(it) {
-                                            ChessGameStateOnline.GAME_OVER -> onlineGameRef.child(gameRoomName).removeValue()
+                                            ChessGameStateOnline.GAME_OVER -> {
+                                                updateGameOverMessage.invoke()
+                                                updateGameState.invoke()
+                                                onlineGameRef.child(gameRoomName).removeValue()
+                                            }
                                             else -> { }
                                         }
                                     }
@@ -138,6 +143,18 @@ class FirebaseRealtimeDatabaseGame(
                             }
                             onlineGameRef.child(gameRoomName).child("gameState").addValueEventListener(gameStateEventListener)
 
+                            val gameMessageEventListener = object : ValueEventListener {
+                                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                    dataSnapshot.getValue(String::class.java)?.let {
+                                        gameEndMessage = it
+                                    }
+                                }
+
+                                override fun onCancelled(databaseError: DatabaseError) {
+                                    // TODO : Handle errors that occurred while trying to read the data
+                                }
+                            }
+                            onlineGameRef.child(gameRoomName).child("gameOverMessage").addValueEventListener(gameMessageEventListener)
                             context.sendBroadcast(Intent("GAME_START"))
                         } else {
                             val exception = task.exception
@@ -242,8 +259,12 @@ class FirebaseRealtimeDatabaseGame(
         return currentTurn
     }
 
-    override fun getGameState(): ChessGameStateOnline {
+    override fun getCurrentGameState(): ChessGameStateOnline {
         return gameState
+    }
+
+    override fun getGameOverMessage(): String {
+        return gameEndMessage
     }
 
     override fun movePieces(from: Tile, to: Tile) {
@@ -381,10 +402,6 @@ class FirebaseRealtimeDatabaseGame(
         )
     }
 
-    override fun giveRankPoint() {
-        TODO("Not yet implemented")
-    }
-
     override fun sendDrawOffer() {
         TODO("Not yet implemented")
     }
@@ -400,7 +417,7 @@ class FirebaseRealtimeDatabaseGame(
                     val splitedPlayer = gameRoomName.split("_")
                     val player1Name = splitedPlayer[0]
                     val player2Name = splitedPlayer[1]
-                    println(player2Name)
+                    //println(player2Name)
                     val player1Color = listOf(PieceColor.WHITE,PieceColor.BLACK).random()
                     val player2Color = player1Color.opposite()
                     val player1Model = PlayerInGame(
@@ -420,13 +437,17 @@ class FirebaseRealtimeDatabaseGame(
                         boardRef.push().setValue(tile)
                     }
 
-                    removeFromWaitingRoom(player1Name)
-                    removeFromWaitingRoom(player2Name)
                     val turnRef = gameRoomRef.child("currentTurn")
                     turnRef.setValue(PieceColor.WHITE)
 
                     val gameStateRef = gameRoomRef.child("gameState")
                     gameStateRef.setValue(ChessGameStateOnline.OPEN)
+
+                    val gameMessage = gameRoomRef.child("gameOverMessage")
+                    gameMessage.setValue("The game is not over yet")
+
+                    removeFromWaitingRoom(player1Name)
+                    removeFromWaitingRoom(player2Name)
                 }
             }
 
@@ -436,10 +457,7 @@ class FirebaseRealtimeDatabaseGame(
         })
     }
 
-    fun gameOver(winnerColor: PieceColor, method: GameEndMethod) {
-        var winningPlayerName = ""
-        var losingPlayerName = ""
-        val splitRoomName = gameRoomName.split("_")
+    override fun gameOver(winnerName: String, loserName: String, method: GameEndMethod) {
         val ratingGain = when (method) {
             GameEndMethod.KING_WAS_CAPTURED -> 10
             GameEndMethod.DRAW -> 0
@@ -453,66 +471,25 @@ class FirebaseRealtimeDatabaseGame(
             GameEndMethod.CHECKMATE -> 5
         }
 
-        onlineGameRef.child(gameRoomName).child("players").orderByChild("color").equalTo(winnerColor.name)
+        val gameOverMessage = when(method) {
+            GameEndMethod.KING_WAS_CAPTURED -> "$winnerName Wins\n$loserName King was captured"
+            GameEndMethod.DRAW -> "Draw! $winnerName accept the draw offer"
+            GameEndMethod.RESIGN -> "$winnerName win $loserName resign"
+            GameEndMethod.CHECKMATE -> "$winnerName Wins\nCheckmate"
+        }
+
+        myRef.child("player").orderByChild("name").equalTo(winnerName)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (childSnapshot in snapshot.children) {
-                        val winningPlayer = snapshot.getValue(PlayerInGame::class.java)
+                        val winningPlayer = childSnapshot.getValue(Player::class.java)
                         winningPlayer?.let {
-                            winningPlayerName = it.name
-                            for (name in splitRoomName) {
-                                if (name != winningPlayerName) {
-                                    losingPlayerName = name
-                                    break
-                                }
-                            }
-                        }
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    // TODO : Handle error
-                }
-            })
-
-        myRef.child("player").orderByChild("name").equalTo(winningPlayerName)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (childSnapshot in snapshot.children) {
-                    val winningPlayer = snapshot.getValue(Player::class.java)
-                    winningPlayer?.let {
-                        val winningPlayerWithUpdatedRating = Player(
-                            name = winningPlayer.name,
-                            password = winningPlayer.password,
-                            rating = winningPlayer.rating + ratingGain,
-                            encodedImageBitmap = winningPlayer.encodedImageBitmap,
-                            playerId = winningPlayer.playerId,
-                        )
-                        val key = childSnapshot.key
-                        if (key != null) {
-                            myRef.child("player").child(key).setValue(winningPlayerWithUpdatedRating)
-                        }
-                    }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // TODO : Handle error
-            }
-        })
-
-        myRef.child("player").orderByChild("name").equalTo(losingPlayerName)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    for (childSnapshot in snapshot.children) {
-                        val losingPlayer = snapshot.getValue(Player::class.java)
-                        losingPlayer?.let {
                             val winningPlayerWithUpdatedRating = Player(
-                                name = losingPlayer.name,
-                                password = losingPlayer.password,
-                                rating = losingPlayer.rating - ratingLose,
-                                encodedImageBitmap = losingPlayer.encodedImageBitmap,
-                                playerId = losingPlayer.playerId,
+                                name = winningPlayer.name,
+                                password = winningPlayer.password,
+                                rating = winningPlayer.rating + ratingGain,
+                                encodedImageBitmap = winningPlayer.encodedImageBitmap,
+                                playerId = winningPlayer.playerId,
                             )
                             val key = childSnapshot.key
                             if (key != null) {
@@ -523,9 +500,38 @@ class FirebaseRealtimeDatabaseGame(
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    // TODO : Handle error
+                    // TODO: Handle error
                 }
             })
+
+        myRef.child("player").orderByChild("name").equalTo(loserName)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (childSnapshot in snapshot.children) {
+                        val losingPlayer = childSnapshot.getValue(Player::class.java)
+                        losingPlayer?.let {
+                            val losingPlayerWithUpdatedRating = Player(
+                                name = losingPlayer.name,
+                                password = losingPlayer.password,
+                                rating = losingPlayer.rating - ratingLose,
+                                encodedImageBitmap = losingPlayer.encodedImageBitmap,
+                                playerId = losingPlayer.playerId,
+                            )
+                            val key = childSnapshot.key
+                            if (key != null) {
+                                myRef.child("player").child(key).setValue(losingPlayerWithUpdatedRating)
+                            }
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // TODO: Handle error
+                }
+            })
+
+        onlineGameRef.child(gameRoomName).child("gameOverMessage").setValue(gameOverMessage)
+        onlineGameRef.child(gameRoomName).child("gameState").setValue(ChessGameStateOnline.GAME_OVER)
     }
 
     private fun removeFromWaitingRoom(name: String) {
@@ -545,13 +551,14 @@ class FirebaseRealtimeDatabaseGame(
 
     fun updateColor() {
         val playersRef = onlineGameRef.child(gameRoomName).child("players")
-
+        println("Player name is $playerName")
         playersRef.child(playerName).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
                     val playerModel = dataSnapshot.getValue(PlayerInGame::class.java)
                     val foundedPlayerColor = playerModel?.color
                     if (foundedPlayerColor != null) {
+                        println("$playerName color: $foundedPlayerColor")
                         playerColor = foundedPlayerColor
                         opponentColor = playerColor.opposite()
                         checkValue()

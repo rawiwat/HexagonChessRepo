@@ -31,7 +31,6 @@ import com.example.hexagonalchess.R
 import com.example.hexagonalchess.domain_layer.Route
 import com.example.hexagonalchess.presentation_layer.viewmodel.SignInViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignInScreen(
     navController: NavController,
@@ -53,7 +52,7 @@ fun SignInScreen(
     val showPassword by signInViewModel.showPassword.collectAsState()
 
     val textBoxWidth = remember { (boxSize * 9 /10).dp }
-    val textBoxHeight = remember { (boxSize / 8).dp }
+    val textBoxHeight = remember { (boxSize / 10).dp }
 
     val sizeModifierBigButton = remember { Modifier.size(width = textBoxWidth / 4 * 3 , height = textBoxHeight * 3 / 2) }
     val sizeModifierSmallButton = remember { Modifier.size(width = textBoxWidth / 8 * 3 , height = textBoxHeight * 3 / 4) }

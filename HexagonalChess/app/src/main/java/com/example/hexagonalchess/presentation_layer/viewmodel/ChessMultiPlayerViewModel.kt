@@ -9,7 +9,6 @@ import com.example.hexagonalchess.data_layer.model.TilePair
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.BoardType
-import com.example.hexagonalchess.domain_layer.ChessGameState
 import com.example.hexagonalchess.domain_layer.ChessGameStateOnline
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.GameEndMethod
@@ -18,7 +17,6 @@ import com.example.hexagonalchess.domain_layer.PieceType
 import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.domain_layer.findTile
-import com.example.hexagonalchess.domain_layer.getListOfPromotionTile
 import com.example.hexagonalchess.domain_layer.getTileIndex
 import com.example.hexagonalchess.domain_layer.opposite
 import com.example.hexagonalchess.domain_layer.piecemove.bishopMove
@@ -216,7 +214,7 @@ class ChessMultiPlayerViewModel(
             updateBoard()
             targetedTile.chessPiece?.let { piece ->
                 if (piece.type == PieceType.KING) {
-                    gameOver(piece.color.opposite(), GameEndMethod.KING_WAS_CAPTURED)
+                    gameOver(_playerName.value, _opponentName.value, GameEndMethod.KING_WAS_CAPTURED)
                 }
             }
         }
@@ -325,8 +323,12 @@ class ChessMultiPlayerViewModel(
     }
 
 
-    fun resign(color: PieceColor) {
-        gameOver(color.opposite(), GameEndMethod.RESIGN)
+    fun resign() {
+        gameOver(
+            winnerName = database.opponentName,
+            loserName = database.playerName,
+            method = GameEndMethod.RESIGN
+        )
     }
 
     fun drawAccepted(color: PieceColor) {
@@ -353,9 +355,9 @@ class ChessMultiPlayerViewModel(
 
     }
 
-    private fun gameOver(winnerColor: PieceColor, method: GameEndMethod) {
-        _gameState.value = ChessGameStateOnline.GAME_OVER
-        val winnerColorInMessage = when(winnerColor) {
+    private fun gameOver(winnerName: String, loserName:String,method: GameEndMethod) {
+        //_gameState.value = ChessGameStateOnline.GAME_OVER
+        /*val winnerColorInMessage = when(winnerColor) {
             PieceColor.BLACK -> "Black"
             PieceColor.WHITE -> "White"
         }
@@ -364,13 +366,15 @@ class ChessMultiPlayerViewModel(
             PieceColor.BLACK -> "White"
             PieceColor.WHITE -> "Black"
         }
+
         val gameEndMessage = when(method){
             GameEndMethod.KING_WAS_CAPTURED -> "$winnerColorInMessage Wins\n$loserColorInMessage King was captured"
             GameEndMethod.DRAW -> "$winnerColorInMessage accept the draw offer"
             GameEndMethod.RESIGN -> "$loserColorInMessage resign"
             GameEndMethod.CHECKMATE -> "$winnerColorInMessage Wins\nCheckmate"
         }
-        _gameOverMessage.value = gameEndMessage
+        _gameOverMessage.value = gameEndMessage*/
+        database.gameOver(winnerName, loserName, method)
     }
 
     fun updateNameAndColor() {
@@ -392,6 +396,12 @@ class ChessMultiPlayerViewModel(
             _currentTurn.value = database.getCurrentTurn()
         }
 
+        database.updateGameOverMessage = {
+            _gameOverMessage.value = database.getGameOverMessage()
+        }
 
+        database.updateGameState = {
+            _gameState.value = database.getCurrentGameState()
+        }
     }
 }

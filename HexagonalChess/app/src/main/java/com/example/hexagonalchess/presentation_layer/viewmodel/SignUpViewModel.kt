@@ -10,14 +10,10 @@ import kotlinx.coroutines.flow.StateFlow
 class SignUpViewModel(
     private val databasePlayer: DatabasePlayer
 ):ViewModel() {
-    //val playerManager: ManagePlayer = FirebasePlayerManager()
     private val _nameMessage = MutableStateFlow("enter name")
     val nameMessage:StateFlow<String> = _nameMessage
     private val _passwordMessage = MutableStateFlow("enter password")
     val passwordMessage:StateFlow<String> = _passwordMessage
-
-    private val _showPassword = MutableStateFlow(false)
-    val showPassword: StateFlow<Boolean> = _showPassword
 
     private var nameReady = false
 
@@ -78,9 +74,5 @@ class SignUpViewModel(
                 navController
             )
         }
-    }
-
-    fun showPassword() {
-        _showPassword.value = !_showPassword.value
     }
 }
