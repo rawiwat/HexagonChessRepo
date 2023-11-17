@@ -122,3 +122,9 @@ enum class SettingState {
     THEME,
     LOG_OUT
 }
+
+enum class AuthenticationState {
+    NEUTRAL,
+    INVALID,
+    VALID
+}

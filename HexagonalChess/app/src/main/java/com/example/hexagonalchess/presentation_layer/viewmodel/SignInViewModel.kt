@@ -3,6 +3,7 @@ package com.example.hexagonalchess.presentation_layer.viewmodel
 import android.content.Context
 import androidx.navigation.NavController
 import com.example.hexagonalchess.data_layer.database.DatabasePlayer
+import com.example.hexagonalchess.domain_layer.AuthenticationState
 import com.example.hexagonalchess.domain_layer.Route
 import com.example.hexagonalchess.domain_layer.player.manager.PlayerNameSharedPref
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,38 +20,40 @@ class SignInViewModel(
     private val _showPassword = MutableStateFlow(false)
     val showPassword: StateFlow<Boolean> = _showPassword
 
-    private var nameReady = false
+    private val _userNameState = MutableStateFlow(AuthenticationState.NEUTRAL)
+    val userNameState:StateFlow<AuthenticationState> = _userNameState
 
-    private var passwordReady = false
+    private val _passwordState = MutableStateFlow(AuthenticationState.NEUTRAL)
+    val passwordState:StateFlow<AuthenticationState> = _passwordState
 
     private fun checkIfPlayerExists(name:String, resolve:(Boolean) ->Unit) {
         databasePlayer.checkIfPlayerExists(name, resolve)
     }
 
     private fun loginAndGotoMain(name: String, navController: NavController, context: Context) {
-        if (nameReady && passwordReady) {
+        if (_userNameState.value == AuthenticationState.VALID && _passwordState.value == AuthenticationState.VALID) {
             PlayerNameSharedPref(context).savePlayer(name)
             navController.navigate(Route.main)
         }
     }
 
     private fun passwordIncorrect() {
+        _passwordState.value = AuthenticationState.INVALID
         _passwordMessage.value = "incorrect password"
-        passwordReady = false
     }
 
     private fun nameIsReady() {
-        nameReady = true
+        _userNameState.value = AuthenticationState.VALID
         _nameMessage.value = "name Valid"
     }
 
     private fun nameNotFind() {
-        nameReady = false
+        _userNameState.value = AuthenticationState.INVALID
         _nameMessage.value = "name Invalid"
     }
 
     private fun passwordIsReady() {
-        passwordReady = true
+        _passwordState.value = AuthenticationState.VALID
         _passwordMessage.value = "password Valid"
     }
 

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,8 +32,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -364,11 +367,14 @@ fun PlayerOnMain(
     screenWidth: Dp,
     context: Context
 ) {
-    var playerImageBitmap = getPlayerImageBitmap(
+    val playerImageBitmap = getPlayerImageBitmap(
         encodedString = player.encodedImageBitmap,
         context = context
     )
-    val imageSize = remember {screenWidth / 4}
+    val imageSize = remember { screenWidth / 4 }
+    val frameHeight = remember { screenWidth / 3 }
+    val frameWidth = remember { frameHeight * 86 / 100 }
+
     /*playerImageBitmap = Bitmap.createScaledBitmap(
         playerImageBitmap,
         imageSize.value.toInt(),
@@ -376,14 +382,16 @@ fun PlayerOnMain(
         true
     )*/
 
-    val idGap = remember { screenWidth / 8 * 3 }
+    val idGap = remember { screenWidth / 3 }
 
     val painter = rememberImagePainter(data = playerImageBitmap)
+
+    //val mockPainter = painterResource(id = R.drawable.white_player_icon)
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(imageSize)
+            .height(frameHeight)
         ,
         contentAlignment = Alignment.CenterStart
     ) {
@@ -395,27 +403,32 @@ fun PlayerOnMain(
                 strokeColor = Color.White
             )
 
-            /*Canvas(
-                modifier = Modifier,
-                onDraw = {
-                    drawImage(
-                        playerImageBitmap.asImageBitmap(),
-                        topLeft = Offset(0f, 0f), // Set the destination rectangle
-                        alpha = 1f,
-                    )
-                }
-            )*/
-            Image(
-                painter = painter,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(imageSize),
-                contentScale = ContentScale.Crop
-            )
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painter,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(imageSize)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+
+                Image(
+                    painter = painterResource(id = R.drawable.player_image_frame),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(
+                            height = frameHeight,
+                            width = frameWidth
+                        )
+                )
+            }
 
             Box(
                 modifier = Modifier
-                    .height(imageSize),
+                    .height(frameHeight),
                 contentAlignment = Alignment.Center
             ) {
                 Image(

@@ -3,6 +3,7 @@ package com.example.hexagonalchess.presentation_layer.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.hexagonalchess.data_layer.database.DatabasePlayer
+import com.example.hexagonalchess.domain_layer.AuthenticationState
 import com.example.hexagonalchess.domain_layer.Route
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,42 +12,44 @@ class SignUpViewModel(
     private val databasePlayer: DatabasePlayer
 ):ViewModel() {
     private val _nameMessage = MutableStateFlow("enter name")
-    val nameMessage:StateFlow<String> = _nameMessage
+    val userNameMessage:StateFlow<String> = _nameMessage
     private val _passwordMessage = MutableStateFlow("enter password")
     val passwordMessage:StateFlow<String> = _passwordMessage
 
-    private var nameReady = false
+    private val _userNameState = MutableStateFlow(AuthenticationState.NEUTRAL)
+    val userNameState:StateFlow<AuthenticationState> = _userNameState
 
-    private var passwordReady = false
+    private val _passwordState = MutableStateFlow(AuthenticationState.NEUTRAL)
+    val passwordState:StateFlow<AuthenticationState> = _passwordState
 
     private fun checkIfPlayerExists(name:String, resolve:(Boolean) ->Unit) {
         databasePlayer.checkIfPlayerExists(name, resolve)
     }
 
     private fun addNewPlayer(name: String, password: String, navController: NavController) {
-        if (nameReady && passwordReady) {
+        if (_userNameState.value == AuthenticationState.VALID && _passwordState.value == AuthenticationState.VALID) {
             databasePlayer.addNewPlayer(name, password)
             navController.navigate(Route.main)
         }
     }
 
     private fun nameAlreadyExisted(name: String) {
+        _userNameState.value = AuthenticationState.INVALID
         _nameMessage.value = "$name was already used"
-        nameReady = false
     }
 
     private fun passwordTooShort() {
+        _passwordState.value = AuthenticationState.INVALID
         _passwordMessage.value = "password too short"
-        passwordReady = false
     }
 
     private fun nameIsReady() {
-        nameReady = true
+        _userNameState.value = AuthenticationState.VALID
         _nameMessage.value = "name Valid"
     }
 
     private fun passwordIsReady() {
-        passwordReady = true
+        _passwordState.value = AuthenticationState.VALID
         _passwordMessage.value = "password Valid"
     }
 
