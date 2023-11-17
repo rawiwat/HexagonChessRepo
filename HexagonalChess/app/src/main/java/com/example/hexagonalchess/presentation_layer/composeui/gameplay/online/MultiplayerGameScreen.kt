@@ -5,7 +5,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
@@ -47,12 +45,10 @@ import androidx.navigation.NavController
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.BoardType
-import com.example.hexagonalchess.domain_layer.ChessGameState
 import com.example.hexagonalchess.domain_layer.ChessGameStateOnline
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.Route
-import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 import com.example.hexagonalchess.domain_layer.getChessPieceImage
@@ -193,15 +189,20 @@ fun MultiplayerGameScreen(
 
         AnimatedVisibility(
             visible = (
-                    gameState == ChessGameStateOnline.PLAYER1_PROMOTE ||
-                            gameState == ChessGameStateOnline.PLAYER2_PROMOTE
+                    gameState == ChessGameStateOnline.WHITE_PROMOTE ||
+                            gameState == ChessGameStateOnline.BLACK_PROMOTE
                     ),
         ) {
             PromoteMenuOnline(
                 width = popUpBoxWidth,
                 height = popUpBoxHeight,
                 chessBoardViewModel = chessBoardViewModel,
-                currentTurn = currentTurn
+                color = when(gameState) {
+                    ChessGameStateOnline.WHITE_PROMOTE -> PieceColor.WHITE
+                    ChessGameStateOnline.BLACK_PROMOTE -> PieceColor.BLACK
+                    ChessGameStateOnline.GAME_OVER -> PieceColor.BLACK
+                    ChessGameStateOnline.OPEN -> PieceColor.BLACK
+                }
             )
         }
 
@@ -417,9 +418,8 @@ fun PromoteMenuOnline(
     width: Dp,
     height: Dp,
     chessBoardViewModel: ChessMultiPlayerViewModel,
-    currentTurn: PieceColor
+    color: PieceColor
 ) {
-    val color by rememberSaveable { mutableStateOf(if (currentTurn == PieceColor.BLACK) PieceColor.WHITE else PieceColor.BLACK) }
     val listOfPromotion = remember { getPromotionKeyWordFromColor(color) }
 
     Box(

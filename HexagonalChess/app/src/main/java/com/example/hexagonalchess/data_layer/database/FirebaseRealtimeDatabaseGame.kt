@@ -17,7 +17,11 @@ import com.example.hexagonalchess.domain_layer.ChessGameStateOnline
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.GameEndMethod
 import com.example.hexagonalchess.domain_layer.PieceColor
+import com.example.hexagonalchess.domain_layer.PieceType
+import com.example.hexagonalchess.domain_layer.SimpleDirection
+import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
+import com.example.hexagonalchess.domain_layer.getListOfPromotionTile
 import com.example.hexagonalchess.domain_layer.opposite
 import com.example.hexagonalchess.domain_layer.player.manager.PlayerNameSharedPref
 import com.google.firebase.database.ChildEventListener
@@ -37,6 +41,7 @@ class FirebaseRealtimeDatabaseGame(
     override var opponentColor: PieceColor = PieceColor.WHITE
     override var playerName: String = PlayerNameSharedPref(context).getPlayerName().toString()
     override var opponentName: String = ""
+    override var drawOffered: Boolean = false
     var allTiles: MutableList<Tile> = mutableListOf()
     val playerCapturedPiece = mutableListOf<ChessPiece>()
     val opponentCapturedPiece = mutableListOf<ChessPiece>()
@@ -48,6 +53,7 @@ class FirebaseRealtimeDatabaseGame(
     override var updateTurn: () -> Unit = { }
     override var updateGameState: () -> Unit = { }
     override var updateGameOverMessage: () -> Unit = { }
+    override var updateDrawOffering: () -> Unit = { }
 
     private val playerReceiver = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
@@ -155,6 +161,18 @@ class FirebaseRealtimeDatabaseGame(
                                 }
                             }
                             onlineGameRef.child(gameRoomName).child("gameOverMessage").addValueEventListener(gameMessageEventListener)
+
+                            val drawOfferedListener = object : ValueEventListener {
+                                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                    val player = dataSnapshot.getValue(PlayerInGame::class.java)
+                                    drawOffered = player?.offeredDraw ?: false
+                                    updateDrawOffering.invoke()
+                                }
+
+                                override fun onCancelled(databaseError: DatabaseError) {}
+                            }
+                            onlineGameRef.child(gameRoomName).child(playerName).addValueEventListener(drawOfferedListener)
+
                             context.sendBroadcast(Intent("GAME_START"))
                         } else {
                             val exception = task.exception
@@ -267,47 +285,13 @@ class FirebaseRealtimeDatabaseGame(
         return gameEndMessage
     }
 
-    override fun movePieces(from: Tile, to: Tile) {
+    override fun movePieces(from: Tile, to: Tile, boardType: BoardType) {
         val movingTileId = from.id
         val targetTileId = to.id
         val boardRef = onlineGameRef.child(gameRoomName).child("board")
         val movingPiece = from.chessPiece
 
-        boardRef.orderByChild("id").equalTo(movingTileId.name).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (tileSnapshot in dataSnapshot.children) {
-                        val tile = tileSnapshot.getValue(Tile::class.java)
-                        if (tile != null) {
-                            // Do something with the retrieved tile
-                            val movedOutTile = Tile(
-                                id = tile.id,
-                                color = tile.color,
-                                topTile = tile.topTile,
-                                upperRightTile = tile.upperRightTile,
-                                underRightTile = tile.underRightTile,
-                                bottomTile = tile.bottomTile,
-                                underLeftTile = tile.underLeftTile,
-                                upperLeftTile = tile.upperLeftTile,
-                                isAPossibleMove = false,
-                                chessPiece = null
-                            )
-                            val tileKey = tileSnapshot.key
-                            if (tileKey != null) {
-                                boardRef.child(tileKey).setValue(movedOutTile)
-                                println("Tile $targetTileId updated successfully")
-                            }
-                        }
-                    }
-                } else {
-                    println("No tile found with TileId: $movingTileId")
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                println("Error getting tile: ${databaseError.toException()}")
-            }
-        })
+        removePieceByTileID(movingTileId)
 
         boardRef.orderByChild("id").equalTo(targetTileId.name).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -352,6 +336,12 @@ class FirebaseRealtimeDatabaseGame(
         val newTurn = playerColor.opposite()
 
         val turnRef = onlineGameRef.child(gameRoomName).child("currentTurn")
+        if (from.chessPiece!!.type == PieceType.PAWN && getListOfPromotionTile(boardType, from.chessPiece!!.color).contains(to.id)) {
+            when(from.chessPiece!!.color) {
+                PieceColor.BLACK -> onlineGameRef.child(gameRoomName).child("gameState").setValue(ChessGameStateOnline.BLACK_PROMOTE)
+                PieceColor.WHITE -> onlineGameRef.child(gameRoomName).child("gameState").setValue(ChessGameStateOnline.WHITE_PROMOTE)
+            }
+        }
 
         turnRef.setValue(newTurn)
             .addOnSuccessListener {
@@ -413,11 +403,9 @@ class FirebaseRealtimeDatabaseGame(
                 if (dataSnapshot.exists()) {
                     // do nothing the room already existed in database
                 } else {
-                    // Create the game room since it doesn't exist
-                    val splitedPlayer = gameRoomName.split("_")
-                    val player1Name = splitedPlayer[0]
-                    val player2Name = splitedPlayer[1]
-                    //println(player2Name)
+                    val splitPlayer = gameRoomName.split("_")
+                    val player1Name = splitPlayer[0]
+                    val player2Name = splitPlayer[1]
                     val player1Color = listOf(PieceColor.WHITE,PieceColor.BLACK).random()
                     val player2Color = player1Color.opposite()
                     val player1Model = PlayerInGame(
@@ -455,6 +443,153 @@ class FirebaseRealtimeDatabaseGame(
                 // TODO : Handle error
             }
         })
+    }
+
+    override fun enableEnPassant(tileId: TileId, direction: SimpleDirection) {
+        val boardRefs = onlineGameRef.child(gameRoomName).child("board")
+        boardRefs.orderByChild("id").equalTo(tileId.name).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (tileSnapshot in dataSnapshot.children) {
+                        val tile = tileSnapshot.getValue(Tile::class.java)
+                        if (tile != null) {
+                            tile.chessPiece?.let {
+                                val updatedPiece = when(direction) {
+                                    SimpleDirection.RIGHT -> ChessPiece(
+                                        type = it.type,
+                                        color = it.color,
+                                        keyWord = it.keyWord,
+                                        materialValue = it.materialValue,
+                                        enPassantLeftEnable = it.enPassantLeftEnable,
+                                        enPassantRightEnable = true
+                                    )
+                                    SimpleDirection.LEFT -> ChessPiece(
+                                        type = it.type,
+                                        color = it.color,
+                                        keyWord = it.keyWord,
+                                        materialValue = it.materialValue,
+                                        enPassantLeftEnable = true,
+                                        enPassantRightEnable = it.enPassantRightEnable
+                                    )
+                                }
+
+                                val updatedTile = Tile(
+                                    id = tile.id,
+                                    color = tile.color,
+                                    topTile = tile.topTile,
+                                    upperRightTile = tile.upperRightTile,
+                                    underRightTile = tile.underRightTile,
+                                    bottomTile = tile.bottomTile,
+                                    underLeftTile = tile.underLeftTile,
+                                    upperLeftTile = tile.upperLeftTile,
+                                    isAPossibleMove = false,
+                                    chessPiece = updatedPiece
+                                )
+
+                                val tileKey = tileSnapshot.key
+                                if (tileKey != null) {
+                                    boardRefs.child(tileKey).setValue(updatedTile)
+                                    println("Tile $tileId enable en passant")
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    println("No tile found with TileId: $tileId")
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("Error getting tile: ${databaseError.toException()}")
+            }
+        })
+    }
+
+    override fun promote(tileId: TileId, keyWord: ChessPieceKeyWord) {
+        val boardRefs = onlineGameRef.child(gameRoomName).child("board")
+        boardRefs.orderByChild("id").equalTo(tileId.name).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (tileSnapshot in dataSnapshot.children) {
+                        val tile = tileSnapshot.getValue(Tile::class.java)
+                        if (tile != null) {
+                            tile.chessPiece?.let {
+                                val promotedPiece = getChessPieceFromKeyWord(keyWord)
+                                val updatedTile = Tile(
+                                    id = tile.id,
+                                    color = tile.color,
+                                    topTile = tile.topTile,
+                                    upperRightTile = tile.upperRightTile,
+                                    underRightTile = tile.underRightTile,
+                                    bottomTile = tile.bottomTile,
+                                    underLeftTile = tile.underLeftTile,
+                                    upperLeftTile = tile.upperLeftTile,
+                                    isAPossibleMove = false,
+                                    chessPiece = promotedPiece
+                                )
+
+                                val tileKey = tileSnapshot.key
+                                if (tileKey != null) {
+                                    boardRefs.child(tileKey).setValue(updatedTile)
+                                    println("Tile $tileId enable en passant")
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    println("No tile found with TileId: $tileId")
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("Error getting tile: ${databaseError.toException()}")
+            }
+        })
+    }
+
+    override fun removePieceByTileID(tileId: TileId) {
+        val boardRef = onlineGameRef.child(gameRoomName).child("board")
+
+        boardRef.orderByChild("id").equalTo(tileId.name).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (tileSnapshot in dataSnapshot.children) {
+                        val tile = tileSnapshot.getValue(Tile::class.java)
+                        if (tile != null) {
+                            val movedOutTile = Tile(
+                                id = tile.id,
+                                color = tile.color,
+                                topTile = tile.topTile,
+                                upperRightTile = tile.upperRightTile,
+                                underRightTile = tile.underRightTile,
+                                bottomTile = tile.bottomTile,
+                                underLeftTile = tile.underLeftTile,
+                                upperLeftTile = tile.upperLeftTile,
+                                isAPossibleMove = false,
+                                chessPiece = null
+                            )
+                            val tileKey = tileSnapshot.key
+                            if (tileKey != null) {
+                                boardRef.child(tileKey).setValue(movedOutTile)
+                            }
+                        }
+                    }
+                } else {
+                    println("No tile found with TileId: $tileId")
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("Error getting tile: ${databaseError.toException()}")
+            }
+        })
+    }
+
+    override fun drawOffering(boolean: Boolean) {
+        onlineGameRef.child(gameRoomName)
+            .child("players")
+            .child(opponentName)
+            .updateChildren(mapOf<String, Any>("offeredDraw" to boolean))
     }
 
     override fun gameOver(winnerName: String, loserName: String, method: GameEndMethod) {

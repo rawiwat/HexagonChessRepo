@@ -80,6 +80,11 @@ class FireBaseDatabasePlayer(
             })
     }
 
+    override fun nameHasForbiddenChar (inputName: String): Boolean {
+        val forbiddenCharacters = listOf(' ', '_','/')
+        return inputName.any { forbiddenCharacters.contains(it) }
+    }
+
     fun updatePlayerImage(playerName: String, encodedImage: String) {
         playersRef.orderByChild("name").equalTo(playerName)
             .addListenerForSingleValueEvent(object : ValueEventListener {

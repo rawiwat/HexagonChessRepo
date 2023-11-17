@@ -38,9 +38,14 @@ class SignUpViewModel(
         _nameMessage.value = "$name was already used"
     }
 
+    private fun nameContainForbidden() {
+        _userNameState.value = AuthenticationState.INVALID
+        _nameMessage.value = "blank space / and _ is not allow in player name"
+    }
+
     private fun passwordTooShort() {
         _passwordState.value = AuthenticationState.INVALID
-        _passwordMessage.value = "password too short"
+        _passwordMessage.value = "password has to contains at least 8 letters"
     }
 
     private fun nameIsReady() {
@@ -61,6 +66,8 @@ class SignUpViewModel(
         checkIfPlayerExists(name) { playerExisted ->
             if (playerExisted) {
                 nameAlreadyExisted(name)
+            } else if (databasePlayer.nameHasForbiddenChar(name)) {
+                nameContainForbidden()
             } else {
                 nameIsReady()
             }

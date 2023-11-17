@@ -75,8 +75,8 @@ enum class ChessGameState {
 }
 
 enum class ChessGameStateOnline {
-    PLAYER1_PROMOTE,
-    PLAYER2_PROMOTE,
+    WHITE_PROMOTE,
+    BLACK_PROMOTE,
     GAME_OVER,
     OPEN
 }
@@ -127,4 +127,9 @@ enum class AuthenticationState {
     NEUTRAL,
     INVALID,
     VALID
+}
+
+enum class SimpleDirection {
+    LEFT,
+    RIGHT
 }

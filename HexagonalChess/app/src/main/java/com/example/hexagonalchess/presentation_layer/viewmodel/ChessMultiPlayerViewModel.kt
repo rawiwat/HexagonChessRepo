@@ -14,11 +14,11 @@ import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
 import com.example.hexagonalchess.domain_layer.GameEndMethod
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.PieceType
+import com.example.hexagonalchess.domain_layer.SimpleDirection
 import com.example.hexagonalchess.domain_layer.TileDirections
 import com.example.hexagonalchess.domain_layer.TileId
 import com.example.hexagonalchess.domain_layer.findTile
 import com.example.hexagonalchess.domain_layer.getTileIndex
-import com.example.hexagonalchess.domain_layer.opposite
 import com.example.hexagonalchess.domain_layer.piecemove.bishopMove
 import com.example.hexagonalchess.domain_layer.piecemove.getForwardTwoPath
 import com.example.hexagonalchess.domain_layer.piecemove.kingMove
@@ -90,9 +90,6 @@ class ChessMultiPlayerViewModel(
 
     private val _backMenu = MutableStateFlow(false)
     val backMenu:StateFlow<Boolean> = _backMenu
-
-    private val _playerOfferedDraw = MutableStateFlow(false)
-    val playerOfferedDraw:StateFlow<Boolean> = _playerOfferedDraw
 
     private val _opponentOfferedDraw = MutableStateFlow(false)
     val opponentOfferedDraw:StateFlow<Boolean> = _opponentOfferedDraw
@@ -178,38 +175,32 @@ class ChessMultiPlayerViewModel(
         }
         selectingTile = targetedTile
         movingTile?.let {
-            database.movePieces(it, targetedTile)
-
-            /*val targetedIndex = getTileIndex(targetedTile.id, boardType)
-
-            _chessBoard.value[targetedIndex].chessPiece = it.chessPiece
-            val selectedTileIndex = getTileIndex(it.id, boardType)
-            _chessBoard.value[selectedTileIndex].chessPiece = null
-            if (it.chessPiece!!.type == PieceType.PAWN && getListOfPromotionTile(boardType, it.chessPiece!!.color).contains(targetedTile.id)) {
-                if (_gameState.value == ChessGameState.PLAYER1_TURN) {
-                    _gameState.value = ChessGameState.PLAYER1_PROMOTE
-                } else if (_gameState.value == ChessGameState.PLAYER2_TURN) {
-                    _gameState.value = ChessGameState.PLAYER2_PROMOTE
-                }
-            }*/
-
-            /*val currentMovePath = TilePair(
+            val currentMovePath = TilePair(
                 startingPoint = it.id,
                 endPoint = selectingTile!!.id
             )
-            it.chessPiece?.let {
-                if (it.type == PieceType.PAWN) {
+            it.chessPiece?.let {thisPiece ->
+                if (thisPiece.type == PieceType.PAWN) {
                     enPassantEnable(currentMovePath,targetedTile)
                     checkAndPerformEnPassant(
                         movingTileId = movingTile!!.id,
                         targetedTileId = targetedTile.id,
-                        enPassantLeftEnable = it.enPassantLeftEnable,
-                        enPassantRightEnable = it.enPassantRightEnable,
-                        color = it.color,
+                        enPassantLeftEnable = thisPiece.enPassantLeftEnable,
+                        enPassantRightEnable = thisPiece.enPassantRightEnable,
+                        color = thisPiece.color,
                         board = _chessBoard.value
                     )
                 }
-            }*/
+            }
+            database.movePieces(it, targetedTile, boardType)
+            for (tiles in _chessBoard.value) {
+                tiles.chessPiece?.let { thisPiece ->
+                    if (thisPiece.color == it.chessPiece!!.color) {
+                        thisPiece.enPassantLeftEnable = false
+                        thisPiece.enPassantRightEnable = false
+                    }
+                }
+            }
 
             updateBoard()
             targetedTile.chessPiece?.let { piece ->
@@ -231,14 +222,17 @@ class ChessMultiPlayerViewModel(
                             TileDirections.UPPER_LEFT,_chessBoard.value, boardType)
                         enPassant1?.let {
                             _chessBoard.value[getTileIndex(enPassant1, boardType)].chessPiece?.let {
-                                if (it.type == PieceType.PAWN)
-                                    it.enPassantLeftEnable = true
+                                if (it.type == PieceType.PAWN) {
+                                    database.enableEnPassant(currentMovePath.endPoint, direction = SimpleDirection.LEFT)
+                                    //it.enPassantLeftEnable = true
+                                }
                             }
                         }
                         enPassant2?.let {
                             _chessBoard.value[getTileIndex(enPassant2, boardType)].chessPiece?.let {
-                                if (it.type == PieceType.PAWN)
-                                    it.enPassantRightEnable = true
+                                if (it.type == PieceType.PAWN) {
+                                    database.enableEnPassant(currentMovePath.endPoint, direction = SimpleDirection.RIGHT)
+                                }
                             }
                         }
                         break
@@ -253,14 +247,16 @@ class ChessMultiPlayerViewModel(
                             TileDirections.UNDER_LEFT,_chessBoard.value, boardType)
                         enPassant1?.let {
                             _chessBoard.value[getTileIndex(enPassant1, boardType)].chessPiece?.let {
-                                if (it.type == PieceType.PAWN)
-                                    it.enPassantLeftEnable = true
+                                if (it.type == PieceType.PAWN) {
+                                    database.enableEnPassant(currentMovePath.endPoint, direction = SimpleDirection.LEFT)
+                                }
                             }
                         }
                         enPassant2?.let {
                             _chessBoard.value[getTileIndex(enPassant2, boardType)].chessPiece?.let {
-                                if (it.type == PieceType.PAWN)
-                                    it.enPassantRightEnable = true
+                                if (it.type == PieceType.PAWN) {
+                                    database.enableEnPassant(currentMovePath.endPoint, direction = SimpleDirection.RIGHT)
+                                }
                             }
                         }
                         break
@@ -283,8 +279,10 @@ class ChessMultiPlayerViewModel(
                     TileDirections.UNDER_LEFT,_chessBoard.value, boardType) == targetedTileId
                 if (enPassantLeftEnable && attackLeft) {
                     findTile(targetedTileId, TileDirections.TOP,board, boardType)?.let {
-                        //capturePiece(board[getTileIndex(it, boardType)].chessPiece)
-                        board[getTileIndex(it, boardType)].chessPiece = null
+                        board[getTileIndex(it, boardType)].chessPiece?.let { targetedEnPassant ->
+                            database.capture(targetedEnPassant.keyWord)
+                        }
+                        database.removePieceByTileID(it)
                         playSoundEffect(context, R.raw.capture)
                     }
                 }
@@ -292,8 +290,10 @@ class ChessMultiPlayerViewModel(
                     TileDirections.UNDER_RIGHT,_chessBoard.value, boardType) == targetedTileId
                 if (enPassantRightEnable && attackRight) {
                     findTile(targetedTileId, TileDirections.TOP,board, boardType)?.let {
-                        //capturePiece(board[getTileIndex(it, boardType)].chessPiece)
-                        board[getTileIndex(it, boardType)].chessPiece = null
+                        board[getTileIndex(it, boardType)].chessPiece?.let { targetedEnPassant ->
+                            database.capture(targetedEnPassant.keyWord)
+                        }
+                        database.removePieceByTileID(it)
                         playSoundEffect(context, R.raw.capture)
                     }
                 }
@@ -304,8 +304,10 @@ class ChessMultiPlayerViewModel(
                     TileDirections.UPPER_LEFT,_chessBoard.value, boardType) == targetedTileId
                 if (enPassantLeftEnable && attackLeft) {
                     findTile(targetedTileId, TileDirections.BOTTOM, board, boardType)?.let {
-                        //capturePiece(board[getTileIndex(it, boardType)].chessPiece)
-                        board[getTileIndex(it, boardType)].chessPiece = null
+                        board[getTileIndex(it, boardType)].chessPiece?.let { targetedEnPassant ->
+                            database.capture(targetedEnPassant.keyWord)
+                        }
+                        database.removePieceByTileID(it)
                         playSoundEffect(context, R.raw.capture)
                     }
                 }
@@ -313,8 +315,10 @@ class ChessMultiPlayerViewModel(
                     TileDirections.UPPER_RIGHT,_chessBoard.value, boardType) == targetedTileId
                 if (enPassantRightEnable && attackRight) {
                     findTile(targetedTileId, TileDirections.BOTTOM, board, boardType)?.let {
-                        //capturePiece(board[getTileIndex(it, boardType)].chessPiece)
-                        board[getTileIndex(it, boardType)].chessPiece = null
+                        board[getTileIndex(it, boardType)].chessPiece?.let { targetedEnPassant ->
+                            database.capture(targetedEnPassant.keyWord)
+                        }
+                        database.removePieceByTileID(it)
                         playSoundEffect(context, R.raw.capture)
                     }
                 }
@@ -331,16 +335,16 @@ class ChessMultiPlayerViewModel(
         )
     }
 
-    fun drawAccepted(color: PieceColor) {
-
+    fun drawAccepted() {
+        gameOver(_playerName.value, _opponentName.value, method = GameEndMethod.DRAW)
     }
 
-    fun drawRejected(color: PieceColor) {
-
+    fun drawRejected() {
+        database.drawOffering(false)
     }
 
-    fun drawOffered(color: PieceColor) {
-
+    fun drawOffered() {
+        database.drawOffering(true)
     }
 
     fun turnOnResignMenu() {
@@ -352,28 +356,10 @@ class ChessMultiPlayerViewModel(
     }
 
     fun promotePawn(keyWord: ChessPieceKeyWord, tileId: TileId) {
-
+        database.promote(tileId, keyWord)
     }
 
     private fun gameOver(winnerName: String, loserName:String,method: GameEndMethod) {
-        //_gameState.value = ChessGameStateOnline.GAME_OVER
-        /*val winnerColorInMessage = when(winnerColor) {
-            PieceColor.BLACK -> "Black"
-            PieceColor.WHITE -> "White"
-        }
-
-        val loserColorInMessage = when(winnerColor) {
-            PieceColor.BLACK -> "White"
-            PieceColor.WHITE -> "Black"
-        }
-
-        val gameEndMessage = when(method){
-            GameEndMethod.KING_WAS_CAPTURED -> "$winnerColorInMessage Wins\n$loserColorInMessage King was captured"
-            GameEndMethod.DRAW -> "$winnerColorInMessage accept the draw offer"
-            GameEndMethod.RESIGN -> "$loserColorInMessage resign"
-            GameEndMethod.CHECKMATE -> "$winnerColorInMessage Wins\nCheckmate"
-        }
-        _gameOverMessage.value = gameEndMessage*/
         database.gameOver(winnerName, loserName, method)
     }
 
@@ -402,6 +388,10 @@ class ChessMultiPlayerViewModel(
 
         database.updateGameState = {
             _gameState.value = database.getCurrentGameState()
+        }
+
+        database.updateDrawOffering = {
+            _opponentOfferedDraw.value = database.drawOffered
         }
     }
 }

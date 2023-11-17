@@ -172,7 +172,7 @@ fun PlayerUIOnline(
                                         contentScale = ContentScale.FillBounds,
                                         modifier = Modifier
                                             .clickable {
-                                                chessBoardViewModel.drawAccepted(color)
+                                                chessBoardViewModel.drawAccepted()
                                             }
                                     )
                                     Text(
@@ -191,7 +191,7 @@ fun PlayerUIOnline(
                                         contentScale = ContentScale.FillBounds,
                                         modifier = Modifier
                                             .clickable {
-                                                chessBoardViewModel.drawRejected(color)
+                                                chessBoardViewModel.drawRejected()
                                             }
                                     )
                                     Text(
@@ -210,7 +210,7 @@ fun PlayerUIOnline(
                                 contentDescription = null,
                                 modifier = sizeModifierForIcon
                                     .clickable {
-                                        chessBoardViewModel.drawOffered(color)
+                                        chessBoardViewModel.drawOffered()
                                     }
                             )
                             Image(

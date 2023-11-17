@@ -7,6 +7,7 @@ interface DatabasePlayer {
     fun checkIfPlayerExists(inputName: String, callback: (Boolean) -> Unit)
     fun checkPassword(inputName: String,inputPassword: String, callback: (Boolean) -> Unit)
     fun searchPlayerByName(name: String, callback: PlayerSearchCallback)
+    fun nameHasForbiddenChar (inputName: String): Boolean
 }
 
 interface PlayerSearchCallback {

@@ -8,6 +8,5 @@ data class PlayerInGame(
     val name: String = "",
     val color: PieceColor = PieceColor.WHITE,
     val offeredDraw: Boolean = false,
-    val offeredResign: Boolean = false,
     var captured: List<ChessPieceKeyWord> = listOf()
 )
