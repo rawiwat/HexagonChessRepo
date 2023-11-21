@@ -139,13 +139,41 @@ class FireBaseDatabasePlayer(
             })
     }
 
+    override fun buy(playerName: String, item: Collectable, callback: () -> Unit) {
+        playersRef.orderByChild("name").equalTo(playerName)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    for (snapshot in dataSnapshot.children) {
+                        val playerKey = snapshot.key
+                        val playerRef = playerKey?.let { playersRef.child(it) }
+
+                        val updates = hashMapOf<String, Any>()
+                        updates["coin"] = ServerValue.increment((currentPrice * -1).toLong())
+                        playerRef?.updateChildren(updates)
+
+                        addToCollection(item)
+
+                        callback.invoke()
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // TODO : Handle error
+                }
+            })
+    }
+
     override fun calculatePrice() {
         playersRef.child(playerKey).child("collection").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val collection = snapshot.getValue(object : GenericTypeIndicator<List<Collectable>>() {})
                     ?: listOf()
 
-                currentPrice = collection.size * 100
+                currentPrice = if(collection.isNullOrEmpty()) {
+                    100
+                } else {
+                    collection.size * 150
+                }
                 updatePrice.invoke()
             }
 

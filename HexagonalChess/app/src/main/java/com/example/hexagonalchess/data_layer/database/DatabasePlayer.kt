@@ -10,9 +10,10 @@ interface DatabasePlayer {
     fun searchPlayerByName(name: String, callback: PlayerSearchCallback)
     fun nameHasForbiddenChar (inputName: String): Boolean
     fun updatePlayerCoin(playerName: String, amount:Long)
+    fun buy(playerName: String, item:Collectable, callback: () -> Unit)
     fun calculatePrice()
     fun addToCollection(collectable: Collectable)
-    var currentPrice:Int
+    var currentPrice: Int
     var updatePrice:() -> Unit
 }
 

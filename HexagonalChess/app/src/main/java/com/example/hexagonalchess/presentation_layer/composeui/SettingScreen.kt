@@ -13,11 +13,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
@@ -48,10 +53,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hexagonalchess.MainActivity
 import com.example.hexagonalchess.R
+import com.example.hexagonalchess.data_layer.database.FireBaseDatabasePlayer
+import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
+import com.example.hexagonalchess.domain_layer.ChessSkin
 import com.example.hexagonalchess.domain_layer.Route
 import com.example.hexagonalchess.domain_layer.SettingState
 import com.example.hexagonalchess.domain_layer.TileColor
 import com.example.hexagonalchess.domain_layer.TileTheme
+import com.example.hexagonalchess.domain_layer.getChessPieceImage
+import com.example.hexagonalchess.domain_layer.getColorFromTheme
 import com.example.hexagonalchess.domain_layer.getTileImage
 import com.example.hexagonalchess.domain_layer.player.manager.PlayerNameSharedPref
 import com.example.hexagonalchess.presentation_layer.viewmodel.SettingViewModel
@@ -68,6 +78,14 @@ fun SettingScreen(
     val themeSettingTurnOn by rememberUpdatedState(newValue = settingState == SettingState.THEME)
 
     val logOutSettingTurnOn by rememberUpdatedState(newValue = settingState == SettingState.LOG_OUT)
+
+    val skinSettingTurnOn by rememberUpdatedState(newValue = settingState == SettingState.SKIN)
+
+    val currentSkin by settingViewModel.currentSkin.collectAsState()
+
+    val playerTileCollection = remember { settingViewModel.playersTiles }
+
+    val playerSkinCollection = remember { settingViewModel.playerChessSkin }
 
     Surface(
         modifier = Modifier.fillMaxSize()
@@ -86,11 +104,12 @@ fun SettingScreen(
                 text = "Theme",
                 onClick = {
                     settingViewModel.turnOnTheme()
-                    println(themeSettingTurnOn)
-                    println(settingState)
-                },
+                }
             )
 
+            SettingButton(text = "Chess Skin") {
+                settingViewModel.turnOnSkin()
+            }
             SettingButton(
                 text = "Change Image",
                 onClick = {
@@ -118,7 +137,10 @@ fun SettingScreen(
             contentAlignment = Alignment.Center
         ) {
             AnimatedVisibility(visible = themeSettingTurnOn) {
-                ThemeSetting(settingViewModel)
+                ThemeSetting(
+                    settingViewModel,
+                    tilesCollection = playerTileCollection
+                )
             }
 
             AnimatedVisibility(visible = logOutSettingTurnOn) {
@@ -129,9 +151,22 @@ fun SettingScreen(
                     closeAppFunction = closeAppFunction
                 )
             }
+            AnimatedVisibility(visible = skinSettingTurnOn) {
+                ChessSkinSetting(
+                    settingViewModel = settingViewModel,
+                    skinCollection = playerSkinCollection,
+                    listOfAllPiece = listOf(
+                        ChessPieceKeyWord.WHITE_KING, ChessPieceKeyWord.BLACK_KING, ChessPieceKeyWord.WHITE_QUEEN,
+                        ChessPieceKeyWord.BLACK_QUEEN, ChessPieceKeyWord.WHITE_BISHOP, ChessPieceKeyWord.BLACK_BISHOP,
+                        ChessPieceKeyWord.WHITE_KNIGHT, ChessPieceKeyWord.BLACK_KNIGHT, ChessPieceKeyWord.WHITE_ROOK,
+                        ChessPieceKeyWord.BLACK_ROOK,ChessPieceKeyWord.WHITE_PAWN, ChessPieceKeyWord.BLACK_PAWN
+                    ),
+                    currentSkin = currentSkin
+                )
+            }
         }
-
     }
+    
     BackHandler(
         onBack = {
             settingViewModel.turnOffSettingMenu()
@@ -253,60 +288,20 @@ fun ChangeTheme(
 
 @Composable
 fun ThemeSetting(
-    settingViewModel: SettingViewModel
+    settingViewModel: SettingViewModel,
+    tilesCollection: List<TileTheme>
 ) {
-
     Column(
         modifier = Modifier
     ) {
-        ChangeTheme(
-            theme = TileTheme.DEFAULT,
-            viewModel = settingViewModel,
-            themeName = "Default Theme",
-            themeColor = Color.White
-        )
-
-        ChangeTheme(
-            theme = TileTheme.RED,
-            viewModel = settingViewModel,
-            themeName = "Red Theme",
-            themeColor = Color.Red
-        )
-
-        ChangeTheme(
-            theme = TileTheme.YELLOW,
-            viewModel = settingViewModel,
-            themeName = "Yellow Theme",
-            themeColor = Color.Yellow
-        )
-
-        ChangeTheme(
-            theme = TileTheme.BLUE,
-            viewModel = settingViewModel,
-            themeName = "Blue Theme",
-            themeColor = Color.Blue
-        )
-
-        ChangeTheme(
-            theme = TileTheme.PURPLE,
-            viewModel = settingViewModel,
-            themeName = "Purple Theme",
-            themeColor = Color.Magenta
-        )
-
-        ChangeTheme(
-            theme = TileTheme.GREEN,
-            viewModel = settingViewModel,
-            themeName = "Green Theme",
-            themeColor = Color.Green
-        )
-
-        ChangeTheme(
-            theme = TileTheme.ORANGE,
-            viewModel = settingViewModel,
-            themeName = "Orange Theme",
-            themeColor = Color(0xFFFFA500)
-        )
+        for (tileTheme in tilesCollection) {
+            ChangeTheme(
+                theme = tileTheme,
+                viewModel = settingViewModel,
+                themeName = tileTheme.name,
+                themeColor = getColorFromTheme(tileTheme)
+            )
+        }
 
         SettingButton(text = "Done") {
             settingViewModel.turnOffSettingMenu()
@@ -314,7 +309,85 @@ fun ThemeSetting(
     }
 }
 
+@Composable
+fun ChessSkinSetting(
+    settingViewModel: SettingViewModel,
+    skinCollection: List<ChessSkin>,
+    listOfAllPiece: List<ChessPieceKeyWord>,
+    currentSkin: ChessSkin
+) {
+    Column {
+        for (chessSkin in skinCollection) {
+            ChangeChessSkin(
+                chessSkin = chessSkin,
+                settingViewModel = settingViewModel,
+                listOfAllPiece = listOfAllPiece,
+                currentSkin = currentSkin
+            )
+        }
+        SettingButton(text = "Done") {
+            settingViewModel.turnOffSettingMenu()
+        }
+    }
+}
 
+@Composable
+fun ChangeChessSkin(
+    chessSkin: ChessSkin,
+    settingViewModel: SettingViewModel,
+    listOfAllPiece: List<ChessPieceKeyWord>,
+    currentSkin: ChessSkin
+) {
+    val height = remember { 96.dp }
+    val width = remember { 272.dp }
+
+    Box(
+        modifier = Modifier
+            .size(width = width, height = height)
+            .border(width = if (chessSkin == currentSkin) 5.dp else 0.dp, color = Color.White)
+            .clickable {
+                settingViewModel.changeSkin(chessSkin)
+            }
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.menu_template_dark),
+            contentDescription = null,
+            modifier = Modifier.size(width = width, height = height),
+            contentScale = ContentScale.FillBounds
+        )
+        Column(
+            modifier = Modifier.fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = chessSkin.name,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                style = TextStyle(
+                    color = Color.White
+                ),
+                fontFamily = FontFamily(Font(R.font.menu_text)),
+                fontSize = 25.sp
+            )
+
+            LazyHorizontalGrid(
+                rows = GridCells.Fixed(2),
+                modifier = Modifier
+                    .height(70.dp)
+            ) {
+                items(listOfAllPiece) {
+                    Image(
+                        painter = painterResource(id = getChessPieceImage(it,chessSkin)),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(35.dp)
+                    )
+                }
+            }
+        }
+    }
+}
 @Composable
 fun LogOutMenu(
     settingViewModel: SettingViewModel,
@@ -414,7 +487,7 @@ fun LogOutMenu(
     }
 }
 
-@Preview
+/*@Preview
 @Composable
 fun ChangeThemePreview() {
     val context = LocalContext.current
@@ -423,7 +496,8 @@ fun ChangeThemePreview() {
         viewModel = SettingViewModel(
             context,
             NavController(context),
-            PlayerNameSharedPref(context)
+            PlayerNameSharedPref(context),
+            databasePlayer = FireBaseDatabasePlayer(context)
         ),
         themeName = "Purple Theme",
         themeColor = Color.Magenta
@@ -439,7 +513,8 @@ fun SettingScreenPreview() {
         settingViewModel = SettingViewModel(
             context,
             NavController(context),
-            PlayerNameSharedPref(context)
+            PlayerNameSharedPref(context),
+            databasePlayer = FireBaseDatabasePlayer(context)
         ),{},
         context
     )
@@ -449,9 +524,13 @@ fun SettingScreenPreview() {
 @Composable
 fun ThemeSettingPreview() {
     val context = LocalContext.current
-    ThemeSetting(SettingViewModel(
-        context,
-        NavController(context),
-        PlayerNameSharedPref(context)
-    ))
-}
+    ThemeSetting(
+        SettingViewModel(
+            context,
+            NavController(context),
+            PlayerNameSharedPref(context),
+            databasePlayer = FireBaseDatabasePlayer(context)
+        ),
+        listOf()
+    )
+}*/

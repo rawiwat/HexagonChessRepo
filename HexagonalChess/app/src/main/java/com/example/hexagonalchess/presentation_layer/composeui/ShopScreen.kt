@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -70,6 +71,7 @@ fun ShopScreen(
     //val collection by shopViewModel.currentCollection.collectAsState()
     val price by shopViewModel.itemPrice.collectAsState()
     val backMenu by shopViewModel.backMenu.collectAsState()
+    val playerCoin by shopViewModel.playerCoin.collectAsState()
 
     Surface(
         modifier = Modifier.fillMaxSize()
@@ -79,25 +81,33 @@ fun ShopScreen(
             contentDescription = null,
             contentScale = ContentScale.Crop
         )
-        Column {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Spacer(modifier = Modifier.height(12.dp))
+
             Box(
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.CenterStart,
+                modifier = Modifier
+                    .height(36.dp)
+                    .fillMaxWidth()
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.coin_label),
                     contentDescription = null,
                     modifier = Modifier
-                        .width(70.dp)
+                        .width(105.dp)
                 )
                 Text(
-                    text = price.toString(),
+                    text = playerCoin.toString(),
                     color = Color.White,
                     modifier = Modifier
-                        .size(45.dp)
-                        .padding(start = 8.dp, top = 2.dp),
+                        .size(67.dp)
+                        .padding(start = 30.dp, top = 6.dp),
                     textAlign = TextAlign.Center,
                 )
             }
+
             LazyColumn {
                 items(shopViewModel.getPieceInShop()) {
                     ChessShop(
@@ -105,6 +115,7 @@ fun ShopScreen(
                         price = price,
                         shopViewModel = shopViewModel
                     )
+                    Spacer(modifier = Modifier.height(15.dp))
                 }
             }
             LazyColumn {
@@ -116,7 +127,32 @@ fun ShopScreen(
                         tileWidth = 55,
                         price = price
                     )
+                    Spacer(modifier = Modifier.height(15.dp))
                 }
+            }
+
+            if (shopViewModel.getPieceInShop().isNullOrEmpty() && shopViewModel.getTileInShop().isNullOrEmpty()) {
+                TextWithStroke(
+                    text = "There's nothing left in the shop",
+                    modifier = Modifier,
+                    textColor = Color.Black,
+                    strokeColor = Color.White,
+                    fontSize = 80
+                )
+            }
+        }
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            MenuButton(
+                text = "Back",
+                modifier = Modifier
+                    .width(100.dp),
+                fontSize = 20
+            ) {
+                shopViewModel.backMenu(true)
             }
         }
     }

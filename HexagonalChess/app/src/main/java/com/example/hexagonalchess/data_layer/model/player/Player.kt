@@ -2,6 +2,7 @@ package com.example.hexagonalchess.data_layer.model.player
 
 import androidx.compose.ui.graphics.ImageBitmap
 import com.example.hexagonalchess.data_layer.model.collection.Collectable
+import com.example.hexagonalchess.domain_layer.ChessSkin
 import com.example.hexagonalchess.domain_layer.CollectableType
 import com.example.hexagonalchess.domain_layer.TileTheme
 import com.example.hexagonalchess.domain_layer.player.generatePlayerIdFromName
@@ -29,6 +30,10 @@ data class Player(
         Collectable(
             type = CollectableType.TILE_THEME,
             name = TileTheme.BLUE.name
+        ),
+        Collectable(
+            type = CollectableType.PIECE_THEME,
+            name = ChessSkin.DEFAULT.name
         )
     )
 )

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -461,7 +462,15 @@ fun PlayerOnMain(
                     Text(
                         text = player.coin.toString(),
                         fontSize = (frameHeight.value / 4).sp,
-                        color = Color.White
+                        color = Color.White,
+                        modifier = Modifier
+                            .height(frameHeight / 7 * 2)
+                            .padding(
+                                start = frameHeight / 10
+                            )
+                            .offset(y = (frameHeight / 30) * -1),
+                        textAlign = TextAlign.Center,
+                        lineHeight = (frameHeight / 7 * 2).value.sp
                     )
                 }
             }

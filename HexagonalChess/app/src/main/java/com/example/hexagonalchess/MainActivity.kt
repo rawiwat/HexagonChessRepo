@@ -52,18 +52,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             HexagonalChessTheme {
                 navController = rememberNavController()
-                val settingViewModel = SettingViewModel(
-                    context = this@MainActivity,
-                    navController = navController,
-                    playerNameSharedPref = playerNameSharedPref
-            )
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     App(
                         navController = navController as NavHostController,
-                        settingViewModel = settingViewModel,
                         playerNameSharedPref = playerNameSharedPref,
                         context = this@MainActivity,
                         closeAppFunction = { finish() },

@@ -33,7 +33,6 @@ import com.example.hexagonalchess.presentation_layer.viewmodel.SignUpViewModel
 @Composable
 fun App(
     navController: NavHostController,
-    settingViewModel: SettingViewModel,
     playerNameSharedPref: PlayerNameSharedPref,
     context: Context,
     closeAppFunction:() -> Unit,
@@ -43,7 +42,6 @@ fun App(
 
     val databaseForPlayer = FireBaseDatabasePlayer(context)
     val databaseGame = FirebaseRealtimeDatabaseGame(context)
-
     val startDestination = if (playerName.isNullOrBlank()) {
         Route.signUp
     } else {
@@ -101,7 +99,12 @@ fun App(
         ) {
             SettingScreen(
                 navController = navController,
-                settingViewModel = settingViewModel,
+                settingViewModel = SettingViewModel(
+                    context = context,
+                    navController = navController,
+                    playerNameSharedPref = playerNameSharedPref,
+                    databasePlayer = databaseForPlayer
+                ),
                 closeAppFunction = closeAppFunction,
                 context = context
             )
@@ -210,7 +213,11 @@ fun App(
 
         composable(route = Route.shop) {
             ShopScreen(
-                shopViewModel = ShopViewModel(databaseForPlayer, playerName.toString()),
+                shopViewModel = ShopViewModel(
+                    databaseForPlayer,
+                    playerName.toString(),
+                    context
+                ),
                 navController = navController
             )
         }

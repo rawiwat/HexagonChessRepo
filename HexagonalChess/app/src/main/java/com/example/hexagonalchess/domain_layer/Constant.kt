@@ -121,7 +121,8 @@ enum class GameMode {
 enum class SettingState {
     NONE,
     THEME,
-    LOG_OUT
+    LOG_OUT,
+    SKIN
 }
 
 enum class AuthenticationState {
