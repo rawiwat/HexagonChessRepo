@@ -26,6 +26,7 @@ import com.example.hexagonalchess.presentation_layer.viewmodel.BoardSelectionVie
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessBoardViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.ChessMultiPlayerViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.SettingViewModel
+import com.example.hexagonalchess.presentation_layer.viewmodel.ShopViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.SignInViewModel
 import com.example.hexagonalchess.presentation_layer.viewmodel.SignUpViewModel
 
@@ -86,7 +87,8 @@ fun App(
                     }, boardType = boardType,
                     context = context,
                     gameMode = gameMode,
-                    playerColor = viablePieceColor.random()
+                    playerColor = viablePieceColor.random(),
+                    databaseForPlayer
                 ),
                 context = context,
                 boardType = boardType,
@@ -203,6 +205,13 @@ fun App(
                     context = context
                 ),
                 context = context
+            )
+        }
+
+        composable(route = Route.shop) {
+            ShopScreen(
+                shopViewModel = ShopViewModel(databaseForPlayer, playerName.toString()),
+                navController = navController
             )
         }
     }

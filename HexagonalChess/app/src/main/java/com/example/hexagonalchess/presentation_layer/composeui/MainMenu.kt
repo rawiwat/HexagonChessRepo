@@ -1,10 +1,8 @@
 package com.example.hexagonalchess.presentation_layer.composeui
 
 import android.content.Context
-import android.graphics.Bitmap
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,26 +19,17 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -58,7 +47,6 @@ import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.database.DatabasePlayer
-import com.example.hexagonalchess.data_layer.database.FireBaseDatabasePlayer
 import com.example.hexagonalchess.data_layer.model.player.Player
 import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.Route
@@ -109,9 +97,9 @@ fun MainMenu(
             GameTitle(titleSize = titleSize)
 
             MenuButton(
-                text = "Play\nOnline",
+                text = "Coming\nSoon",
                 onClick = {
-                    navController.navigate("${Route.boardSelection}/${GameMode.ONLINE}")
+                    /*navController.navigate("${Route.boardSelection}/${GameMode.ONLINE}")*/
                 },
                 modifier = sizeModifier,
                 fontSize = fontSize
@@ -130,6 +118,15 @@ fun MainMenu(
                 text = "Play Cpu",
                 onClick = {
                     navController.navigate("${Route.boardSelection}/${GameMode.CPU}")
+                },
+                modifier = sizeModifier,
+                fontSize = fontSize
+            )
+
+            MenuButton(
+                text = "Shop",
+                onClick = {
+                    navController.navigate(Route.shop)
                 },
                 modifier = sizeModifier,
                 fontSize = fontSize
@@ -375,18 +372,9 @@ fun PlayerOnMain(
     val frameHeight = remember { screenWidth / 3 }
     val frameWidth = remember { frameHeight * 86 / 100 }
 
-    /*playerImageBitmap = Bitmap.createScaledBitmap(
-        playerImageBitmap,
-        imageSize.value.toInt(),
-        imageSize.value.toInt(),
-        true
-    )*/
-
     val idGap = remember { screenWidth / 3 }
 
     val painter = rememberImagePainter(data = playerImageBitmap)
-
-    //val mockPainter = painterResource(id = R.drawable.white_player_icon)
 
     Box(
         modifier = Modifier
@@ -400,7 +388,8 @@ fun PlayerOnMain(
                 text = "id : ${player.playerId}",
                 modifier = Modifier.width(idGap),
                 textColor = Color.Black,
-                strokeColor = Color.White
+                strokeColor = Color.White,
+                10
             )
 
             Box(
@@ -428,27 +417,51 @@ fun PlayerOnMain(
 
             Box(
                 modifier = Modifier
-                    .height(frameHeight),
-                contentAlignment = Alignment.Center
+                    .height(frameHeight)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.player_name_and_rating_display),
-                    contentDescription = null,
+                Box(
                     modifier = Modifier
-                )
+                        .height(frameHeight),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.player_name_and_rating_display),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .height(frameHeight / 2 * 3)
+                    )
 
-                Column {
-                    Text(
-                        text = player.name,
-                        style = TextStyle(
-                            color = Color.White
+                    Column {
+                        Text(
+                            text = player.name,
+                            style = TextStyle(
+                                color = Color.White
+                            )
                         )
+                        Text(
+                            text = "Rank Rating : ${player.rating}",
+                            style = TextStyle(
+                                color = Color.White
+                            )
+                        )
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .height(frameHeight),
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.coin_label),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .height(frameHeight / 7 * 2)
                     )
                     Text(
-                        text = "Rank Rating : ${player.rating}",
-                        style = TextStyle(
-                            color = Color.White
-                        )
+                        text = player.coin.toString(),
+                        fontSize = (frameHeight.value / 4).sp,
+                        color = Color.White
                     )
                 }
             }
@@ -462,6 +475,7 @@ fun TextWithStroke(
     modifier: Modifier,
     textColor: Color,
     strokeColor: Color,
+    fontSize: Int
 ) {
     Box {
         Text(
@@ -470,7 +484,8 @@ fun TextWithStroke(
             modifier = modifier,
             style = TextStyle(
                 color = textColor
-            )
+            ),
+            fontSize = fontSize.sp
         )
 
         Text(
@@ -482,7 +497,8 @@ fun TextWithStroke(
                 drawStyle = Stroke(
                     width = 1f
                 )
-            )
+            ),
+            fontSize = fontSize.sp
         )
     }
 }

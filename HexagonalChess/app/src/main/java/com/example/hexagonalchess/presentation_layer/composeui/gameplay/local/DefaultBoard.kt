@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.BoardType
+import com.example.hexagonalchess.domain_layer.ChessSkin
 import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.TileTheme
@@ -23,6 +24,7 @@ fun ChessBoardUI(
     chessBoardData:List<Tile>,
     chessBoardViewModel: ChessBoardViewModel,
     theme: TileTheme,
+    skin: ChessSkin,
     screenWidth: Int,
     tileUiManager: TileUiManager,
     boardType: BoardType,
@@ -69,7 +71,8 @@ fun ChessBoardUI(
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
-                    boardType = boardType
+                    boardType = boardType,
+                    skin = skin
                 )
             }
         }
@@ -90,7 +93,8 @@ fun ChessBoardUI(
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
-                    boardType = boardType
+                    boardType = boardType,
+                    skin = skin
                 )
             }
         }
@@ -111,7 +115,8 @@ fun ChessBoardUI(
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
-                    boardType = boardType
+                    boardType = boardType,
+                    skin = skin
                 )
             }
         }
@@ -132,7 +137,8 @@ fun ChessBoardUI(
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
-                    boardType = boardType
+                    boardType = boardType,
+                    skin = skin
                 )
             }
         }
@@ -152,7 +158,8 @@ fun ChessBoardUI(
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
-                    boardType = boardType
+                    boardType = boardType,
+                    skin = skin
                 )
             }
         }
@@ -173,7 +180,8 @@ fun ChessBoardUI(
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
-                    boardType = boardType
+                    boardType = boardType,
+                    skin = skin
                 )
             }
         }
@@ -194,7 +202,8 @@ fun ChessBoardUI(
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
-                    boardType = boardType
+                    boardType = boardType,
+                    skin = skin
                 )
             }
         }
@@ -215,7 +224,8 @@ fun ChessBoardUI(
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
-                    boardType = boardType
+                    boardType = boardType,
+                    skin = skin
                 )
             }
         }
@@ -236,7 +246,8 @@ fun ChessBoardUI(
                     tileUiManager = tileUiManager,
                     chessBoardViewModel = chessBoardViewModel,
                     theme = theme,
-                    boardType = boardType
+                    boardType = boardType,
+                    skin = skin
                 )
             }
         }

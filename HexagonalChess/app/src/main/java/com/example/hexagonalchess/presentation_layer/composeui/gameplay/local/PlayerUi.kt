@@ -37,6 +37,7 @@ import com.example.hexagonalchess.data_layer.chess_board_data.base.ChessboardDat
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
+import com.example.hexagonalchess.domain_layer.ChessSkin
 import com.example.hexagonalchess.domain_layer.GameMode
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.PieceType
@@ -51,6 +52,7 @@ fun PlayerUI(
     color: PieceColor,
     chessBoardViewModel: ChessBoardViewModel,
     listOfCapturedPiece: List<ChessPiece>,
+    skin: ChessSkin,
     screenWidth: Dp
 ) {
     val borderWidth = if (currentTurn == color) { screenWidth / 100 } else { 0.dp }
@@ -161,19 +163,39 @@ fun PlayerUI(
 
                     Row {
                         if (capturedPawn.isNotEmpty()) {
-                            CapturedPieceUi(listOfCapturedPiece = capturedPawn, size = pieceUiSize)
+                            CapturedPieceUi(
+                                listOfCapturedPiece = capturedPawn,
+                                size = pieceUiSize,
+                                skin = skin
+                            )
                         }
                         if (capturedKnight.isNotEmpty()) {
-                            CapturedPieceUi(listOfCapturedPiece = capturedKnight, size = pieceUiSize)
+                            CapturedPieceUi(
+                                listOfCapturedPiece = capturedKnight,
+                                size = pieceUiSize,
+                                skin = skin
+                            )
                         }
                         if (capturedBishop.isNotEmpty()) {
-                            CapturedPieceUi(listOfCapturedPiece = capturedBishop, size = pieceUiSize)
+                            CapturedPieceUi(
+                                listOfCapturedPiece = capturedBishop,
+                                size = pieceUiSize,
+                                skin = skin
+                            )
                         }
                         if (capturedRook.isNotEmpty()) {
-                            CapturedPieceUi(listOfCapturedPiece = capturedRook, size = pieceUiSize)
+                            CapturedPieceUi(
+                                listOfCapturedPiece = capturedRook,
+                                size = pieceUiSize,
+                                skin = skin
+                            )
                         }
                         if (capturedQueen.isNotEmpty()) {
-                            CapturedPieceUi(listOfCapturedPiece = capturedQueen, size = pieceUiSize)
+                            CapturedPieceUi(
+                                listOfCapturedPiece = capturedQueen,
+                                size = pieceUiSize,
+                                skin = skin
+                            )
                         }
                         Text(text = if (currentAdvantage >= 1) " | +$currentAdvantage" else "")
                     }
@@ -308,11 +330,12 @@ fun PlayerUI(
 @Composable
 fun CapturedPieceUi(
     listOfCapturedPiece: List<ChessPiece>,
-    size: Dp
+    size: Dp,
+    skin: ChessSkin
 ) {
     Row {
         Image(
-            painter = painterResource(id = getChessPieceImage(listOfCapturedPiece[0])),
+            painter = painterResource(id = getChessPieceImage(listOfCapturedPiece[0].keyWord,skin)),
             contentDescription = null,
             modifier = Modifier
                 .size(size)
@@ -325,7 +348,7 @@ fun CapturedPieceUi(
         )
     }
 }
-
+/*
 @Preview
 @Composable
 fun PlayerUIPreview() {
@@ -361,6 +384,7 @@ fun PlayerUIPreview() {
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
             getChessPieceFromKeyWord(ChessPieceKeyWord.WHITE_PAWN),
         ),
-        LocalConfiguration.current.screenWidthDp.dp
+        screenWidth = LocalConfiguration.current.screenWidthDp.dp,
+        skin = ChessSkin.DEFAULT
     )
-}
+}*/

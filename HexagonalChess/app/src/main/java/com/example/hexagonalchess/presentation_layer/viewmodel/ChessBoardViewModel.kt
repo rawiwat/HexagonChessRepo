@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hexagonalchess.R
+import com.example.hexagonalchess.data_layer.database.FireBaseDatabasePlayer
 import com.example.hexagonalchess.data_layer.model.TilePair
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
 import com.example.hexagonalchess.data_layer.model.tile.Tile
@@ -35,6 +36,7 @@ import com.example.hexagonalchess.domain_layer.piecemove.pawnMove
 import com.example.hexagonalchess.domain_layer.piecemove.queenMove
 import com.example.hexagonalchess.domain_layer.piecemove.rookMove
 import com.example.hexagonalchess.domain_layer.playSoundEffect
+import com.example.hexagonalchess.domain_layer.player.manager.PlayerNameSharedPref
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -50,7 +52,8 @@ class ChessBoardViewModel(
     val boardType: BoardType,
     val context: Context,
     val gameMode: GameMode,
-    val playerColor: PieceColor
+    val playerColor: PieceColor,
+    private val databasePlayer: FireBaseDatabasePlayer
 ) : ViewModel() {
     private val _chessBoard = MutableStateFlow(allTiles)
     val chessBoard: StateFlow<List<Tile>> = _chessBoard
@@ -110,6 +113,8 @@ class ChessBoardViewModel(
 
     private val _blackConsiderResign = MutableStateFlow(false)
     val blackConsiderResign:StateFlow<Boolean> = _blackConsiderResign
+
+    private val playerName = PlayerNameSharedPref(context).getPlayerName()
 
     fun onClickPieces(tile: Tile) {
         var result = listOf<TileId?>()
@@ -403,6 +408,9 @@ class ChessBoardViewModel(
             GameEndMethod.DRAW -> "$winnerColorInMessage accept the draw offer"
             GameEndMethod.RESIGN -> "$loserColorInMessage resign"
             GameEndMethod.CHECKMATE -> "$winnerColorInMessage Wins\nCheckmate"
+        }
+        if (playerName != null) {
+            databasePlayer.updatePlayerCoin(playerName,5)
         }
         _gameOverMessage.value = gameEndMessage
     }

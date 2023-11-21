@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.hexagonalchess.R
 import com.example.hexagonalchess.data_layer.model.pieces.ChessPiece
+import com.example.hexagonalchess.domain_layer.ChessSkin
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.PieceType
 import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.CapturedPieceUi
@@ -37,7 +38,8 @@ fun OpponentUIOnline(
     color: PieceColor,
     chessBoardViewModel: ChessMultiPlayerViewModel,
     listOfCapturedPiece: List<ChessPiece>,
-    screenWidth: Dp
+    screenWidth: Dp,
+    opponentSkin: ChessSkin
 ) {
     val borderWidth = if (currentTurn == color) { screenWidth / 100 } else { 0.dp }
 
@@ -123,19 +125,19 @@ fun OpponentUIOnline(
 
                     Row {
                         if (capturedPawn.isNotEmpty()) {
-                            CapturedPieceUi(listOfCapturedPiece = capturedPawn, size = pieceUiSize)
+                            CapturedPieceUi(listOfCapturedPiece = capturedPawn, size = pieceUiSize, opponentSkin)
                         }
                         if (capturedKnight.isNotEmpty()) {
-                            CapturedPieceUi(listOfCapturedPiece = capturedKnight, size = pieceUiSize)
+                            CapturedPieceUi(listOfCapturedPiece = capturedKnight, size = pieceUiSize, opponentSkin)
                         }
                         if (capturedBishop.isNotEmpty()) {
-                            CapturedPieceUi(listOfCapturedPiece = capturedBishop, size = pieceUiSize)
+                            CapturedPieceUi(listOfCapturedPiece = capturedBishop, size = pieceUiSize, opponentSkin)
                         }
                         if (capturedRook.isNotEmpty()) {
-                            CapturedPieceUi(listOfCapturedPiece = capturedRook, size = pieceUiSize)
+                            CapturedPieceUi(listOfCapturedPiece = capturedRook, size = pieceUiSize, opponentSkin)
                         }
                         if (capturedQueen.isNotEmpty()) {
-                            CapturedPieceUi(listOfCapturedPiece = capturedQueen, size = pieceUiSize)
+                            CapturedPieceUi(listOfCapturedPiece = capturedQueen, size = pieceUiSize, opponentSkin)
                         }
                         Text(text = if (currentAdvantage >= 1) " | +$currentAdvantage" else "")
                     }

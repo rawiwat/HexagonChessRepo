@@ -191,6 +191,7 @@ fun ChangeTheme(
     val tileWidth by remember { mutableIntStateOf(55) }
     val tileHeight by remember { mutableIntStateOf(47) }
     val scrollState = rememberScrollState()
+
     Box(
         modifier = Modifier
             .size(width = 272.dp, height = 96.dp)

@@ -1,6 +1,5 @@
 package com.example.hexagonalchess
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,8 +13,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.hexagonalchess.data_layer.database.FireBaseDatabasePlayer
-import com.example.hexagonalchess.domain_layer.PieceColor
-import com.example.hexagonalchess.domain_layer.bitmapToByteArray
 import com.example.hexagonalchess.domain_layer.encodeBitmapToString
 import com.example.hexagonalchess.domain_layer.getBitmapFromUri
 import com.example.hexagonalchess.domain_layer.player.manager.PlayerNameSharedPref

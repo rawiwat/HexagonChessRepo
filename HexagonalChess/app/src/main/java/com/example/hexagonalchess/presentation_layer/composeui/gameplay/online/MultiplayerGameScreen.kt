@@ -47,6 +47,7 @@ import com.example.hexagonalchess.data_layer.model.tile.Tile
 import com.example.hexagonalchess.domain_layer.BoardType
 import com.example.hexagonalchess.domain_layer.ChessGameStateOnline
 import com.example.hexagonalchess.domain_layer.ChessPieceKeyWord
+import com.example.hexagonalchess.domain_layer.ChessSkin
 import com.example.hexagonalchess.domain_layer.PieceColor
 import com.example.hexagonalchess.domain_layer.Route
 import com.example.hexagonalchess.domain_layer.TileTheme
@@ -54,6 +55,7 @@ import com.example.hexagonalchess.domain_layer.getChessPieceFromKeyWord
 import com.example.hexagonalchess.domain_layer.getChessPieceImage
 import com.example.hexagonalchess.domain_layer.getPromotionKeyWordFromColor
 import com.example.hexagonalchess.domain_layer.getTileImage
+import com.example.hexagonalchess.domain_layer.skin_setting.SkinSharedPrefs
 import com.example.hexagonalchess.domain_layer.theme_setting.ThemeSharedPrefs
 import com.example.hexagonalchess.domain_layer.tile_ui_manager.TileUiManager
 import com.example.hexagonalchess.presentation_layer.composeui.gameplay.local.GameOverMenu
@@ -82,6 +84,7 @@ fun MultiplayerGameScreen(
     val turnOnBack by chessBoardViewModel.backMenu.collectAsState()
     val playerName by chessBoardViewModel.playerName.collectAsState()
     val opponentName by chessBoardViewModel.opponentName.collectAsState()
+    val playerSkin by remember { mutableStateOf(SkinSharedPrefs(context).getSkin()) }
 
     LaunchedEffect(Unit) {
         chessBoardViewModel.updateNameAndColor()
@@ -99,7 +102,8 @@ fun MultiplayerGameScreen(
             color = playerColor,
             chessBoardViewModel = chessBoardViewModel,
             listOfCapturedPiece = playerCaptured,
-            screenWidth = screenWidth.dp
+            screenWidth = screenWidth.dp,
+            playerSkin = playerSkin
         )
 
         OpponentUIOnline(
@@ -108,7 +112,8 @@ fun MultiplayerGameScreen(
             color = opponentColor,
             chessBoardViewModel = chessBoardViewModel,
             listOfCapturedPiece = opponentCaptured,
-            screenWidth = screenWidth.dp
+            screenWidth = screenWidth.dp,
+            ChessSkin.DEFAULT
         )
 
         Box(
@@ -202,7 +207,8 @@ fun MultiplayerGameScreen(
                     ChessGameStateOnline.BLACK_PROMOTE -> PieceColor.BLACK
                     ChessGameStateOnline.GAME_OVER -> PieceColor.BLACK
                     ChessGameStateOnline.OPEN -> PieceColor.BLACK
-                }
+                },
+                playerSkin
             )
         }
 
@@ -370,7 +376,7 @@ fun TileUIOnline(
 
         if(tile.chessPiece != null) {
             Image(
-                painter = painterResource(id = getChessPieceImage(tile.chessPiece!!)),
+                painter = painterResource(id = getChessPieceImage(tile.chessPiece!!.keyWord,ChessSkin.DEFAULT)),
                 contentDescription = null,
                 modifier = Modifier
                     .size(
@@ -399,14 +405,20 @@ fun TileUIOnline(
 @Composable
 fun PromotionIconOnline(
     chessBoardViewModel: ChessMultiPlayerViewModel,
-    keyWord: ChessPieceKeyWord
+    keyWord: ChessPieceKeyWord,
+    skin:ChessSkin
 ) {
     Image(
-        painter = painterResource(id = getChessPieceImage(getChessPieceFromKeyWord(keyWord))),
+        painter = painterResource(id = getChessPieceImage(keyWord, skin)),
         contentDescription = null,
         modifier = Modifier
             .clickable {
-                chessBoardViewModel.selectingTile?.let { chessBoardViewModel.promotePawn(keyWord, it.id) }
+                chessBoardViewModel.selectingTile?.let {
+                    chessBoardViewModel.promotePawn(
+                        keyWord,
+                        it.id
+                    )
+                }
             }
             .size(60.dp)
     )
@@ -418,7 +430,8 @@ fun PromoteMenuOnline(
     width: Dp,
     height: Dp,
     chessBoardViewModel: ChessMultiPlayerViewModel,
-    color: PieceColor
+    color: PieceColor,
+    skin:ChessSkin
 ) {
     val listOfPromotion = remember { getPromotionKeyWordFromColor(color) }
 
@@ -467,7 +480,8 @@ fun PromoteMenuOnline(
                 items(listOfPromotion) { promotionOption ->
                     PromotionIconOnline(
                         chessBoardViewModel = chessBoardViewModel,
-                        keyWord = promotionOption
+                        keyWord = promotionOption,
+                        skin = skin
                     )
                 }
             }

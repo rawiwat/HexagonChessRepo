@@ -89,7 +89,7 @@ fun checkKingUnavailableMove(pieceColor: PieceColor, board: List<Tile>):List<Til
         }
     }
     return result
-}*/
+}
 
 private fun checkPawnAttack(tile: Tile, board:List<Tile>, boardType: BoardType):List<TileId?> {
     return if(tile.chessPiece!!.color == PieceColor.BLACK) {
@@ -97,7 +97,7 @@ private fun checkPawnAttack(tile: Tile, board:List<Tile>, boardType: BoardType):
     } else {
         listOf(findTile(tile.id,TileDirections.UPPER_LEFT, board, boardType),findTile(tile.id,TileDirections.UPPER_RIGHT, board, boardType))
     }
-}
+}*/
 
 fun getAllTileInDirection(selectedTile: Tile, direction: TileDirections, board: List<Tile>, boardType: BoardType):List<TileId?> {
     val result = mutableListOf<TileId?>()

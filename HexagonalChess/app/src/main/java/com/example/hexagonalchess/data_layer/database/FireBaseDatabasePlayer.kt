@@ -1,11 +1,14 @@
 package com.example.hexagonalchess.data_layer.database
 
 import android.content.Context
+import com.example.hexagonalchess.data_layer.model.collection.Collectable
 import com.example.hexagonalchess.data_layer.model.player.Player
 import com.example.hexagonalchess.domain_layer.player.manager.PlayerNameSharedPref
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.GenericTypeIndicator
+import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 
 class FireBaseDatabasePlayer(
@@ -13,6 +16,9 @@ class FireBaseDatabasePlayer(
 ): DatabasePlayer {
     private val gameRef = FirebaseDatabase.getInstance().reference.child("game")
     private val playersRef = gameRef.child("player")
+    private var playerKey = ""
+    override var currentPrice = 0
+    override var updatePrice:() -> Unit = { }
 
     override fun addNewPlayer(name: String, password: String) {
         val newPlayer = Player(name, password)
@@ -109,5 +115,81 @@ class FireBaseDatabasePlayer(
                     // TODO : Handle error
                 }
             })
+    }
+
+    override fun updatePlayerCoin(playerName: String, amount:Long) {
+        playersRef.orderByChild("name").equalTo(playerName)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    for (snapshot in dataSnapshot.children) {
+                        val playerKey = snapshot.key
+                        val playerRef = playerKey?.let { playersRef.child(it) }
+
+                        val updates = hashMapOf<String, Any>()
+                        updates["coin"] = ServerValue.increment(amount)
+
+                        playerRef?.updateChildren(updates)
+                        return
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // TODO : Handle error
+                }
+            })
+    }
+
+    override fun calculatePrice() {
+        playersRef.child(playerKey).child("collection").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val collection = snapshot.getValue(object : GenericTypeIndicator<List<Collectable>>() {})
+                    ?: listOf()
+
+                currentPrice = collection.size * 100
+                updatePrice.invoke()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
+    }
+
+    override fun addToCollection(collectable: Collectable) {
+        // Retrieve the current collection
+        playersRef.child(playerKey).child("collection").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val currentCollection = snapshot.getValue(object : GenericTypeIndicator<List<Collectable>>() {})
+                    ?: listOf()
+
+                // Add the new collectable to the collection
+                val updatedCollection = currentCollection.toMutableList()
+                updatedCollection.add(collectable)
+
+                playersRef.child(playerKey).child("collection").setValue(updatedCollection)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
+    }
+
+    init {
+        playersRef.orderByChild("name").equalTo(PlayerNameSharedPref(context).getPlayerName()).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (playerSnapshot in snapshot.children) {
+                    val player = playerSnapshot.getValue(Player::class.java)
+                    // Handle the found player
+                    if (player != null) {
+                        playerKey = playerSnapshot.key.toString()
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
     }
 }

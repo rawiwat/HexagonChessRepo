@@ -101,6 +101,7 @@ class Route {
         const val loadingOnline = "LoadingOnline"
         const val signUp = "SignUp"
         const val signIn = "SignIn"
+        const val shop = "shop"
     }
 }
 
@@ -132,4 +133,15 @@ enum class AuthenticationState {
 enum class SimpleDirection {
     LEFT,
     RIGHT
+}
+
+enum class CollectableType {
+    TILE_THEME,
+    PIECE_THEME
+}
+
+enum class ChessSkin {
+    DEFAULT,
+    CHINESE,
+    MEDIEVAL
 }

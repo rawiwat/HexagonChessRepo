@@ -661,7 +661,7 @@ class FirebaseRealtimeDatabaseGame(
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    // TODO: Handle error
+                    //TODO: Handle error
                 }
             })
 
@@ -679,7 +679,7 @@ class FirebaseRealtimeDatabaseGame(
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    // TODO : Handle error
+                    //TODO : Handle error
                 }
             })
     }
