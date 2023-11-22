@@ -1,123 +1,26 @@
 {
   "project_info": {
-    "project_number": "235136452103",
-    "project_id": "crashtest-99204",
-    "storage_bucket": "crashtest-99204.appspot.com"
+    "project_number": "135842871585",
+    "project_id": "hexagonalchess-ed19e",
+    "storage_bucket": "hexagonalchess-ed19e.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:235136452103:android:789edaf3ea7a1ae6a70ca2",
+        "mobilesdk_app_id": "1:135842871585:android:ab15c9cc49c2ceb3266660",
         "android_client_info": {
-          "package_name": "com.example.crashlytic"
+          "package_name": "com.hexchess.hexagonalchess"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "235136452103-0bv833bo0chhscptdgg1pcj4aoi3df9n.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAkrcmLHs0hw3UegyOms2go47P8GcSDCyE"
+          "current_key": "AIzaSyD1AoL365oKuWPbi5JjSzGAdeYf9Gg58Uw"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "235136452103-0bv833bo0chhscptdgg1pcj4aoi3df9n.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:235136452103:android:2ea7158079765c09a70ca2",
-        "android_client_info": {
-          "package_name": "com.example.hexagonalchess"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "235136452103-0bv833bo0chhscptdgg1pcj4aoi3df9n.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAkrcmLHs0hw3UegyOms2go47P8GcSDCyE"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "235136452103-0bv833bo0chhscptdgg1pcj4aoi3df9n.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:235136452103:android:656dae40f6bca6c1a70ca2",
-        "android_client_info": {
-          "package_name": "com.example.rustmathquiz"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "235136452103-0bv833bo0chhscptdgg1pcj4aoi3df9n.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAkrcmLHs0hw3UegyOms2go47P8GcSDCyE"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "235136452103-0bv833bo0chhscptdgg1pcj4aoi3df9n.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:235136452103:android:260ce9d30636031fa70ca2",
-        "android_client_info": {
-          "package_name": "com.example.uiassignmentseptember"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "235136452103-0bv833bo0chhscptdgg1pcj4aoi3df9n.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAkrcmLHs0hw3UegyOms2go47P8GcSDCyE"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "235136452103-0bv833bo0chhscptdgg1pcj4aoi3df9n.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

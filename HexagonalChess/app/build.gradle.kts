@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.hexagonalchess"
+    namespace = "com.hexchess.hexagonalchess"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.hexagonalchess"
+        applicationId = "com.hexchess.hexagonalchess"
         minSdk = 22
         targetSdk = 34
         versionCode = 1
